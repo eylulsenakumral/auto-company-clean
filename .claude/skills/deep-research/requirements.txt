@@ -1,0 +1,10 @@
+# Deep Research Skill Dependencies
+# These are standard library modules, no external dependencies needed for core functionality
+
+# Optional: For enhanced features, uncomment if needed
+# requests>***REMOVED***2.31.0  # For web fetching
+# beautifulsoup4>***REMOVED***4.12.0  # For HTML parsing
+# markdownify>***REMOVED***0.11.6  # For HTML to markdown conversion
+# numpy>***REMOVED***1.24.0  # For statistical analysis
+# pandas>***REMOVED***2.0.0  # For data analysis
+# networkx>***REMOVED***3.1  # For knowledge graph analysis
