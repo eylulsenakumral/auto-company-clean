@@ -1,0 +1,3 @@
+pytest>***REMOVED***7.0.0
+pytest-cov>***REMOVED***4.0.0
+pytest-mock>***REMOVED***3.10.0
