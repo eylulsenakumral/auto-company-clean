@@ -1,0 +1,4 @@
+*.sh text eol***REMOVED***lf
+Makefile text eol***REMOVED***lf
+*.ps1 text eol***REMOVED***lf
+.claude/skills/agent-browser/templates/*.sh -text
