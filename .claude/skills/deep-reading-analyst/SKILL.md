@@ -124,3 +124,128 @@ Quick scan using `references/5w2h_analysis.md`:
 ```
 
 ## Step 3: Apply Thinking Models
+
+**Select based on depth level and user preference:**
+
+### Level 1 (Quick - 15 min)
+**Core**: Structure + SCQA + 5W2H Quick Check
+
+Output:
+- SCQA breakdown
+- Information gaps (from 5W2H)
+- TOP 3 insights
+- 1 immediate action item
+
+### Level 2 (Standard - 30 min)
+**Add**: Critical Thinking + Inversion
+
+Load and apply:
+- `references/critical_thinking.md`:
+  - Argument quality assessment
+  - Logic flaw identification
+  - Evidence evaluation
+  - Alternative perspectives
+
+- `references/inversion_thinking.md`:
+  - How to ensure failure? (reverse the advice)
+  - What assumptions if wrong?
+  - Missing risks
+  - Pre-mortem analysis
+
+```markdown
+## Critical Analysis
+
+### Argument Strength: [X/10]
+Strengths:
+- [Point 1]
+
+Weaknesses:
+- [Point 1]
+
+Logical fallacies detected:
+- [If any]
+
+## Inversion Analysis
+
+🚨 How this could fail:
+1. [Failure mode 1] → Mitigation: [...]
+2. [Failure mode 2] → Mitigation: [...]
+
+Missing risk factors:
+- [Risk 1]
+```
+
+### Level 3 (Deep - 60 min)
+**Add**: Mental Models + First Principles + Systems + Six Hats
+
+Load and apply:
+- `references/mental_models.md`:
+  - Select 3-5 relevant models from different disciplines
+  - Apply each lens to the content
+  - Identify cross-model insights
+
+- `references/first_principles.md`:
+  - Strip to fundamental truths
+  - Identify core assumptions
+  - Rebuild understanding from base
+
+- `references/systems_thinking.md`:
+  - Map relationships and feedback loops
+  - Identify leverage points
+  - See the big picture
+
+- `references/six_hats.md`:
+  - White (facts), Red (feelings), Black (caution)
+  - Yellow (benefits), Green (creativity), Blue (process)
+
+```markdown
+## Multi-Model Analysis
+
+### Mental Models Applied:
+1. **[Model 1 from X discipline]**
+   Insight: [...]
+
+2. **[Model 2 from Y discipline]**
+   Insight: [...]
+
+3. **[Model 3 from Z discipline]**
+   Insight: [...]
+
+Cross-model pattern: [Key insight from combining models]
+
+### First Principles Breakdown:
+Core assumptions:
+1. [Assumption 1] → Valid: [Yes/No/Conditional]
+2. [Assumption 2] → Valid: [Yes/No/Conditional]
+
+Fundamental truth: [What remains after stripping assumptions]
+
+### Systems Map:
+```
+[Variable A] ──reinforces──> [Variable B]
+      ↑                          |
+      |                          |
+   balances                  reinforces
+      |                          |
+      └─────────<────────────────┘
+
+Leverage point: [Where small change ***REMOVED*** big impact]
+```
+
+### Six Hats Perspective:
+🤍 Facts: [Objective data]
+❤️ Feelings: [Intuitive response]
+🖤 Cautions: [Risks and downsides]
+💛 Benefits: [Positive aspects]
+💚 Ideas: [Creative alternatives]
+💙 Process: [Meta-thinking]
+```
+
+### Level 4 (Research - 120 min+)
+**Add**: Cross-source comparison via web_search
+
+Use web_search to find 2-3 related sources, then:
+- Load `references/comparison_matrix.md`
+- Compare SCQA across sources
+- Identify consensus vs. divergence
+- Synthesize integrated perspective
