@@ -123,3 +123,128 @@ Note: This is more conservative than simple LTV ($800) because early churn is hi
 Use historical data to predict future retention and spending patterns. Advanced approach for companies with large datasets.
 
 **Inputs**: Customer attributes (demographics, behavior, acquisition channel), historical purchase/churn data.
+
+**Model**: Regression, survival analysis, or ML model predicts LTV for each customer segment.
+
+### LTV for Different Business Models
+
+**Transactional (E-commerce)**:
+
+```
+LTV ***REMOVED*** AOV × Purchase Frequency × Gross Margin % × Customer Lifetime (years)
+```
+
+**Example**:
+- AOV ***REMOVED*** $100
+- Purchases/year ***REMOVED*** 3
+- Gross Margin ***REMOVED*** 50%
+- Lifetime ***REMOVED*** 2 years
+- LTV ***REMOVED*** $100 × 3 × 50% × 2 ***REMOVED*** $300
+
+**Marketplace**:
+
+```
+LTV ***REMOVED*** GMV per user × Take Rate × Gross Margin % ÷ Churn Rate
+```
+
+**Example** (ride-sharing):
+- Monthly GMV per rider ***REMOVED*** $200 (total rides)
+- Take Rate ***REMOVED*** 25%
+- Gross Margin ***REMOVED*** 80% (after payment processing)
+- Monthly Churn ***REMOVED*** 10%
+- Lifetime ***REMOVED*** 1 ÷ 0.10 ***REMOVED*** 10 months
+- Monthly Revenue ***REMOVED*** $200 × 25% ***REMOVED*** $50
+- LTV ***REMOVED*** $50 × 10 months × 80% ***REMOVED*** $400
+
+**Freemium**:
+
+```
+Blended LTV ***REMOVED*** (Free-to-Paid Conversion % × Paid User LTV) - (Free User Costs × Avg Free User Lifetime)
+```
+
+**Example**:
+- 100 free users, 5% convert to paid
+- Paid LTV ***REMOVED*** $1,000
+- Free user cost ***REMOVED*** $2/month (hosting), avg lifetime 6 months
+- Blended LTV ***REMOVED*** (0.05 × $1,000) - ($2 × 6) ***REMOVED*** $50 - $12 ***REMOVED*** $38 per free user
+
+### Improving LTV
+
+**Levers to increase LTV**:
+
+1. **Reduce churn**: Improve onboarding, product engagement, customer success. 1% churn reduction → 10-25% LTV increase.
+2. **Increase ARPU**: Upsells, cross-sells, premium tiers, usage-based pricing.
+3. **Improve gross margin**: Reduce COGS, optimize infrastructure, negotiate better rates.
+4. **Extend lifetime**: Long-term contracts, annual billing (locks in customers).
+
+**Example impact** (SaaS):
+- Current: ARPU $50, Churn 5%, Margin 80% → LTV ***REMOVED*** $800
+- Reduce churn to 4%: LTV ***REMOVED*** $50 × 80% ÷ 0.04 ***REMOVED*** $1,000 (+25%)
+- Increase ARPU to $60: LTV ***REMOVED*** $60 × 80% ÷ 0.05 ***REMOVED*** $960 (+20%)
+- Both: LTV ***REMOVED*** $60 × 80% ÷ 0.04 ***REMOVED*** $1,200 (+50%)
+
+---
+
+## 3. Contribution Margin Analysis
+
+### Contribution Margin Formula
+
+```
+Contribution Margin ***REMOVED*** Revenue - Variable Costs
+Contribution Margin % ***REMOVED*** (Revenue - Variable Costs) ÷ Revenue
+```
+
+**Variable costs** (scale with each unit):
+- COGS (cost of goods sold)
+- Hosting/infrastructure per user
+- Payment processing fees (2-3% of revenue)
+- Customer support (per-customer time)
+- Shipping/fulfillment
+- Transaction-specific costs
+
+**Fixed costs** (do NOT include):
+- Engineering salaries (build product once)
+- Rent, utilities
+- Admin, HR, finance teams
+
+### Contribution Margin by Business Model
+
+**SaaS**:
+- Revenue: $100/month subscription
+- Variable costs: $15 hosting + $3 payment fees ***REMOVED*** $18
+- Contribution Margin: $100 - $18 ***REMOVED*** $82
+- Margin %: 82%
+
+**E-commerce**:
+- Revenue: $80 product sale
+- Variable costs: $30 COGS + $5 shipping + $2.40 payment fees ***REMOVED*** $37.40
+- Contribution Margin: $80 - $37.40 ***REMOVED*** $42.60
+- Margin %: 53%
+
+**Marketplace**:
+- GMV: $200 transaction
+- Take Rate: 20% → Revenue ***REMOVED*** $40
+- Variable costs: $2 payment fees + $3 support ***REMOVED*** $5
+- Contribution Margin: $40 - $5 ***REMOVED*** $35
+- Margin %: 87.5% (of platform revenue)
+
+### Improving Contribution Margin
+
+**Levers**:
+1. **Increase prices**: Directly increases revenue per unit.
+2. **Reduce COGS**: Negotiate supplier costs, economies of scale, vertical integration.
+3. **Optimize infrastructure**: Right-size hosting, use cheaper providers, optimize usage.
+4. **Automate support**: Self-service, chatbots, knowledge base reduce manual support time.
+5. **Negotiate fees**: Lower payment processing rates (volume discounts), reduce transaction costs.
+
+**Example** (E-commerce):
+- Current: Revenue $80, COGS $30, Margin 53%
+- Negotiate COGS to $25: Margin ***REMOVED*** ($80 - $32.40) / $80 ***REMOVED*** 59.5% (+6.5pp)
+- Increase price to $90: Margin ***REMOVED*** ($90 - $37.65) / $90 ***REMOVED*** 58% (+5pp)
+- Both: Margin ***REMOVED*** ($90 - $32.65) / $90 ***REMOVED*** 63.7% (+10.7pp)
+
+---
+
+## 4. Cohort Analysis
+
+### Why Cohort Analysis Matters
