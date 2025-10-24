@@ -143,3 +143,148 @@ async function refreshTokens(refreshToken: string): Promise<TokenPair> {
   const storedToken ***REMOVED*** await RefreshToken.findOne({ tokenHash });
   
   if (!storedToken || storedToken.expiresAt < new Date()) {
+    throw new Error('Invalid refresh token');
+  }
+  
+  // Detect token reuse (potential theft)
+  const familyTokens ***REMOVED*** await RefreshToken.find({ familyId: storedToken.familyId });
+  if (familyTokens.some(t ***REMOVED***> t.id !***REMOVED******REMOVED*** storedToken.id && t.createdAt > storedToken.createdAt)) {
+    // Token reuse detected - invalidate entire family
+    await RefreshToken.deleteMany({ familyId: storedToken.familyId });
+    throw new Error('Token reuse detected');
+  }
+  
+  // Rotate: invalidate old, create new
+  await RefreshToken.delete({ id: storedToken.id });
+  
+  const newRefreshToken ***REMOVED*** await createRefreshToken(storedToken.userId, storedToken.familyId);
+  const newAccessToken ***REMOVED*** generateAccessToken(await User.findById(storedToken.userId));
+  
+  return { accessToken: newAccessToken, refreshToken: newRefreshToken };
+}
+```
+
+---
+
+### Session-Based Authentication
+
+#### Secure Session Configuration
+
+```typescript
+import session from 'express-session';
+import RedisStore from 'connect-redis';
+import { createClient } from 'redis';
+
+const redisClient ***REMOVED*** createClient({ url: process.env.REDIS_URL });
+
+app.use(session({
+  store: new RedisStore({ client: redisClient }),
+  secret: process.env.SESSION_SECRET!,
+  name: '__Host-session',  // Cookie prefix for additional security
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: true,          // HTTPS only
+    httpOnly: true,        // No JS access
+    sameSite: 'strict',    // CSRF protection
+    maxAge: 24 * 60 * 60 * 1000,  // 24 hours
+    domain: undefined,     // Current domain only
+    path: '/'
+  }
+}));
+```
+
+#### Session Regeneration
+
+```typescript
+// Always regenerate session on login
+app.post('/login', async (req, res) ***REMOVED***> {
+  const user ***REMOVED*** await authenticateUser(req.body);
+  
+  req.session.regenerate((err) ***REMOVED***> {
+    if (err) return res.status(500).json({ error: 'Session error' });
+    
+    req.session.userId ***REMOVED*** user.id;
+    req.session.loginTime ***REMOVED*** Date.now();
+    req.session.ip ***REMOVED*** req.ip;
+    
+    res.json({ success: true });
+  });
+});
+
+// Validate session consistency
+function validateSession(req: Request, res: Response, next: NextFunction) {
+  if (req.session.ip && req.session.ip !***REMOVED******REMOVED*** req.ip) {
+    // IP changed - potential session hijacking
+    req.session.destroy(() ***REMOVED***> {});
+    return res.status(401).json({ error: 'Session invalid' });
+  }
+  next();
+}
+```
+
+---
+
+## Authorization Patterns
+
+### Role-Based Access Control (RBAC)
+
+```typescript
+enum Role {
+  USER ***REMOVED*** 'user',
+  ADMIN ***REMOVED*** 'admin',
+  SUPER_ADMIN ***REMOVED*** 'super_admin'
+}
+
+interface User {
+  id: string;
+  roles: Role[];
+}
+
+function requireRole(...roles: Role[]) {
+  return (req: Request, res: Response, next: NextFunction) ***REMOVED***> {
+    const user ***REMOVED*** req.user as User;
+    
+    if (!user) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+    
+    const hasRole ***REMOVED*** roles.some(role ***REMOVED***> user.roles.includes(role));
+    
+    if (!hasRole) {
+      return res.status(403).json({ error: 'Insufficient permissions' });
+    }
+    
+    next();
+  };
+}
+
+// Usage
+app.delete('/api/users/:id', authenticate, requireRole(Role.ADMIN), deleteUser);
+```
+
+### Permission-Based Access Control
+
+```typescript
+enum Permission {
+  READ_USERS ***REMOVED*** 'users:read',
+  WRITE_USERS ***REMOVED*** 'users:write',
+  DELETE_USERS ***REMOVED*** 'users:delete',
+  READ_ORDERS ***REMOVED*** 'orders:read',
+  WRITE_ORDERS ***REMOVED*** 'orders:write'
+}
+
+const ROLE_PERMISSIONS: Record<Role, Permission[]> ***REMOVED*** {
+  [Role.USER]: [Permission.READ_USERS, Permission.READ_ORDERS],
+  [Role.ADMIN]: [Permission.READ_USERS, Permission.WRITE_USERS, Permission.READ_ORDERS, Permission.WRITE_ORDERS],
+  [Role.SUPER_ADMIN]: Object.values(Permission)
+};
+
+function requirePermission(...permissions: Permission[]) {
+  return (req: Request, res: Response, next: NextFunction) ***REMOVED***> {
+    const user ***REMOVED*** req.user as User;
+    const userPermissions ***REMOVED*** user.roles.flatMap(role ***REMOVED***> ROLE_PERMISSIONS[role]);
+    
+    const hasPermissions ***REMOVED*** permissions.every(p ***REMOVED***> userPermissions.includes(p));
+    
+    if (!hasPermissions) {
