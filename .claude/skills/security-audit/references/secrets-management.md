@@ -136,3 +136,141 @@ function validateEnv() {
   return result.data;
 }
 
+export const env ***REMOVED*** validateEnv();
+```
+
+---
+
+## Secret Managers
+
+### AWS Secrets Manager
+
+```typescript
+import { SecretsManagerClient, GetSecretValueCommand } from '@aws-sdk/client-secrets-manager';
+
+const client ***REMOVED*** new SecretsManagerClient({ region: 'us-east-1' });
+
+async function getSecret(secretId: string): Promise<Record<string, string>> {
+  const command ***REMOVED*** new GetSecretValueCommand({ SecretId: secretId });
+  const response ***REMOVED*** await client.send(command);
+  
+  if (response.SecretString) {
+    return JSON.parse(response.SecretString);
+  }
+  
+  throw new Error('Secret not found');
+}
+
+// Cache secrets
+const secretCache ***REMOVED*** new Map<string, { value: unknown; expiry: number }>();
+const CACHE_TTL ***REMOVED*** 5 * 60 * 1000; // 5 minutes
+
+async function getCachedSecret(secretId: string) {
+  const cached ***REMOVED*** secretCache.get(secretId);
+  
+  if (cached && cached.expiry > Date.now()) {
+    return cached.value;
+  }
+  
+  const value ***REMOVED*** await getSecret(secretId);
+  secretCache.set(secretId, { value, expiry: Date.now() + CACHE_TTL });
+  
+  return value;
+}
+```
+
+### HashiCorp Vault
+
+```typescript
+import Vault from 'node-vault';
+
+const vault ***REMOVED*** Vault({
+  endpoint: process.env.VAULT_ADDR,
+  token: process.env.VAULT_TOKEN
+});
+
+async function getVaultSecret(path: string): Promise<Record<string, string>> {
+  const result ***REMOVED*** await vault.read(path);
+  return result.data.data;
+}
+
+// AppRole authentication
+async function authenticateAppRole() {
+  const result ***REMOVED*** await vault.approleLogin({
+    role_id: process.env.VAULT_ROLE_ID,
+    secret_id: process.env.VAULT_SECRET_ID
+  });
+  
+  vault.token ***REMOVED*** result.auth.client_token;
+}
+```
+
+### 1Password CLI
+
+```bash
+# Load secrets from 1Password
+export DATABASE_URL***REMOVED***$(op read "op://Vault/Database/connection_string")
+export JWT_SECRET***REMOVED***$(op read "op://Vault/JWT/secret")
+
+# Or use op run
+op run --env-file***REMOVED***.env -- npm start
+```
+
+---
+
+## Kubernetes Secrets
+
+### Creating Secrets
+
+```bash
+# From literal values
+kubectl create secret generic app-secrets \
+  --from-literal***REMOVED***database-url***REMOVED***'postgres://...' \
+  --from-literal***REMOVED***jwt-secret***REMOVED***'...'
+
+# From file
+kubectl create secret generic app-secrets \
+  --from-file***REMOVED***.env
+```
+
+### Secret YAML
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: app-secrets
+type: Opaque
+data:
+  # Values must be base64 encoded
+  database-url: cG9zdGdyZXM6Ly8uLi4***REMOVED***
+  jwt-secret: c3VwZXJzZWNyZXQ***REMOVED***
+stringData:
+  # Or use stringData for plain text
+  api-key: my-api-key
+```
+
+### Using in Pods
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: app
+spec:
+  containers:
+    - name: app
+      image: myapp:latest
+      env:
+        # Individual secrets
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: database-url
+      envFrom:
+        # All secrets as env vars
+        - secretRef:
+            name: app-secrets
+      volumeMounts:
+        # Secrets as files
