@@ -124,3 +124,128 @@ Problem: [Surface issue]
                          ↓
                     [End]
 ```
+
+### H2: How Much (Metrics)
+
+**Core Questions**:
+1. What's the cost? (money, time, opportunity, learning)
+2. How many resources needed?
+3. What's the expected ROI?
+4. What's the scale/magnitude?
+5. How big are the risks?
+6. What are the target metrics?
+
+**ROI Analysis**:
+```
+Investment:
+- Direct costs: [$]
+- Indirect costs: [$]
+- Total: [$]
+
+Returns:
+- Expected benefit: [$]
+- Timeframe: [X months]
+- ROI ***REMOVED*** (Benefit - Cost) / Cost × 100%
+
+Worth it?: [Yes/No]
+```
+
+## Complete Analysis Template
+
+### Quick Version (15 min)
+
+```markdown
+# 5W2H Quick Analysis: [Article Title]
+
+**What**: [One-line topic and solution]
+**Why**: [Core motivation and value]
+**Who**: [Target audience and executors]
+**When**: [Timeline and urgency]
+**Where**: [Applicability and context]
+**How**: [Key steps (3-5)]
+**How much**: [Main costs and expected returns]
+
+## Gap Analysis
+Missing information: [List unanswered questions from 5W2H]
+Key risks: [Risks based on missing info]
+```
+
+### Deep Version (60 min)
+
+```markdown
+# 5W2H Deep Analysis: [Article Title]
+
+## 📋 What - Content Analysis
+[Detailed breakdown...]
+
+## 🎯 Why - Reason Analysis  
+[Detailed breakdown...]
+[Five Whys analysis]
+
+## 👥 Who - People Analysis
+[Detailed breakdown...]
+[Stakeholder map]
+
+## ⏰ When - Time Analysis
+[Detailed breakdown...]
+[Timeline visualization]
+
+## 🌍 Where - Context Analysis
+[Detailed breakdown...]
+[Applicability matrix]
+
+## 🔧 How - Method Analysis
+[Detailed breakdown...]
+[Process flowchart]
+
+## 💰 How Much - Cost-Benefit Analysis
+[Detailed breakdown...]
+[ROI calculation]
+
+## 📊 Overall Assessment
+
+### Information Completeness
+- ✅ Clearly answered: [X/7]
+- ⚠️  Partially answered: [List]
+- ❌ Completely missing: [List]
+
+### Feasibility Score
+Based on 5W2H completeness: [X/10]
+
+### Risk Level
+Based on missing info: [High/Medium/Low]
+
+### Action Recommendations
+1. [Specific recommendation based on analysis]
+2. [Information needed to supplement]
+3. [Priority actions to take]
+```
+
+## Practical Example
+
+### Example: Remote Work Article
+
+**Article Title**: "How to Successfully Transition to Remote Work"
+
+```markdown
+## 5W2H Analysis
+
+### What
+- Topic: Company transition from office to remote work
+- Solution: Phased transition plan
+- Goal: Maintain or improve team productivity
+
+### Why
+- Background: Post-pandemic work model changes
+- Value: Cost savings, increased flexibility
+- Rationale: Mature technology + changing work nature
+⚠️  Missing: Why not hybrid model?
+
+### Who
+- Target: SMB managers
+- Executors: HR + IT teams
+- Beneficiaries: Employees (flexibility) + Company (cost)
+⚠️  Missing: How to handle resisters?
+
+### When
+- Recommended: 3-month transition
