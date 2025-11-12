@@ -144,3 +144,148 @@ CMD ["node", "dist/server.js"]
         analyzer.load_dockerfile()
         analyzer.analyze_multi_stage()
 
+        multi_stage_issues ***REMOVED*** [i for i in analyzer.issues if i['category'] ***REMOVED******REMOVED*** 'optimization']
+        assert len(multi_stage_issues) ***REMOVED******REMOVED*** 0
+
+
+class TestAnalyzeLayerCaching:
+    """Test layer caching analysis"""
+
+    def test_source_before_dependencies(self, temp_dockerfile):
+        content ***REMOVED*** """
+FROM node:20
+WORKDIR /app
+COPY . .
+RUN npm install
+"""
+        write_dockerfile(temp_dockerfile, content)
+        analyzer ***REMOVED*** DockerfileAnalyzer(temp_dockerfile)
+        analyzer.load_dockerfile()
+        analyzer.analyze_layer_caching()
+
+        assert len(analyzer.issues) ***REMOVED******REMOVED*** 1
+        assert analyzer.issues[0]['category'] ***REMOVED******REMOVED*** 'caching'
+
+    def test_correct_order(self, temp_dockerfile):
+        content ***REMOVED*** """
+FROM node:20
+WORKDIR /app
+COPY package.json .
+RUN npm install
+COPY . .
+"""
+        write_dockerfile(temp_dockerfile, content)
+        analyzer ***REMOVED*** DockerfileAnalyzer(temp_dockerfile)
+        analyzer.load_dockerfile()
+        analyzer.analyze_layer_caching()
+
+        caching_issues ***REMOVED*** [i for i in analyzer.issues if i['category'] ***REMOVED******REMOVED*** 'caching']
+        assert len(caching_issues) ***REMOVED******REMOVED*** 0
+
+
+class TestAnalyzeSecurity:
+    """Test security analysis"""
+
+    def test_no_user_instruction(self, temp_dockerfile):
+        content ***REMOVED*** """
+FROM node:20
+WORKDIR /app
+COPY . .
+CMD ["node", "server.js"]
+"""
+        write_dockerfile(temp_dockerfile, content)
+        analyzer ***REMOVED*** DockerfileAnalyzer(temp_dockerfile)
+        analyzer.load_dockerfile()
+        analyzer.analyze_security()
+
+        assert len(analyzer.issues) >***REMOVED*** 1
+        security_issues ***REMOVED*** [i for i in analyzer.issues if i['category'] ***REMOVED******REMOVED*** 'security']
+        assert any('root' in i['message'] for i in security_issues)
+
+    def test_with_user_instruction(self, temp_dockerfile):
+        content ***REMOVED*** """
+FROM node:20
+WORKDIR /app
+COPY . .
+USER node
+CMD ["node", "server.js"]
+"""
+        write_dockerfile(temp_dockerfile, content)
+        analyzer ***REMOVED*** DockerfileAnalyzer(temp_dockerfile)
+        analyzer.load_dockerfile()
+        analyzer.analyze_security()
+
+        # Should not have root user issue
+        root_issues ***REMOVED*** [i for i in analyzer.issues
+                      if i['category'] ***REMOVED******REMOVED*** 'security' and 'root' in i['message']]
+        assert len(root_issues) ***REMOVED******REMOVED*** 0
+
+    def test_detect_secrets(self, temp_dockerfile):
+        content ***REMOVED*** """
+FROM node:20
+ENV API_KEY***REMOVED***secret123
+ENV PASSWORD***REMOVED***mypassword
+"""
+        write_dockerfile(temp_dockerfile, content)
+        analyzer ***REMOVED*** DockerfileAnalyzer(temp_dockerfile)
+        analyzer.load_dockerfile()
+        analyzer.analyze_security()
+
+        secret_issues ***REMOVED*** [i for i in analyzer.issues
+                        if i['category'] ***REMOVED******REMOVED*** 'security' and 'secret' in i['message'].lower()]
+        assert len(secret_issues) >***REMOVED*** 1
+
+
+class TestAnalyzeAptCache:
+    """Test apt cache cleanup analysis"""
+
+    def test_apt_without_cleanup(self, temp_dockerfile):
+        content ***REMOVED*** """
+FROM ubuntu:22.04
+RUN apt-get update && apt-get install -y curl
+"""
+        write_dockerfile(temp_dockerfile, content)
+        analyzer ***REMOVED*** DockerfileAnalyzer(temp_dockerfile)
+        analyzer.load_dockerfile()
+        analyzer.analyze_apt_cache()
+
+        assert len(analyzer.suggestions) >***REMOVED*** 1
+        assert any('apt cache' in s['message'] for s in analyzer.suggestions)
+
+    def test_apt_with_cleanup(self, temp_dockerfile):
+        content ***REMOVED*** """
+FROM ubuntu:22.04
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+"""
+        write_dockerfile(temp_dockerfile, content)
+        analyzer ***REMOVED*** DockerfileAnalyzer(temp_dockerfile)
+        analyzer.load_dockerfile()
+        analyzer.analyze_apt_cache()
+
+        apt_suggestions ***REMOVED*** [s for s in analyzer.suggestions if 'apt cache' in s['message']]
+        assert len(apt_suggestions) ***REMOVED******REMOVED*** 0
+
+
+class TestAnalyzeCombineRun:
+    """Test RUN command combination analysis"""
+
+    def test_consecutive_runs(self, temp_dockerfile):
+        content ***REMOVED*** """
+FROM node:20
+RUN apt-get update
+RUN apt-get install -y curl
+RUN apt-get clean
+"""
+        write_dockerfile(temp_dockerfile, content)
+        analyzer ***REMOVED*** DockerfileAnalyzer(temp_dockerfile)
+        analyzer.load_dockerfile()
+        analyzer.analyze_combine_run()
+
+        assert len(analyzer.suggestions) >***REMOVED*** 1
+        assert any('consecutive' in s['message'] for s in analyzer.suggestions)
+
+    def test_non_consecutive_runs(self, temp_dockerfile):
+        content ***REMOVED*** """
+FROM node:20
+RUN apt-get update
+COPY package.json .
