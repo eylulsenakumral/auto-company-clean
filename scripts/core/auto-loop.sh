@@ -154,3 +154,159 @@ backup_consensus() {
     if [ -f "$CONSENSUS_FILE" ]; then
         cp "$CONSENSUS_FILE" "$CONSENSUS_FILE.bak"
     fi
+}
+
+restore_consensus() {
+    if [ -f "$CONSENSUS_FILE.bak" ]; then
+        cp "$CONSENSUS_FILE.bak" "$CONSENSUS_FILE"
+        log "Consensus restored from backup after failed cycle"
+    fi
+}
+
+validate_consensus() {
+    if [ ! -s "$CONSENSUS_FILE" ]; then
+        return 1
+    fi
+    if ! grep -q "^# Auto Company Consensus" "$CONSENSUS_FILE"; then
+        return 1
+    fi
+    if ! grep -q "^## Next Action" "$CONSENSUS_FILE"; then
+        return 1
+    fi
+    if ! grep -q "^## Company State" "$CONSENSUS_FILE"; then
+        return 1
+    fi
+    return 0
+}
+
+consensus_changed_since_backup() {
+    if [ ! -f "$CONSENSUS_FILE" ]; then
+        return 1
+    fi
+
+    if [ ! -f "$CONSENSUS_FILE.bak" ]; then
+        return 0
+    fi
+
+    if cmp -s "$CONSENSUS_FILE" "$CONSENSUS_FILE.bak"; then
+        return 1
+    fi
+
+    return 0
+}
+
+resolve_codex_bin() {
+    if [ -n "$CODEX_BIN" ]; then
+        if [ -x "$CODEX_BIN" ]; then
+            echo "$CODEX_BIN"
+            return 0
+        fi
+        if command -v "$CODEX_BIN" >/dev/null 2>&1; then
+            command -v "$CODEX_BIN"
+            return 0
+        fi
+    fi
+
+    # Prefer WSL-local Codex installed via nvm.
+    local nvm_candidate***REMOVED***""
+    for candidate in "$HOME"/.nvm/versions/node/*/bin/codex; do
+        if [ -x "$candidate" ]; then
+            nvm_candidate***REMOVED***"$candidate"
+        fi
+    done
+    if [ -n "$nvm_candidate" ]; then
+        echo "$nvm_candidate"
+        return 0
+    fi
+
+    # Fallback: ask an interactive bash shell (loads user profile).
+    local interactive_candidate
+    interactive_candidate***REMOVED***$(bash -ic 'command -v codex' 2>/dev/null | tail -n1 | tr -d '\r' || true)
+    if [ -n "$interactive_candidate" ] && [ -x "$interactive_candidate" ]; then
+        echo "$interactive_candidate"
+        return 0
+    fi
+
+    # Last fallback: current shell PATH.
+    if command -v codex >/dev/null 2>&1; then
+        command -v codex
+        return 0
+    fi
+
+    return 1
+}
+
+run_codex_cycle() {
+    local prompt***REMOVED***"$1"
+    local output_file timeout_flag message_file
+
+    output_file***REMOVED***$(mktemp)
+    timeout_flag***REMOVED***$(mktemp)
+    message_file***REMOVED***$(mktemp)
+
+    set +e
+    (
+        cd "$PROJECT_DIR" || exit 1
+        local codex_cmd***REMOVED***("$RESOLVED_CODEX_BIN" "exec" "-c" "sandbox_mode***REMOVED***\"${CODEX_SANDBOX_MODE}\"" "-o" "$message_file")
+        if [ -n "$MODEL" ]; then
+            codex_cmd+***REMOVED***("-m" "$MODEL")
+        fi
+        codex_cmd+***REMOVED***("$prompt")
+        "${codex_cmd[@]}"
+    ) > "$output_file" 2>&1 &
+    local codex_pid***REMOVED***$!
+
+    (
+        sleep "$CYCLE_TIMEOUT_SECONDS"
+        if kill -0 "$codex_pid" 2>/dev/null; then
+            echo "1" > "$timeout_flag"
+            kill -TERM "$codex_pid" 2>/dev/null || true
+            sleep 5
+            kill -KILL "$codex_pid" 2>/dev/null || true
+        fi
+    ) &
+    local watchdog_pid***REMOVED***$!
+
+    wait "$codex_pid"
+    EXIT_CODE***REMOVED***$?
+
+    kill "$watchdog_pid" 2>/dev/null || true
+    wait "$watchdog_pid" 2>/dev/null || true
+    set -e
+
+    OUTPUT***REMOVED***$(cat "$output_file")
+    RESULT_MESSAGE***REMOVED***$(cat "$message_file" 2>/dev/null || true)
+    rm -f "$output_file" "$message_file"
+
+    if [ -s "$timeout_flag" ]; then
+        CYCLE_TIMED_OUT***REMOVED***1
+        EXIT_CODE***REMOVED***124
+    else
+        CYCLE_TIMED_OUT***REMOVED***0
+    fi
+    rm -f "$timeout_flag"
+}
+
+extract_cycle_metadata() {
+    RESULT_TEXT***REMOVED***""
+    CYCLE_COST***REMOVED***"N/A"
+    CYCLE_SUBTYPE***REMOVED***"unknown"
+    CYCLE_TYPE***REMOVED***"codex_exec"
+
+    RESULT_TEXT***REMOVED***$(echo "$RESULT_MESSAGE" | head -c 2000 || true)
+    if [ -z "$RESULT_TEXT" ]; then
+        RESULT_TEXT***REMOVED***$(echo "$OUTPUT" | head -c 2000 || true)
+    fi
+
+    if [ "$EXIT_CODE" -eq 0 ]; then
+        CYCLE_SUBTYPE***REMOVED***"success"
+    else
+        CYCLE_SUBTYPE***REMOVED***"error"
+    fi
+}
+
+# ***REMOVED******REMOVED******REMOVED*** Setup ***REMOVED******REMOVED******REMOVED***
+
+mkdir -p "$LOG_DIR" "$PROJECT_DIR/memories"
+
+# Clean up stale stop file from previous run
