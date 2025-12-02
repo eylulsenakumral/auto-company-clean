@@ -144,3 +144,149 @@ class SourceEvaluator:
             # Recency scoring
             if age < timedelta(days***REMOVED***90):  # < 3 months
                 return 100.0
+            elif age < timedelta(days***REMOVED***365):  # < 1 year
+                return 85.0
+            elif age < timedelta(days***REMOVED***730):  # < 2 years
+                return 70.0
+            elif age < timedelta(days***REMOVED***1825):  # < 5 years
+                return 50.0
+            else:
+                return 30.0
+
+        except Exception:
+            return 50.0
+
+    def _evaluate_expertise(
+        self,
+        domain: str,
+        title: str,
+        author: Optional[str]
+    ) -> float:
+        """Evaluate source expertise (0-100)"""
+        score ***REMOVED*** 50.0
+
+        # Academic/research domains get high expertise
+        if any(d in domain for d in ['arxiv', 'nature', 'science', 'ieee', 'acm']):
+            score +***REMOVED*** 30
+
+        # Government/official sources
+        if '.gov' in domain or 'who.int' in domain:
+            score +***REMOVED*** 25
+
+        # Technical documentation
+        if 'docs.' in domain or 'documentation' in title.lower():
+            score +***REMOVED*** 20
+
+        # Author credentials (if available)
+        if author:
+            if any(title in author.lower() for title in ['dr.', 'phd', 'professor']):
+                score +***REMOVED*** 15
+
+        return min(score, 100.0)
+
+    def _evaluate_bias(
+        self,
+        domain: str,
+        title: str,
+        content: Optional[str]
+    ) -> float:
+        """Evaluate potential bias (0-100, higher ***REMOVED*** more neutral)"""
+        score ***REMOVED*** 70.0  # Start neutral
+
+        # Check for sensationalism in title
+        sensational_indicators ***REMOVED*** [
+            '!', 'shocking', 'unbelievable', 'you won\'t believe',
+            'secret', 'they don\'t want you to know'
+        ]
+        title_lower ***REMOVED*** title.lower()
+        if any(indicator in title_lower for indicator in sensational_indicators):
+            score -***REMOVED*** 20
+
+        # Academic sources are typically less biased
+        if any(d in domain for d in ['arxiv', 'nature', 'science', 'ieee']):
+            score +***REMOVED*** 20
+
+        # Check for balance in content (if available)
+        if content:
+            # Look for balanced language
+            balanced_indicators ***REMOVED*** ['however', 'although', 'on the other hand', 'critics argue']
+            if any(indicator in content.lower() for indicator in balanced_indicators):
+                score +***REMOVED*** 10
+
+        return min(max(score, 0), 100.0)
+
+    def _identify_factors(
+        self,
+        domain: str,
+        domain_score: float,
+        recency_score: float,
+        expertise_score: float,
+        bias_score: float
+    ) -> Dict[str, str]:
+        """Identify key credibility factors"""
+        factors ***REMOVED*** {}
+
+        if domain_score >***REMOVED*** 85:
+            factors['domain'] ***REMOVED*** "High authority domain"
+        elif domain_score <***REMOVED*** 45:
+            factors['domain'] ***REMOVED*** "Low authority domain - verify claims"
+
+        if recency_score >***REMOVED*** 85:
+            factors['recency'] ***REMOVED*** "Recent information"
+        elif recency_score <***REMOVED*** 40:
+            factors['recency'] ***REMOVED*** "Outdated information - verify currency"
+
+        if expertise_score >***REMOVED*** 80:
+            factors['expertise'] ***REMOVED*** "Expert source"
+        elif expertise_score <***REMOVED*** 45:
+            factors['expertise'] ***REMOVED*** "Limited expertise indicators"
+
+        if bias_score >***REMOVED*** 80:
+            factors['bias'] ***REMOVED*** "Balanced perspective"
+        elif bias_score <***REMOVED*** 50:
+            factors['bias'] ***REMOVED*** "Potential bias detected"
+
+        return factors
+
+    def _generate_recommendation(self, overall_score: float) -> str:
+        """Generate trust recommendation"""
+        if overall_score >***REMOVED*** 80:
+            return "high_trust"
+        elif overall_score >***REMOVED*** 60:
+            return "moderate_trust"
+        elif overall_score >***REMOVED*** 40:
+            return "low_trust"
+        else:
+            return "verify"
+
+
+# Example usage
+if __name__ ***REMOVED******REMOVED*** '__main__':
+    evaluator ***REMOVED*** SourceEvaluator()
+
+    # Test sources
+    test_sources ***REMOVED*** [
+        {
+            'url': 'https://www.nature.com/articles/s41586-2025-12345',
+            'title': 'Breakthrough in Quantum Computing',
+            'publication_date': '2025-10-15'
+        },
+        {
+            'url': 'https://someblog.wordpress.com/shocking-discovery',
+            'title': 'SHOCKING! You Won\'t Believe This Discovery!',
+            'publication_date': '2020-01-01'
+        },
+        {
+            'url': 'https://docs.python.org/3/library/asyncio.html',
+            'title': 'asyncio — Asynchronous I/O',
+            'publication_date': '2025-11-01'
+        }
+    ]
+
+    for source in test_sources:
+        score ***REMOVED*** evaluator.evaluate_source(**source)
+        print(f"\nSource: {source['title']}")
+        print(f"URL: {source['url']}")
+        print(f"Overall Score: {score.overall_score}/100")
+        print(f"Recommendation: {score.recommendation}")
+        print(f"Factors: {score.factors}")
