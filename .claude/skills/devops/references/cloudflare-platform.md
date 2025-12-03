@@ -134,3 +134,138 @@ export default {
 
 ### Installation
 ```bash
+npm install -g wrangler
+wrangler login
+wrangler init my-worker
+```
+
+### Core Commands
+```bash
+# Development
+wrangler dev                    # Local dev server
+wrangler dev --remote          # Dev on real edge
+
+# Deployment
+wrangler deploy                # Deploy to production
+wrangler deploy --dry-run      # Preview changes
+
+# Logs
+wrangler tail                  # Real-time logs
+wrangler tail --format pretty  # Formatted logs
+
+# Versions
+wrangler deployments list      # List deployments
+wrangler rollback [version]    # Rollback
+
+# Secrets
+wrangler secret put SECRET_NAME
+wrangler secret list
+```
+
+### Resource Management
+```bash
+# D1
+wrangler d1 create my-db
+wrangler d1 execute my-db --file***REMOVED***schema.sql
+
+# KV
+wrangler kv:namespace create MY_KV
+wrangler kv:key put --binding***REMOVED***MY_KV "key" "value"
+
+# R2
+wrangler r2 bucket create my-bucket
+wrangler r2 object put my-bucket/file.txt --file***REMOVED***./file.txt
+```
+
+## Configuration (wrangler.toml)
+
+```toml
+name ***REMOVED*** "my-worker"
+main ***REMOVED*** "src/index.ts"
+compatibility_date ***REMOVED*** "2024-01-01"
+
+# Environment variables
+[vars]
+ENVIRONMENT ***REMOVED*** "production"
+
+# D1 Database
+[[d1_databases]]
+binding ***REMOVED*** "DB"
+database_name ***REMOVED*** "my-database"
+database_id ***REMOVED*** "YOUR_DATABASE_ID"
+
+# KV Namespace
+[[kv_namespaces]]
+binding ***REMOVED*** "KV"
+id ***REMOVED*** "YOUR_NAMESPACE_ID"
+
+# R2 Bucket
+[[r2_buckets]]
+binding ***REMOVED*** "R2_BUCKET"
+bucket_name ***REMOVED*** "my-bucket"
+
+# Durable Objects
+[[durable_objects.bindings]]
+name ***REMOVED*** "COUNTER"
+class_name ***REMOVED*** "Counter"
+script_name ***REMOVED*** "my-worker"
+
+# Queues
+[[queues.producers]]
+binding ***REMOVED*** "MY_QUEUE"
+queue ***REMOVED*** "my-queue"
+
+# Workers AI
+[ai]
+binding ***REMOVED*** "AI"
+
+# Cron triggers
+[triggers]
+crons ***REMOVED*** ["0 0 * * *"]
+```
+
+## Best Practices
+
+### Performance
+- Keep Workers lightweight (<1MB bundled)
+- Use bindings over fetch (faster than HTTP)
+- Leverage KV and Cache API for frequently accessed data
+- Use D1 batch for multiple queries
+- Stream large responses
+
+### Security
+- Use `wrangler secret` for API keys
+- Separate production/staging/development environments
+- Validate user input
+- Implement rate limiting (KV or Durable Objects)
+- Configure proper CORS headers
+
+### Cost Optimization
+- R2 for large files (zero egress fees vs S3)
+- KV for caching (reduce D1/R2 requests)
+- Request deduplication with caching
+- Efficient D1 queries (proper indexing)
+- Monitor usage via Cloudflare Analytics
+
+## Decision Matrix
+
+| Need | Choose |
+|------|--------|
+| Sub-millisecond reads | KV |
+| SQL queries | D1 |
+| Large files (>25MB) | R2 |
+| Real-time WebSockets | Durable Objects |
+| Async background jobs | Queues |
+| ACID transactions | D1 |
+| Strong consistency | Durable Objects |
+| Zero egress costs | R2 |
+| AI inference | Workers AI |
+| Static site hosting | Pages |
+
+## Resources
+
+- Docs: https://developers.cloudflare.com
+- Wrangler: https://developers.cloudflare.com/workers/wrangler/
+- Discord: https://discord.cloudflare.com
+- Examples: https://developers.cloudflare.com/workers/examples/
+- Status: https://www.cloudflarestatus.com
