@@ -133,3 +133,137 @@ class CloudflareDeploy:
                 for line in f:
                     if line.strip().startswith('name'):
                         # Parse: name ***REMOVED*** "worker-name"
+                        return line.split('***REMOVED***')[1].strip().strip('"\'')
+        except Exception as e:
+            raise CloudflareDeployError(f"Failed to read worker name: {e}")
+
+        raise CloudflareDeployError("Worker name not found in wrangler.toml")
+
+    def build_deploy_command(self) -> List[str]:
+        """
+        Build wrangler deploy command with appropriate flags.
+
+        Returns:
+            Command as list of strings
+        """
+        cmd ***REMOVED*** ["wrangler", "deploy"]
+
+        if self.env:
+            cmd.extend(["--env", self.env])
+
+        if self.dry_run:
+            cmd.append("--dry-run")
+
+        return cmd
+
+    def deploy(self) -> bool:
+        """
+        Execute deployment.
+
+        Returns:
+            True if successful
+
+        Raises:
+            CloudflareDeployError: If deployment fails
+        """
+        # Validate
+        self.validate_project()
+
+        if not self.check_wrangler_installed():
+            raise CloudflareDeployError(
+                "wrangler CLI not installed. Install: npm install -g wrangler"
+            )
+
+        worker_name ***REMOVED*** self.get_worker_name()
+        env_suffix ***REMOVED*** f" ({self.env})" if self.env else ""
+        mode ***REMOVED*** "DRY RUN" if self.dry_run else "DEPLOY"
+
+        print(f"\n{mode}: {worker_name}{env_suffix}")
+        print(f"Project: {self.project_dir}\n")
+
+        # Build and run command
+        cmd ***REMOVED*** self.build_deploy_command()
+        exit_code, stdout, stderr ***REMOVED*** self.run_command(cmd)
+
+        # Output results
+        if stdout:
+            print(stdout)
+        if stderr:
+            print(stderr, file***REMOVED***sys.stderr)
+
+        if exit_code ***REMOVED******REMOVED*** 0:
+            status ***REMOVED*** "would be deployed" if self.dry_run else "deployed successfully"
+            print(f"\n✓ Worker {status}")
+            return True
+        else:
+            raise CloudflareDeployError("Deployment failed")
+
+
+def main():
+    """CLI entry point."""
+    parser ***REMOVED*** argparse.ArgumentParser(
+        description***REMOVED***"Deploy Cloudflare Worker with wrangler",
+        formatter_class***REMOVED***argparse.RawDescriptionHelpFormatter,
+        epilog***REMOVED***"""
+Examples:
+  python cloudflare-deploy.py
+  python cloudflare-deploy.py --env production
+  python cloudflare-deploy.py --project ./my-worker --env staging
+  python cloudflare-deploy.py --dry-run
+  python cloudflare-deploy.py --env prod --verbose
+        """
+    )
+
+    parser.add_argument(
+        "--project",
+        type***REMOVED***str,
+        default***REMOVED***".",
+        help***REMOVED***"Path to Worker project directory (default: current directory)"
+    )
+
+    parser.add_argument(
+        "--env",
+        type***REMOVED***str,
+        choices***REMOVED***["production", "staging", "dev"],
+        help***REMOVED***"Environment to deploy to (production, staging, dev)"
+    )
+
+    parser.add_argument(
+        "--dry-run",
+        action***REMOVED***"store_true",
+        help***REMOVED***"Preview deployment without actually deploying"
+    )
+
+    parser.add_argument(
+        "--verbose",
+        "-v",
+        action***REMOVED***"store_true",
+        help***REMOVED***"Enable verbose output"
+    )
+
+    args ***REMOVED*** parser.parse_args()
+
+    try:
+        deployer ***REMOVED*** CloudflareDeploy(
+            project_dir***REMOVED***args.project,
+            env***REMOVED***args.env,
+            dry_run***REMOVED***args.dry_run,
+            verbose***REMOVED***args.verbose
+        )
+
+        success ***REMOVED*** deployer.deploy()
+        sys.exit(0 if success else 1)
+
+    except CloudflareDeployError as e:
+        print(f"Error: {e}", file***REMOVED***sys.stderr)
+        sys.exit(1)
+    except KeyboardInterrupt:
+        print("\nDeployment cancelled by user", file***REMOVED***sys.stderr)
+        sys.exit(130)
+    except Exception as e:
+        print(f"Unexpected error: {e}", file***REMOVED***sys.stderr)
+        sys.exit(1)
+
+
+if __name__ ***REMOVED******REMOVED*** "__main__":
+    main()
