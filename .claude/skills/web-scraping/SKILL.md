@@ -308,3 +308,157 @@ class PoisonPillDetector:
             r'become a member',
             r'sign up to read',
             r'you\'ve reached your limit',
+            r'article limit reached',
+        ],
+        PoisonPillType.CAPTCHA: [
+            r'verify you are human',
+            r'captcha',
+            r'robot verification',
+            r'prove you\'re not a robot',
+        ],
+        PoisonPillType.RATE_LIMIT: [
+            r'too many requests',
+            r'rate limit exceeded',
+            r'slow down',
+            r'429',
+        ],
+        PoisonPillType.CLOUDFLARE: [
+            r'checking your browser',
+            r'cloudflare',
+            r'ddos protection',
+            r'please wait while we verify',
+        ],
+        PoisonPillType.LOGIN_REQUIRED: [
+            r'sign in to continue',
+            r'log in required',
+            r'create an account',
+        ],
+    }
+
+    PAYWALL_DOMAINS ***REMOVED*** {
+        'nytimes.com': PoisonPillType.PAYWALL,
+        'wsj.com': PoisonPillType.PAYWALL,
+        'washingtonpost.com': PoisonPillType.PAYWALL,
+        'ft.com': PoisonPillType.PAYWALL,
+        'bloomberg.com': PoisonPillType.PAYWALL,
+    }
+
+    def detect(self, url: str, content: str, status_code: int ***REMOVED*** 200) -> PoisonPillResult:
+        # Check status code
+        if status_code ***REMOVED******REMOVED*** 429:
+            return PoisonPillResult(True, PoisonPillType.RATE_LIMIT, 1.0, 'HTTP 429')
+        if status_code ***REMOVED******REMOVED*** 403:
+            return PoisonPillResult(True, PoisonPillType.CLOUDFLARE, 0.8, 'HTTP 403')
+        if status_code ***REMOVED******REMOVED*** 404:
+            return PoisonPillResult(True, PoisonPillType.NOT_FOUND, 1.0, 'HTTP 404')
+
+        # Check known paywall domains
+        from urllib.parse import urlparse
+        domain ***REMOVED*** urlparse(url).netloc.replace('www.', '')
+        for paywall_domain, pill_type in self.PAYWALL_DOMAINS.items():
+            if paywall_domain in domain:
+                # Check if content is suspiciously short (paywall truncation)
+                if len(content) < 500:
+                    return PoisonPillResult(True, pill_type, 0.9, f'Short content from {domain}')
+
+        # Pattern matching
+        content_lower ***REMOVED*** content.lower()
+        for pill_type, patterns in self.PATTERNS.items():
+            for pattern in patterns:
+                if re.search(pattern, content_lower):
+                    return PoisonPillResult(True, pill_type, 0.7, f'Pattern match: {pattern}')
+
+        return PoisonPillResult(False, PoisonPillType.NONE, 0.0, '')
+```
+
+## Social media scraping
+
+### YouTube with yt-dlp
+
+```python
+import yt_dlp
+from pathlib import Path
+
+def download_video_metadata(url: str) -> dict:
+    """Extract metadata without downloading video."""
+    ydl_opts ***REMOVED*** {
+        'skip_download': True,
+        'quiet': True,
+        'no_warnings': True,
+    }
+
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        info ***REMOVED*** ydl.extract_info(url, download***REMOVED***False)
+        return {
+            'title': info.get('title'),
+            'description': info.get('description'),
+            'duration': info.get('duration'),
+            'upload_date': info.get('upload_date'),
+            'view_count': info.get('view_count'),
+            'channel': info.get('channel'),
+            'thumbnail': info.get('thumbnail'),
+        }
+
+def download_video(url: str, output_dir: Path, audio_only: bool ***REMOVED*** False) -> Path:
+    """Download video or audio."""
+    output_template ***REMOVED*** str(output_dir / '%(title)s.%(ext)s')
+
+    ydl_opts ***REMOVED*** {
+        'outtmpl': output_template,
+        'quiet': True,
+    }
+
+    if audio_only:
+        ydl_opts['format'] ***REMOVED*** 'bestaudio/best'
+        ydl_opts['postprocessors'] ***REMOVED*** [{
+            'key': 'FFmpegExtractAudio',
+            'preferredcodec': 'mp3',
+        }]
+
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        info ***REMOVED*** ydl.extract_info(url, download***REMOVED***True)
+        filename ***REMOVED*** ydl.prepare_filename(info)
+        if audio_only:
+            filename ***REMOVED*** filename.rsplit('.', 1)[0] + '.mp3'
+        return Path(filename)
+
+def get_transcript(url: str) -> list[dict]:
+    """Extract auto-generated or manual subtitles."""
+    ydl_opts ***REMOVED*** {
+        'skip_download': True,
+        'writesubtitles': True,
+        'writeautomaticsub': True,
+        'subtitleslangs': ['en'],
+        'quiet': True,
+    }
+
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        info ***REMOVED*** ydl.extract_info(url, download***REMOVED***False)
+
+        # Check for subtitles
+        subtitles ***REMOVED*** info.get('subtitles', {})
+        auto_captions ***REMOVED*** info.get('automatic_captions', {})
+
+        # Prefer manual subtitles over auto-generated
+        subs ***REMOVED*** subtitles.get('en') or auto_captions.get('en')
+        if not subs:
+            return []
+
+        # Get the vtt or json format
+        for sub in subs:
+            if sub['ext'] in ['vtt', 'json3']:
+                # Download and parse subtitle file
+                # ... implementation depends on format
+                pass
+
+        return []
+```
+
+### Instagram with instaloader
+
+```python
+import instaloader
+from pathlib import Path
+
+class InstagramScraper:
+    def __init__(self, username: str ***REMOVED*** None, session_file: str ***REMOVED*** None):
