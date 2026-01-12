@@ -281,3 +281,144 @@ def regex_scan(filepath: str, source: str) -> list[Finding]:
 
 
 # ─── Scanner ──────────────────────────────────────────────────────────────────
+
+def scan_file(filepath: str) -> list[Finding]:
+    """Scan a single Python file for security issues."""
+    try:
+        source ***REMOVED*** Path(filepath).read_text(encoding***REMOVED***"utf-8")
+    except (OSError, UnicodeDecodeError) as e:
+        print(f"WARNING: Could not read {filepath}: {e}", file***REMOVED***sys.stderr)
+        return []
+
+    findings ***REMOVED*** []
+
+    # AST-based scan
+    try:
+        tree ***REMOVED*** ast.parse(source, filename***REMOVED***filepath)
+        visitor ***REMOVED*** SecurityVisitor(filepath, source.split("\n"))
+        visitor.visit(tree)
+        findings.extend(visitor.findings)
+    except SyntaxError as e:
+        print(f"WARNING: Syntax error in {filepath}: {e}", file***REMOVED***sys.stderr)
+
+    # Regex-based scan
+    findings.extend(regex_scan(filepath, source))
+
+    return findings
+
+
+def scan_directory(path: str) -> list[Finding]:
+    """Recursively scan a directory for Python files."""
+    findings ***REMOVED*** []
+    scan_path ***REMOVED*** Path(path)
+
+    if scan_path.is_file():
+        if scan_path.suffix ***REMOVED******REMOVED*** ".py":
+            return scan_file(str(scan_path))
+        return []
+
+    for py_file in scan_path.rglob("*.py"):
+        # Skip common non-application directories
+        skip_dirs ***REMOVED*** {"__pycache__", ".venv", "venv", "node_modules", ".git", "migrations"}
+        if any(part in skip_dirs for part in py_file.parts):
+            continue
+        findings.extend(scan_file(str(py_file)))
+
+    return findings
+
+
+# ─── Main ─────────────────────────────────────────────────────────────────────
+
+def main():
+    parser ***REMOVED*** argparse.ArgumentParser(
+        description***REMOVED***"AST-based security scanner for Python code.",
+    )
+    parser.add_argument(
+        "--path",
+        required***REMOVED***True,
+        help***REMOVED***"Directory or file to scan",
+    )
+    parser.add_argument(
+        "--output-dir",
+        default***REMOVED***"./security-results",
+        help***REMOVED***"Directory to write JSON results (default: ./security-results)",
+    )
+    parser.add_argument(
+        "--severity",
+        default***REMOVED***"low",
+        choices***REMOVED***["critical", "high", "medium", "low", "info"],
+        help***REMOVED***"Minimum severity to report (default: low)",
+    )
+    args ***REMOVED*** parser.parse_args()
+
+    # Validate path
+    if not Path(args.path).exists():
+        print(f"ERROR: Path does not exist: {args.path}", file***REMOVED***sys.stderr)
+        sys.exit(1)
+
+    # Scan
+    print(f"Scanning: {args.path}")
+    all_findings ***REMOVED*** scan_directory(args.path)
+
+    # Filter by severity
+    min_severity ***REMOVED*** SEVERITY_ORDER.get(args.severity, 3)
+    findings ***REMOVED*** [f for f in all_findings if SEVERITY_ORDER.get(f.severity, 4) <***REMOVED*** min_severity]
+
+    # Sort by severity (critical first), then by file and line
+    findings.sort(key***REMOVED***lambda f: (SEVERITY_ORDER.get(f.severity, 4), f.file, f.line))
+
+    # Write results
+    output_dir ***REMOVED*** Path(args.output_dir)
+    output_dir.mkdir(parents***REMOVED***True, exist_ok***REMOVED***True)
+    timestamp ***REMOVED*** datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+    output_file ***REMOVED*** output_dir / f"security-scan-{timestamp}.json"
+
+    report ***REMOVED*** {
+        "scan_timestamp": datetime.now(timezone.utc).isoformat(),
+        "scanned_path": str(Path(args.path).resolve()),
+        "min_severity": args.severity,
+        "total_findings": len(findings),
+        "by_severity": {
+            sev: len([f for f in findings if f.severity ***REMOVED******REMOVED*** sev])
+            for sev in ["critical", "high", "medium", "low", "info"]
+        },
+        "findings": [asdict(f) for f in findings],
+    }
+
+    output_file.write_text(json.dumps(report, indent***REMOVED***2), encoding***REMOVED***"utf-8")
+    print(f"Results written to: {output_file}")
+
+    # Console summary
+    print(f"\n{'***REMOVED***'*60}")
+    print(f"Security Scan Results")
+    print(f"{'***REMOVED***'*60}")
+    print(f"Files scanned:    {args.path}")
+    print(f"Total findings:   {len(findings)}")
+    for sev in ["critical", "high", "medium", "low"]:
+        count ***REMOVED*** report["by_severity"][sev]
+        if count > 0:
+            print(f"  {sev.upper():12s}  {count}")
+    print(f"{'***REMOVED***'*60}")
+
+    if findings:
+        print("\nFindings:\n")
+        for f in findings:
+            print(f"  [{f.severity.upper()}] {f.rule_id}: {f.message}")
+            print(f"    File: {f.file}:{f.line}")
+            print(f"    Code: {f.snippet}")
+            if f.cwe:
+                print(f"    CWE:  {f.cwe}")
+            print()
+
+    # Exit code: non-zero if critical or high findings exist
+    critical_high ***REMOVED*** report["by_severity"]["critical"] + report["by_severity"]["high"]
+    if critical_high > 0:
+        print(f"FAIL: {critical_high} critical/high severity findings detected.")
+        sys.exit(1)
+    else:
+        print("PASS: No critical or high severity findings.")
+        sys.exit(0)
+
+
+if __name__ ***REMOVED******REMOVED*** "__main__":
+    main()
