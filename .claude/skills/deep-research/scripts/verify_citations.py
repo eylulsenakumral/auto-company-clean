@@ -285,3 +285,146 @@ class CitationVerifier:
                         result['issues'].append(
                             f"Year mismatch: report says {entry['year']}, DOI says {metadata['year']}"
                         )
+                        result['status'] ***REMOVED*** 'suspicious'
+
+            else:
+                print(f"✗ {metadata.get('error', 'Failed')}")
+                result['status'] ***REMOVED*** 'unverified'
+                result['issues'].append(f"DOI resolution failed: {metadata.get('error', 'unknown')}")
+
+        # STEP 3: Check URL accessibility (if no DOI or DOI failed)
+        if entry['url'] and result['status'] !***REMOVED*** 'verified':
+            url_ok, url_status ***REMOVED*** self.verify_url(entry['url'])
+            if url_ok:
+                result['verification_methods'].append('URL')
+                # Upgrade status if URL verifies
+                if result['status'] in ['unknown', 'no_doi', 'unverified']:
+                    result['status'] ***REMOVED*** 'url_verified'
+                print(f"  [{entry['num']}] URL accessible ✓")
+            else:
+                result['issues'].append(f"URL check failed: {url_status}")
+
+        # STEP 4: Final fallback - no verification method
+        if not entry['doi'] and not entry['url']:
+            if 'No DOI provided' not in ' '.join(result['issues']):
+                result['issues'].append("No DOI or URL - cannot verify")
+            result['status'] ***REMOVED*** 'suspicious'
+
+        return result
+
+    def verify_all(self):
+        """Verify all bibliography entries"""
+        print(f"\n{'***REMOVED***'*60}")
+        print(f"CITATION VERIFICATION: {self.report_path.name}")
+        print(f"{'***REMOVED***'*60}\n")
+
+        entries ***REMOVED*** self.extract_bibliography()
+
+        if not entries:
+            print("L No bibliography entries found\n")
+            return False
+
+        print(f"Found {len(entries)} citations\n")
+
+        results ***REMOVED*** []
+        for entry in entries:
+            result ***REMOVED*** self.verify_entry(entry)
+            results.append(result)
+
+            # Rate limiting
+            time.sleep(0.5)
+
+        # Summarize
+        print(f"\n{'***REMOVED***'*60}")
+        print(f"VERIFICATION SUMMARY")
+        print(f"{'***REMOVED***'*60}\n")
+
+        verified ***REMOVED*** [r for r in results if r['status'] ***REMOVED******REMOVED*** 'verified']
+        url_verified ***REMOVED*** [r for r in results if r['status'] ***REMOVED******REMOVED*** 'url_verified']
+        suspicious ***REMOVED*** [r for r in results if r['status'] ***REMOVED******REMOVED*** 'suspicious']
+        unverified ***REMOVED*** [r for r in results if r['status'] in ['unverified', 'no_doi', 'unknown']]
+
+        print(f'DOI Verified: {len(verified)}/{len(results)}')
+        print(f'URL Verified: {len(url_verified)}/{len(results)}')
+        print(f'Suspicious: {len(suspicious)}/{len(results)}')
+        print(f'Unverified: {len(unverified)}/{len(results)}')
+        print()
+
+        if suspicious:
+            print('SUSPICIOUS CITATIONS (Manual Review Needed):')
+            for r in suspicious:
+                print(f"\n  [{r['num']}]")
+                for issue in r['issues']:
+                    print(f"    - {issue}")
+            print()
+
+        if unverified and len(unverified) > 0:
+            print('UNVERIFIED CITATIONS (Could not check):')
+            for r in unverified:
+                print(f"  [{r['num']}] {r['issues'][0] if r['issues'] else 'Unknown'}")
+            print()
+
+        # Decision (Enhanced 2025 - includes URL-verified as acceptable)
+        total_verified ***REMOVED*** len(verified) + len(url_verified)
+
+        if suspicious:
+            print('WARNING: Suspicious citations detected')
+            if self.strict_mode:
+                print('  STRICT MODE: Failing due to suspicious citations')
+                return False
+            else:
+                print('  (Continuing in non-strict mode)')
+
+        if self.strict_mode and unverified:
+            print('STRICT MODE: Unverified citations found')
+            return False
+
+        if total_verified / len(results) < 0.5:
+            print('WARNING: Less than 50% citations verified')
+            return True  # Pass with warning
+        else:
+            print('CITATION VERIFICATION PASSED')
+            return True
+
+
+def main():
+    parser ***REMOVED*** argparse.ArgumentParser(
+        description***REMOVED***"Verify citations in research report",
+        formatter_class***REMOVED***argparse.RawDescriptionHelpFormatter,
+        epilog***REMOVED***"""
+Examples:
+  python verify_citations.py --report report.md
+
+Note: Requires internet connection to check DOIs.
+Uses free DOI resolver - no API key needed.
+        """
+    )
+
+    parser.add_argument(
+        '--report', '-r',
+        type***REMOVED***str,
+        required***REMOVED***True,
+        help***REMOVED***'Path to research report markdown file'
+    )
+
+    parser.add_argument(
+        '--strict',
+        action***REMOVED***'store_true',
+        help***REMOVED***'Strict mode: fail on any unverified or suspicious citations'
+    )
+
+    args ***REMOVED*** parser.parse_args()
+    report_path ***REMOVED*** Path(args.report)
+
+    if not report_path.exists():
+        print(f"ERROR: Report file not found: {report_path}")
+        sys.exit(1)
+
+    verifier ***REMOVED*** CitationVerifier(report_path, strict_mode***REMOVED***args.strict)
+    passed ***REMOVED*** verifier.verify_all()
+
+    sys.exit(0 if passed else 1)
+
+
+if __name__ ***REMOVED******REMOVED*** '__main__':
+    main()
