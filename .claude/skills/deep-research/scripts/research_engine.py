@@ -432,3 +432,147 @@ Your task: Deliver professional, actionable research report
 [Sources consulted]
 [Verification approach]
 ```
+
+Save report to file with timestamp.
+"""
+        }
+
+        return instructions.get(phase, "No instructions available for this phase")
+
+    def execute_phase(self, phase: ResearchPhase) -> Dict[str, Any]:
+        """Execute a research phase"""
+        print(f"\n{'***REMOVED***'*80}")
+        print(f"PHASE {phase.value.upper()}: Starting...")
+        print(f"{'***REMOVED***'*80}\n")
+
+        instructions ***REMOVED*** self.get_phase_instructions(phase)
+        print(instructions)
+
+        # In real usage, Claude will execute these instructions
+        # This returns a structured result that Claude should populate
+        result ***REMOVED*** {
+            'phase': phase.value,
+            'status': 'instructions_displayed',
+            'timestamp': datetime.now().isoformat()
+        }
+
+        return result
+
+    def run_pipeline(self, query: str) -> str:
+        """Run complete research pipeline"""
+        print(f"\n{'#'*80}")
+        print(f"# DEEP RESEARCH ENGINE")
+        print(f"# Query: {query}")
+        print(f"# Mode: {self.mode.value}")
+        print(f"{'#'*80}\n")
+
+        # Initialize research
+        self.initialize_research(query)
+
+        # Determine phases based on mode
+        phases ***REMOVED*** self._get_phases_for_mode()
+
+        # Execute each phase
+        for phase in phases:
+            self.state.phase ***REMOVED*** phase
+            result ***REMOVED*** self.execute_phase(phase)
+
+            # Save state after each phase
+            state_file ***REMOVED*** self.output_dir / f"research_state_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+            self.state.save(state_file)
+            print(f"\n✓ Phase {phase.value} complete. State saved to: {state_file}\n")
+
+        # Generate report path
+        report_file ***REMOVED*** self.output_dir / f"research_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.md"
+
+        print(f"\n{'***REMOVED***'*80}")
+        print(f"RESEARCH PIPELINE COMPLETE")
+        print(f"Report will be saved to: {report_file}")
+        print(f"{'***REMOVED***'*80}\n")
+
+        return str(report_file)
+
+    def _get_phases_for_mode(self) -> List[ResearchPhase]:
+        """Get phases based on research mode"""
+        if self.mode ***REMOVED******REMOVED*** ResearchMode.QUICK:
+            return [
+                ResearchPhase.SCOPE,
+                ResearchPhase.RETRIEVE,
+                ResearchPhase.PACKAGE
+            ]
+        elif self.mode ***REMOVED******REMOVED*** ResearchMode.STANDARD:
+            return [
+                ResearchPhase.SCOPE,
+                ResearchPhase.PLAN,
+                ResearchPhase.RETRIEVE,
+                ResearchPhase.TRIANGULATE,
+                ResearchPhase.SYNTHESIZE,
+                ResearchPhase.PACKAGE
+            ]
+        elif self.mode ***REMOVED******REMOVED*** ResearchMode.DEEP:
+            return list(ResearchPhase)
+        elif self.mode ***REMOVED******REMOVED*** ResearchMode.ULTRADEEP:
+            # In ultradeep, we might iterate some phases
+            return list(ResearchPhase)
+
+        return list(ResearchPhase)
+
+
+def main():
+    """CLI entry point"""
+    parser ***REMOVED*** argparse.ArgumentParser(
+        description***REMOVED***"Deep Research Engine for Claude Code",
+        formatter_class***REMOVED***argparse.RawDescriptionHelpFormatter,
+        epilog***REMOVED***"""
+Examples:
+  python research_engine.py --query "state of quantum computing 2025" --mode deep
+  python research_engine.py --query "PostgreSQL vs Supabase comparison" --mode standard
+  python research_engine.py -q "longevity biotech funding trends" -m ultradeep
+        """
+    )
+
+    parser.add_argument(
+        '--query', '-q',
+        type***REMOVED***str,
+        required***REMOVED***True,
+        help***REMOVED***'Research question or topic'
+    )
+
+    parser.add_argument(
+        '--mode', '-m',
+        type***REMOVED***str,
+        choices***REMOVED***['quick', 'standard', 'deep', 'ultradeep'],
+        default***REMOVED***'standard',
+        help***REMOVED***'Research depth mode (default: standard)'
+    )
+
+    parser.add_argument(
+        '--resume',
+        type***REMOVED***str,
+        help***REMOVED***'Resume from saved state file'
+    )
+
+    args ***REMOVED*** parser.parse_args()
+
+    # Initialize engine
+    mode ***REMOVED*** ResearchMode(args.mode)
+    engine ***REMOVED*** ResearchEngine(mode***REMOVED***mode)
+
+    if args.resume:
+        # Load previous state
+        state_file ***REMOVED*** Path(args.resume)
+        if not state_file.exists():
+            print(f"Error: State file not found: {state_file}", file***REMOVED***sys.stderr)
+            sys.exit(1)
+        engine.state ***REMOVED*** ResearchState.load(state_file)
+        print(f"Resumed research from: {state_file}")
+
+    # Run pipeline
+    report_path ***REMOVED*** engine.run_pipeline(args.query)
+
+    print(f"\nResearch complete! Report path: {report_path}")
+    print(f"\nNow Claude should execute each phase using the displayed instructions.")
+
+
+if __name__ ***REMOVED******REMOVED*** '__main__':
+    main()
