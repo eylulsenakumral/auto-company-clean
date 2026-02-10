@@ -788,3 +788,161 @@ jobs -r              # running only
 jobs -s              # stopped only
 ```
 
+**Output:**
+```
+[1]  + running     cd https://example.com &
+[2]  - extracting  follow 3 &
+[3]    watching    watch https://status.com
+```
+
+---
+
+### `kill`
+
+Cancel a background task.
+
+**Syntax:**
+```
+kill <pid>
+kill %<job-number>
+kill -9 <pid>        # force kill
+killall watch        # kill all watch processes
+```
+
+---
+
+### `wait`
+
+Wait for background task to complete.
+
+**Syntax:**
+```
+wait                 # wait for all
+wait <pid>           # wait for specific
+wait %<job>          # wait for job number
+```
+
+---
+
+### `bg` / `fg`
+
+Move jobs to background/foreground.
+
+**Syntax:**
+```
+bg %<job>            # continue job in background
+fg %<job>            # bring job to foreground
+```
+
+---
+
+### `&` (background operator)
+
+Run command in background.
+
+**Syntax:**
+```
+cd https://example.com &
+watch https://status.com &
+```
+
+---
+
+### `nohup`
+
+Run command immune to hangups.
+
+**Syntax:**
+```
+nohup watch https://example.com &
+```
+
+---
+
+## Environment & Auth
+
+### `env`
+
+Show current environment (headers, cookies, settings).
+
+**Syntax:**
+```
+env                  # all variables
+env | grep COOKIE    # filter
+```
+
+**Output:**
+```
+USER_AGENT***REMOVED***websh/1.0
+ACCEPT***REMOVED***text/html
+COOKIE_session***REMOVED***abc123
+HEADER_Authorization***REMOVED***Bearer xyz
+TIMEOUT***REMOVED***30
+RATE_LIMIT***REMOVED***10/min
+```
+
+---
+
+### `export`
+
+Set environment variable (headers, cookies).
+
+**Syntax:**
+```
+export VAR***REMOVED***value
+export HEADER_X-Custom***REMOVED***value
+export COOKIE_session***REMOVED***abc123
+export USER_AGENT***REMOVED***"Custom Agent"
+export TIMEOUT***REMOVED***60
+```
+
+**Examples:**
+```
+export HEADER_Authorization***REMOVED***"Bearer mytoken"
+export COOKIE_session***REMOVED***"abc123"
+export USER_AGENT***REMOVED***"Mozilla/5.0..."
+```
+
+**Crawl settings:**
+```
+export EAGER_CRAWL***REMOVED***true              # enable/disable prefetching
+export CRAWL_DEPTH***REMOVED***2                 # layers deep to prefetch
+export CRAWL_SAME_DOMAIN***REMOVED***true        # only prefetch same-domain links
+export CRAWL_MAX_PER_PAGE***REMOVED***20         # max links per page
+export CRAWL_MAX_CONCURRENT***REMOVED***5        # parallel fetches
+export CRAWL_DELAY_MS***REMOVED***200            # rate limit delay
+```
+
+---
+
+### `unset`
+
+Remove environment variable.
+
+**Syntax:**
+```
+unset VAR
+unset HEADER_Authorization
+unset COOKIE_session
+```
+
+---
+
+### `whoami`
+
+Show logged-in identity (if detectable).
+
+**Syntax:**
+```
+whoami
+whoami -v            # verbose (show how detected)
+```
+
+**Output:**
+```
+@deepfates (detected from: meta tag, cookie)
+```
+
+Or:
+```
+(not logged in)
