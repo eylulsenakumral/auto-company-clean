@@ -1,0 +1,10 @@
+<svg xmlns***REMOVED***"http://www.w3.org/2000/svg" viewBox***REMOVED***"0 0 128 128">
+  <defs>
+    <linearGradient id***REMOVED***"g" x1***REMOVED***"0" y1***REMOVED***"0" x2***REMOVED***"1" y2***REMOVED***"1">
+      <stop offset***REMOVED***"0%" stop-color***REMOVED***"#67d9ff" />
+      <stop offset***REMOVED***"100%" stop-color***REMOVED***"#29d3a3" />
+    </linearGradient>
+  </defs>
+  <rect width***REMOVED***"128" height***REMOVED***"128" rx***REMOVED***"24" fill***REMOVED***"#0d1b24" />
+  <path d***REMOVED***"M24 94L52 30h13l29 64H80l-6-15H44l-6 15H24zm24-27h22L59 40 48 67z" fill***REMOVED***"url(#g)" />
+</svg>
