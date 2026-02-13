@@ -14,15 +14,22 @@
 #   kill $(cat .auto-loop.pid)  # Force stop
 #
 # Config (env vars):
-#   MODEL***REMOVED***...                   # Optional Codex model override (default: Codex config)
+#   ENGINE***REMOVED***claude               # Engine selection: claude|codex (default: claude)
+#   MODEL***REMOVED***...                   # Optional model override (empty ***REMOVED*** engine default)
+#   CLAUDE_BIN***REMOVED***...              # Optional Claude executable override
+#   CLAUDE_PERMISSION_MODE***REMOVED***bypassPermissions
+#                               # Claude permission mode (default: bypassPermissions)
 #   CODEX_BIN***REMOVED***...               # Optional Codex executable override
 #   CODEX_SANDBOX_MODE***REMOVED***danger-full-access
+#                               # Codex sandbox mode (only for ENGINE***REMOVED***codex)
 #   LOOP_INTERVAL***REMOVED***30            # Seconds between cycles (default: 30)
 #   CYCLE_TIMEOUT_SECONDS***REMOVED***1800  # Max seconds per cycle before force-kill
 #   MAX_CONSECUTIVE_ERRORS***REMOVED***5    # Circuit breaker threshold
 #   COOLDOWN_SECONDS***REMOVED***300        # Cooldown after circuit break
 #   LIMIT_WAIT_SECONDS***REMOVED***3600     # Wait on usage limit
 #   MAX_LOGS***REMOVED***200                # Max cycle logs to keep
+#   AUTO_LOOP_PROTECT_GITIGNORE***REMOVED***1
+#                               # Restore .gitignore if a cycle mutates it
 # ***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***
 
 set -euo pipefail
