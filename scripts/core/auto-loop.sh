@@ -128,6 +128,56 @@ cleanup() {
     exit 0
 }
 
+snapshot_gitignore() {
+    if [ "$AUTO_LOOP_PROTECT_GITIGNORE" ***REMOVED*** "0" ]; then
+        echo ""
+        return
+    fi
+
+    local gitignore_file***REMOVED***"$PROJECT_DIR/.gitignore"
+    local snapshot_file***REMOVED***""
+    if [ -f "$gitignore_file" ]; then
+        snapshot_file***REMOVED***$(mktemp)
+        cp "$gitignore_file" "$snapshot_file"
+    fi
+    echo "$snapshot_file"
+}
+
+restore_gitignore_if_changed() {
+    local snapshot_file***REMOVED***"$1"
+    if [ "$AUTO_LOOP_PROTECT_GITIGNORE" ***REMOVED*** "0" ]; then
+        [ -n "$snapshot_file" ] && rm -f "$snapshot_file"
+        return
+    fi
+
+    local gitignore_file***REMOVED***"$PROJECT_DIR/.gitignore"
+    local changed***REMOVED***0
+
+    if [ -f "$gitignore_file" ]; then
+        if [ -z "$snapshot_file" ] || [ ! -f "$snapshot_file" ]; then
+            changed***REMOVED***1
+        elif ! cmp -s "$gitignore_file" "$snapshot_file"; then
+            changed***REMOVED***1
+        fi
+    else
+        if [ -n "$snapshot_file" ] && [ -f "$snapshot_file" ]; then
+            changed***REMOVED***1
+        fi
+    fi
+
+    if [ "$changed" -eq 1 ]; then
+        if [ -n "$snapshot_file" ] && [ -f "$snapshot_file" ]; then
+            cp "$snapshot_file" "$gitignore_file"
+            log_cycle "$loop_count" "GUARD" "Blocked cycle mutation of .gitignore and restored baseline"
+        else
+            rm -f "$gitignore_file"
+            log_cycle "$loop_count" "GUARD" "Blocked cycle-created .gitignore and removed it"
+        fi
+    fi
+
+    [ -n "$snapshot_file" ] && rm -f "$snapshot_file"
+}
+
 get_file_size_bytes() {
     local target_file***REMOVED***"$1"
     if [ ! -f "$target_file" ]; then
