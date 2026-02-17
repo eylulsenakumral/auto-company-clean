@@ -217,6 +217,31 @@ rotate_logs() {
     fi
 }
 
+cleanup_accidental_root_artifacts() {
+    local removed***REMOVED***0
+    local removed_names***REMOVED***""
+    local f base
+
+    # Known accidental artifacts caused by malformed shell redirections in generated commands.
+    for f in "$PROJECT_DIR"/***REMOVED**** "$PROJECT_DIR"/口径说明*; do
+        [ -f "$f" ] || continue
+        if [ ! -s "$f" ]; then
+            rm -f "$f"
+            removed***REMOVED***$((removed + 1))
+            base***REMOVED***$(basename "$f")
+            if [ -z "$removed_names" ]; then
+                removed_names***REMOVED***"$base"
+            else
+                removed_names***REMOVED***"$removed_names, $base"
+            fi
+        fi
+    done
+
+    if [ "$removed" -gt 0 ]; then
+        log_cycle "$loop_count" "GUARD" "Removed accidental root zero-byte artifact(s): $removed_names"
+    fi
+}
+
 backup_consensus() {
     if [ -f "$CONSENSUS_FILE" ]; then
         cp "$CONSENSUS_FILE" "$CONSENSUS_FILE.bak"
