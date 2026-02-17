@@ -328,6 +328,61 @@ resolve_codex_bin() {
     return 1
 }
 
+resolve_claude_bin() {
+    if [ -n "$CLAUDE_BIN" ]; then
+        if [ -x "$CLAUDE_BIN" ]; then
+            echo "$CLAUDE_BIN"
+            return 0
+        fi
+        if command -v "$CLAUDE_BIN" >/dev/null 2>&1; then
+            command -v "$CLAUDE_BIN"
+            return 0
+        fi
+    fi
+
+    # Prefer WSL-local Claude CLI installed via nvm.
+    local nvm_candidate***REMOVED***""
+    for candidate in "$HOME"/.nvm/versions/node/*/bin/claude; do
+        if [ -x "$candidate" ]; then
+            nvm_candidate***REMOVED***"$candidate"
+        fi
+    done
+    if [ -n "$nvm_candidate" ]; then
+        echo "$nvm_candidate"
+        return 0
+    fi
+
+    # Fallback: ask an interactive bash shell (loads user profile).
+    local interactive_candidate
+    interactive_candidate***REMOVED***$(bash -ic 'command -v claude' 2>/dev/null | tail -n1 | tr -d '\r' || true)
+    if [ -n "$interactive_candidate" ] && [ -x "$interactive_candidate" ]; then
+        echo "$interactive_candidate"
+        return 0
+    fi
+
+    # Last fallback: current shell PATH.
+    if command -v claude >/dev/null 2>&1; then
+        command -v claude
+        return 0
+    fi
+
+    return 1
+}
+
+resolve_engine_bin() {
+    case "$ENGINE" in
+        claude)
+            resolve_claude_bin
+            ;;
+        codex)
+            resolve_codex_bin
+            ;;
+        *)
+            return 1
+            ;;
+    esac
+}
+
 run_codex_cycle() {
     local prompt***REMOVED***"$1"
     local output_file timeout_flag message_file
