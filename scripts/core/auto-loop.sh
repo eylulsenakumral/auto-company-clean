@@ -394,7 +394,7 @@ run_codex_cycle() {
     set +e
     (
         cd "$PROJECT_DIR" || exit 1
-        local codex_cmd***REMOVED***("$RESOLVED_CODEX_BIN" "exec" "-c" "sandbox_mode***REMOVED***\"${CODEX_SANDBOX_MODE}\"" "-o" "$message_file")
+        local codex_cmd***REMOVED***("$RESOLVED_ENGINE_BIN" "exec" "-c" "sandbox_mode***REMOVED***\"${CODEX_SANDBOX_MODE}\"" "-o" "$message_file")
         if [ -n "$MODEL" ]; then
             codex_cmd+***REMOVED***("-m" "$MODEL")
         fi
