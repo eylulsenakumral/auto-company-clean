@@ -83,19 +83,35 @@ $paths ***REMOVED*** Get-RepoPaths
 $repoWin ***REMOVED*** $paths.RepoWin
 $repoWsl ***REMOVED*** $paths.RepoWsl
 
+if ($PSBoundParameters.ContainsKey("Engine")) {
+    $engineNormalized ***REMOVED*** $Engine.ToLowerInvariant()
+    if ($engineNormalized -notin @("claude", "codex")) {
+        throw "Unsupported Engine '$Engine'. Use 'claude' or 'codex'."
+    }
+    $Engine ***REMOVED*** $engineNormalized
+}
+
 if ($PSBoundParameters.ContainsKey("CycleTimeoutSeconds") -and $CycleTimeoutSeconds -lt 300) {
     Write-Warning "CycleTimeoutSeconds***REMOVED***$CycleTimeoutSeconds is very low for real cycles and may cause frequent timeouts. Recommended: 900-1800."
 }
 
 $envLines ***REMOVED*** @()
+if ($PSBoundParameters.ContainsKey("Engine")) { $envLines +***REMOVED*** "ENGINE***REMOVED***$Engine" }
 if ($PSBoundParameters.ContainsKey("Model")) { $envLines +***REMOVED*** "MODEL***REMOVED***$Model" }
+if ($PSBoundParameters.ContainsKey("ClaudePermissionMode")) { $envLines +***REMOVED*** "CLAUDE_PERMISSION_MODE***REMOVED***$ClaudePermissionMode" }
+if ($PSBoundParameters.ContainsKey("ClaudeBin")) { $envLines +***REMOVED*** "CLAUDE_BIN***REMOVED***$ClaudeBin" }
+if ($PSBoundParameters.ContainsKey("CodexBin")) { $envLines +***REMOVED*** "CODEX_BIN***REMOVED***$CodexBin" }
 if ($PSBoundParameters.ContainsKey("LoopInterval")) { $envLines +***REMOVED*** "LOOP_INTERVAL***REMOVED***$LoopInterval" }
 if ($PSBoundParameters.ContainsKey("CycleTimeoutSeconds")) { $envLines +***REMOVED*** "CYCLE_TIMEOUT_SECONDS***REMOVED***$CycleTimeoutSeconds" }
 if ($PSBoundParameters.ContainsKey("MaxConsecutiveErrors")) { $envLines +***REMOVED*** "MAX_CONSECUTIVE_ERRORS***REMOVED***$MaxConsecutiveErrors" }
 if ($PSBoundParameters.ContainsKey("CooldownSeconds")) { $envLines +***REMOVED*** "COOLDOWN_SECONDS***REMOVED***$CooldownSeconds" }
 if ($PSBoundParameters.ContainsKey("LimitWaitSeconds")) { $envLines +***REMOVED*** "LIMIT_WAIT_SECONDS***REMOVED***$LimitWaitSeconds" }
 if ($PSBoundParameters.ContainsKey("MaxLogs")) { $envLines +***REMOVED*** "MAX_LOGS***REMOVED***$MaxLogs" }
-if ($PSBoundParameters.ContainsKey("CodexSandboxMode")) { $envLines +***REMOVED*** "CODEX_SANDBOX_MODE***REMOVED***$CodexSandboxMode" }
+if ($PSBoundParameters.ContainsKey("SandboxMode")) {
+    $envLines +***REMOVED*** "CODEX_SANDBOX_MODE***REMOVED***$SandboxMode"
+} elseif ($PSBoundParameters.ContainsKey("CodexSandboxMode")) {
+    $envLines +***REMOVED*** "CODEX_SANDBOX_MODE***REMOVED***$CodexSandboxMode"
+}
 
 Write-AutoLoopEnv -RepoWin $repoWin -EnvLines $envLines
 
