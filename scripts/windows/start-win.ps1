@@ -1,12 +1,17 @@
 param(
     [string]$Distro ***REMOVED*** "Ubuntu",
+    [string]$Engine,
     [string]$Model,
+    [string]$ClaudePermissionMode,
+    [string]$ClaudeBin,
+    [string]$CodexBin,
     [int]$LoopInterval,
     [int]$CycleTimeoutSeconds,
     [int]$MaxConsecutiveErrors,
     [int]$CooldownSeconds,
     [int]$LimitWaitSeconds,
     [int]$MaxLogs,
+    [string]$SandboxMode,
     [string]$CodexSandboxMode
 )
 
