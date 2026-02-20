@@ -55,14 +55,44 @@ fi
 
 # --- Install ---
 
-# Check dependencies
-if ! command -v codex &>/dev/null; then
-    echo "Error: 'codex' CLI not found. Install Codex CLI first."
-    exit 1
-fi
+# Check dependencies by selected engine
+ENGINE_PATH***REMOVED***""
+case "$ENGINE" in
+    claude)
+        if [ -n "$CLAUDE_BIN" ]; then
+            if [ -x "$CLAUDE_BIN" ]; then
+                ENGINE_PATH***REMOVED***"$CLAUDE_BIN"
+            elif command -v "$CLAUDE_BIN" >/dev/null 2>&1; then
+                ENGINE_PATH***REMOVED***"$(command -v "$CLAUDE_BIN")"
+            fi
+        fi
+        if [ -z "$ENGINE_PATH" ] && command -v claude >/dev/null 2>&1; then
+            ENGINE_PATH***REMOVED***"$(command -v claude)"
+        fi
+        if [ -z "$ENGINE_PATH" ]; then
+            echo "Error: 'claude' CLI not found. Install Claude Code first or set CLAUDE_BIN."
+            exit 1
+        fi
+        ;;
+    codex)
+        if [ -n "$CODEX_BIN" ]; then
+            if [ -x "$CODEX_BIN" ]; then
+                ENGINE_PATH***REMOVED***"$CODEX_BIN"
+            elif command -v "$CODEX_BIN" >/dev/null 2>&1; then
+                ENGINE_PATH***REMOVED***"$(command -v "$CODEX_BIN")"
+            fi
+        fi
+        if [ -z "$ENGINE_PATH" ] && command -v codex >/dev/null 2>&1; then
+            ENGINE_PATH***REMOVED***"$(command -v codex)"
+        fi
+        if [ -z "$ENGINE_PATH" ]; then
+            echo "Error: 'codex' CLI not found. Install Codex CLI first or set CODEX_BIN."
+            exit 1
+        fi
+        ;;
+esac
 
-CODEX_PATH***REMOVED***"$(command -v codex)"
-CODEX_DIR***REMOVED***"$(dirname "$CODEX_PATH")"
+ENGINE_DIR***REMOVED***"$(dirname "$ENGINE_PATH")"
 
 # Detect node path (for wrangler/npx)
 NODE_DIR***REMOVED***""
