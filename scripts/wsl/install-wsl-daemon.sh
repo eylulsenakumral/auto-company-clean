@@ -30,7 +30,7 @@ mkdir -p "$SYSTEMD_USER_DIR"
 
 cat > "$SERVICE_PATH" << EOF
 [Unit]
-Description***REMOVED***Auto Company Loop (Codex)
+Description***REMOVED***Auto Company Loop
 After***REMOVED***default.target
 
 [Service]
