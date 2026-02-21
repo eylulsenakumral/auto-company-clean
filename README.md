@@ -7,7 +7,7 @@
 14 AI agents, each modeled after world-class experts in their domain.
 They ideate products, make decisions, write code, deploy, and market - without human intervention.
 
-Powered by [Codex CLI](https://www.npmjs.com/package/@openai/codex) and Claude Code on macOS + Windows/WSL.
+Powered by Claude Code (default) and [Codex CLI](https://www.npmjs.com/package/@openai/codex) on macOS + Windows/WSL.
 
 [![macOS](https://img.shields.io/badge/Platform-macOS-blue)](#dependencies)
 [![Windows WSL](https://img.shields.io/badge/Platform-Windows%20WSL-blue)](#windows-wsl-quick-start)
