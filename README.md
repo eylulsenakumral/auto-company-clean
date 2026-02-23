@@ -109,8 +109,11 @@ make install
 git clone https://github.com/nicepkg/auto-company.git
 cd auto-company
 
-# Start (daemon mode via PowerShell)
+# Start (daemon mode via PowerShell, default engine ***REMOVED*** claude)
 .\scripts\windows\start-win.ps1
+
+# Switch engine explicitly
+.\scripts\windows\start-win.ps1 -Engine codex
 
 # Status
 .\scripts\windows\status-win.ps1
