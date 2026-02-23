@@ -204,12 +204,28 @@ Hard constraints in `CLAUDE.md`, enforced for all agents:
 Environment variable overrides:
 
 ```bash
-MODEL***REMOVED***gpt-5.3-codex make start             # Optional model override
+ENGINE***REMOVED***claude make start                   # Default engine (claude|codex)
+ENGINE***REMOVED***codex make start                    # Switch to codex
+MODEL***REMOVED***sonnet make start                    # Optional model override
+CLAUDE_PERMISSION_MODE***REMOVED***bypassPermissions make start  # Claude permission mode
 LOOP_INTERVAL***REMOVED***60 make start                # 60s interval (default 30)
 CYCLE_TIMEOUT_SECONDS***REMOVED***3600 make start      # 1h cycle timeout (default 1800)
 MAX_CONSECUTIVE_ERRORS***REMOVED***3 make start        # Circuit-breaker threshold (default 5)
 CODEX_SANDBOX_MODE***REMOVED***workspace-write make start  # Optional sandbox override
+CLAUDE_BIN***REMOVED***/usr/local/bin/claude make start     # Optional Claude binary override
+CODEX_BIN***REMOVED***/usr/local/bin/codex make start       # Optional Codex binary override
 ```
+
+Windows `start-win.ps1` writes the same values into `.auto-loop.env`:
+
+```powershell
+.\scripts\windows\start-win.ps1 -Engine claude -ClaudePermissionMode bypassPermissions
+.\scripts\windows\start-win.ps1 -Engine codex -SandboxMode workspace-write
+# Backward compatibility:
+.\scripts\windows\start-win.ps1 -Engine codex -CodexSandboxMode workspace-write
+```
+
+No automatic engine fallback is performed. If the selected engine is missing, startup fails fast.
 
 ## Project Structure
 
