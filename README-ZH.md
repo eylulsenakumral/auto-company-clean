@@ -205,12 +205,28 @@ AI 团队全自主运行，但你可以随时介入：
 环境变量覆盖：
 
 ```bash
-MODEL***REMOVED***gpt-5.3-codex make start             # 可选：临时覆盖模型
+ENGINE***REMOVED***claude make start                   # 默认引擎（claude|codex）
+ENGINE***REMOVED***codex make start                    # 切换到 codex
+MODEL***REMOVED***sonnet make start                    # 可选：临时覆盖模型
+CLAUDE_PERMISSION_MODE***REMOVED***bypassPermissions make start  # Claude 权限模式
 LOOP_INTERVAL***REMOVED***60 make start                # 60 秒间隔（默认 30）
 CYCLE_TIMEOUT_SECONDS***REMOVED***3600 make start      # 单轮超时 1 小时（默认 1800）
 MAX_CONSECUTIVE_ERRORS***REMOVED***3 make start        # 熔断阈值（默认 5）
 CODEX_SANDBOX_MODE***REMOVED***workspace-write make start  # 可选：覆盖 codex 沙箱模式
+CLAUDE_BIN***REMOVED***/usr/local/bin/claude make start     # 可选：覆盖 Claude 可执行路径
+CODEX_BIN***REMOVED***/usr/local/bin/codex make start       # 可选：覆盖 Codex 可执行路径
 ```
+
+Windows `start-win.ps1` 会把同名配置写入 `.auto-loop.env`：
+
+```powershell
+.\scripts\windows\start-win.ps1 -Engine claude -ClaudePermissionMode bypassPermissions
+.\scripts\windows\start-win.ps1 -Engine codex -SandboxMode workspace-write
+# 兼容旧参数：
+.\scripts\windows\start-win.ps1 -Engine codex -CodexSandboxMode workspace-write
+```
+
+不会自动进行引擎回退。所选引擎缺失时会直接启动失败。
 
 ## 项目结构
 
