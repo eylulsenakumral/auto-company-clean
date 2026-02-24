@@ -109,8 +109,11 @@ make install
 git clone https://github.com/nicepkg/auto-company.git
 cd auto-company
 
-# 在 PowerShell 启动（守护模式）
+# 在 PowerShell 启动（守护模式，默认引擎为 claude）
 .\scripts\windows\start-win.ps1
+
+# 显式切换引擎
+.\scripts\windows\start-win.ps1 -Engine codex
 
 # 查看状态
 .\scripts\windows\status-win.ps1
