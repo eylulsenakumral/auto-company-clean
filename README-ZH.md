@@ -7,7 +7,7 @@
 14 个 AI Agent，每个都是该领域世界顶级专家的思维分身。
 自主构思产品、做决策、写代码、部署上线、搞营销。没有人类参与。
 
-基于 [Codex CLI](https://www.npmjs.com/package/@openai/codex) 与 Claude Code 驱动（macOS 原生 + Windows/WSL）。
+默认使用 Claude Code，并支持 [Codex CLI](https://www.npmjs.com/package/@openai/codex)（macOS 原生 + Windows/WSL）。
 
 [![macOS](https://img.shields.io/badge/平台-macOS-blue)](#依赖)
 [![Windows WSL](https://img.shields.io/badge/平台-Windows%20WSL-blue)](#windows-wsl-快速开始)
