@@ -20,7 +20,10 @@ sudo apt install -y make jq curl
 curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
 sudo apt install -y nodejs
 
-# 安装 Codex CLI
+# 安装 Claude Code（默认引擎）
+npm install -g @anthropic-ai/claude-code
+
+# 可选：安装 Codex CLI（用于 ENGINE***REMOVED***codex）
 npm install -g @openai/codex
 ```
 
