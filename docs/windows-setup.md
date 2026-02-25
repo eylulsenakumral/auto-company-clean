@@ -42,10 +42,12 @@ ps -p 1 -o comm***REMOVED***
 - `systemctl --user --version` 成功
 - `ps -p 1 -o comm***REMOVED***` 输出 `systemd`
 
-建议额外检查 Codex 路径：
+建议额外检查引擎路径（至少检查你要使用的引擎）：
 
 ```bash
+bash -lc 'command -v claude; claude --version'
 bash -lc 'command -v codex; codex --version'
+bash -ic 'command -v claude; claude --version'
 bash -ic 'command -v codex; codex --version'
 ```
 
