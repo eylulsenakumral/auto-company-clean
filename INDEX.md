@@ -41,7 +41,7 @@
 
 | 类别 | 脚本路径 | 主要职责 |
 |---|---|---|
-| 入口 | `scripts/windows/start-win.ps1` | 启动 WSL daemon，写 `.auto-loop.env`，启动防睡眠与 WSL keepalive |
+| 入口 | `scripts/windows/start-win.ps1` | 启动 WSL daemon，写 `.auto-loop.env`（支持 `ENGINE/CLAUDE_PERMISSION_MODE/CODEX_SANDBOX_MODE`），启动防睡眠与 WSL keepalive |
 | 入口 | `scripts/windows/stop-win.ps1` | 停止 daemon 并回收防睡眠与 WSL keepalive |
 | 入口 | `scripts/windows/status-win.ps1` | 汇总 guardian/keepalive/autostart/daemon/loop 五层状态 |
 | 诊断 | `scripts/windows/monitor-win.ps1` | 实时日志 |
