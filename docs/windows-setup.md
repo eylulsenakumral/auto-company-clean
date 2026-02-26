@@ -61,15 +61,17 @@ wsl -d Ubuntu -u root loginctl enable-linger <your-user>
 
 ## 3. 前置事项（每次开始前）
 
-1. WSL 内 `make`、`codex`、`jq`、`systemctl --user` 可用。
-2. `codex` 在 WSL 内已登录且可用。
-3. 建议确认 `codex` 路径优先是 WSL 本地路径（`/home/...`）。
+1. WSL 内 `make`、`claude`、`jq`、`systemctl --user` 可用（如需 codex，再确认 `codex`）。
+2. 目标引擎在 WSL 内已登录且可用（默认 `claude`）。
+3. 建议确认目标引擎路径优先是 WSL 本地路径（`/home/...`）。
 
 可选快速检查（PowerShell）：
 
 ```powershell
-wsl -d Ubuntu bash -lc 'make --version; codex --version; jq --version; systemctl --user --version'
-wsl -d Ubuntu bash -lc 'command -v codex'
+wsl -d Ubuntu bash -lc 'make --version; claude --version; jq --version; systemctl --user --version'
+wsl -d Ubuntu bash -lc 'command -v claude'
+# Optional (for ENGINE***REMOVED***codex):
+wsl -d Ubuntu bash -lc 'codex --version; command -v codex'
 ```
 
 ## 4. 推荐操作（标准）
