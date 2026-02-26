@@ -28,6 +28,11 @@
 
 `scripts/windows/start-win.ps1` -> WSL `systemd --user auto-company.service` -> `scripts/core/auto-loop.sh`
 
+说明：
+- 默认引擎是 `ENGINE***REMOVED***claude`
+- 可通过 `.auto-loop.env` 或 `start-win.ps1 -Engine codex` 切换到 Codex
+- 不做自动引擎回退，所选引擎缺失时直接失败
+
 停止链路：
 
 `scripts/windows/stop-win.ps1` -> 停止 `auto-company.service` + 停止 `awake guardian` + 停止 `wsl anchor`
