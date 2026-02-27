@@ -148,6 +148,9 @@ projects/*
 
 # Local/private outputs (do not publish)
 AGENTS.md
+CHAT_LOGS.md
+PROJECT.md
+PLAN_*.md
 rewrite_report.md
 projects/**/scripts/pilot-smoke.sh
 scripts/core/cycle-*.sh
