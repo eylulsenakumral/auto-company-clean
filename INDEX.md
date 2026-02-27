@@ -73,5 +73,6 @@
 1. 新功能优先改 `scripts/` 下实现脚本。
 2. 文档变更需同步更新：
    - `README.md`
+   - `README-ZH.md`
    - `docs/windows-setup.md`
    - 本索引文件 `INDEX.md`
