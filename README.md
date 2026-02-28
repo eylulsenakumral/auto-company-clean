@@ -256,9 +256,9 @@ auto-company/
 
 | Dependency | Notes |
 |------|------|
-| **Codex CLI / Claude Code** | Supported CLI engines |
+| **Claude Code / Codex CLI** | Supported CLI engines (default: Claude) |
 | **macOS or Windows + WSL2 (Ubuntu)** | macOS uses launchd; Windows uses WSL execution core |
-| `node` | Codex runtime |
+| `node` | Runtime for npm-installed CLI tools |
 | `make` | Start/stop/monitor command entry (WSL/macOS) |
 | `jq` | Recommended for log processing |
 | `gh` | Optional, GitHub CLI |
@@ -278,7 +278,13 @@ auto-company/
 - Cause: CLI installed on Windows only, missing in WSL
 - Fix: install `node` and your chosen CLI inside WSL (`@openai/codex` or Claude Code)
 
-### 3) `make install` fails inside WSL
+### 3) Claude waits for permission and cycles appear blocked
+
+- Cause: strict permission mode in Claude CLI
+- Fix: set `CLAUDE_PERMISSION_MODE***REMOVED***bypassPermissions` (or pass `-ClaudePermissionMode bypassPermissions` in `start-win.ps1`)
+- Verify: check `logs/auto-loop.log` for `Engine: claude` and `PermissionMode: ...`
+
+### 4) `make install` fails inside WSL
 
 - Cause: no available `systemctl --user` in current session
 - Fix:

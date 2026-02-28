@@ -101,13 +101,18 @@ if command -v node &>/dev/null; then
 fi
 
 # Build PATH: include all tool directories
-DAEMON_PATH***REMOVED***"${CODEX_DIR}"
+DAEMON_PATH***REMOVED***"${ENGINE_DIR}"
 [ -n "$NODE_DIR" ] && DAEMON_PATH***REMOVED***"${DAEMON_PATH}:${NODE_DIR}"
 DAEMON_PATH***REMOVED***"${DAEMON_PATH}:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 
 echo "Installing Auto Company daemon..."
 echo "  Project: $PROJECT_DIR"
-echo "  Codex:   $CODEX_PATH"
+echo "  Engine:  $ENGINE"
+echo "  CLI:     $ENGINE_PATH"
+engine_version***REMOVED***"$("$ENGINE_PATH" --version 2>/dev/null | head -n1 || true)"
+if [ -n "$engine_version" ]; then
+    echo "  Version: $engine_version"
+fi
 echo "  PATH:    $DAEMON_PATH"
 
 mkdir -p "$HOME/Library/LaunchAgents" "$PROJECT_DIR/logs"
@@ -162,6 +167,18 @@ cat > "$PLIST_PATH" << EOF
         <string>${DAEMON_PATH}</string>
         <key>HOME</key>
         <string>${HOME}</string>
+        <key>ENGINE</key>
+        <string>${ENGINE}</string>
+        <key>MODEL</key>
+        <string>${MODEL}</string>
+        <key>CLAUDE_PERMISSION_MODE</key>
+        <string>${CLAUDE_PERMISSION_MODE}</string>
+        <key>CLAUDE_BIN</key>
+        <string>${CLAUDE_BIN}</string>
+        <key>CODEX_BIN</key>
+        <string>${CODEX_BIN}</string>
+        <key>CODEX_SANDBOX_MODE</key>
+        <string>${CODEX_SANDBOX_MODE}</string>
     </dict>
 
     <key>ThrottleInterval</key>

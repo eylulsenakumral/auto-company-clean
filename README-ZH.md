@@ -257,9 +257,9 @@ auto-company/
 
 | 依赖 | 说明 |
 |------|------|
-| **Codex CLI / Claude Code** | 支持的 CLI 引擎 |
+| **Claude Code / Codex CLI** | 支持的 CLI 引擎（默认 Claude） |
 | **macOS 或 Windows + WSL2 (Ubuntu)** | macOS 支持 launchd；Windows 走 WSL 执行内核 |
-| `node` | Codex 运行时 |
+| `node` | npm 安装 CLI 的运行时 |
 | `make` | 启停与监控命令入口（WSL/macOS） |
 | `jq` | 推荐，辅助处理日志 |
 | `gh` | 可选，GitHub CLI |
@@ -279,7 +279,13 @@ auto-company/
 - 原因：只在 Windows 安装了 CLI，WSL 环境缺失
 - 处理：在 WSL 内安装 `node` 与你选择的 CLI（`@openai/codex` 或 Claude Code）
 
-### 3) 在 WSL 执行 `make install` 失败
+### 3) Claude 卡在权限确认，周期看起来像阻塞
+
+- 原因：Claude CLI 权限模式过严
+- 处理：设置 `CLAUDE_PERMISSION_MODE***REMOVED***bypassPermissions`（或在 `start-win.ps1` 传 `-ClaudePermissionMode bypassPermissions`）
+- 验证：检查 `logs/auto-loop.log` 是否包含 `Engine: claude` 与 `PermissionMode: ...`
+
+### 4) 在 WSL 执行 `make install` 失败
 
 - 原因：WSL 当前会话没有可用的 `systemctl --user`
 - 处理：

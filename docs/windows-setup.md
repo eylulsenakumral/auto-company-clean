@@ -79,7 +79,12 @@ wsl -d Ubuntu bash -lc 'codex --version; command -v codex'
 在仓库根目录运行：
 
 ```powershell
-.\scripts\windows\start-win.ps1 -CycleTimeoutSeconds 1800 -LoopInterval 30
+# 默认 Claude
+.\scripts\windows\start-win.ps1 -Engine claude -ClaudePermissionMode bypassPermissions -CycleTimeoutSeconds 1800 -LoopInterval 30
+
+# 切换 Codex
+.\scripts\windows\start-win.ps1 -Engine codex -SandboxMode workspace-write -CycleTimeoutSeconds 1800 -LoopInterval 30
+
 .\scripts\windows\status-win.ps1
 .\scripts\windows\monitor-win.ps1
 .\scripts\windows\last-win.ps1
@@ -96,6 +101,9 @@ wsl -d Ubuntu bash -lc 'codex --version; command -v codex'
 推荐参数：
 - `CycleTimeoutSeconds`：`900-1800`
 - `LoopInterval`：`30-60`
+- `Engine`：`claude`（默认）或 `codex`
+- `SandboxMode`：仅在 `ENGINE***REMOVED***codex` 时生效（兼容旧参数 `CodexSandboxMode`）
+- `ClaudePermissionMode`：默认 `bypassPermissions`
 
 脚本定位说明：
 - 所有脚本实现位于 `scripts/windows/`、`scripts/core/`、`scripts/wsl/`、`scripts/macos/`
@@ -120,9 +128,9 @@ wsl -d Ubuntu bash -lc 'codex --version; command -v codex'
 自启任务名：`AutoCompany-WSL-Start`（触发器：At logon）。
 若提示 `Access is denied`，请使用管理员 PowerShell 重新执行。
 
-## 6. Chat-first 模式（只和 Codex 对话）
+## 6. Chat-first 模式（和 Claude/Codex 对话）
 
-如果你不想手动执行命令，可直接在 Windows 里和 Codex 对话，让 Codex 代你操作。
+如果你不想手动执行命令，可直接在 Windows 里和 Claude/Codex 对话，让它代你操作。
 
 底层链路：
 
@@ -142,10 +150,16 @@ git config core.autocrlf false
 git config core.eol lf
 ```
 
-### `codex: node not found`
+### `claude`/`codex` 命令不存在（或 node not found）
 
-- 原因：WSL 中缺 Node/Codex
+- 原因：WSL 中缺 Node 或缺目标引擎 CLI
 - 处理：回到第 1 步重新安装
+
+### Claude 运行时卡在权限确认
+
+- 原因：`CLAUDE_PERMISSION_MODE` 设置过严，导致非交互流程被阻塞
+- 处理：启动时显式传 `-ClaudePermissionMode bypassPermissions`
+- 排查：查看 `logs/auto-loop.log` 中 `Engine: claude | ... | PermissionMode: ...`
 
 ### `systemctl --user` 不可用
 
@@ -155,11 +169,11 @@ git config core.eol lf
   - 再验证 `systemctl --user --version`
   - 必要时重开 WSL 会话后重试
 
-### `status` 显示 Codex bin 在 `/mnt/c/...`
+### 日志显示 Engine bin 在 `/mnt/c/...`
 
-- 原因：PATH 先命中 Windows 侧 codex
+- 原因：PATH 先命中 Windows 侧 CLI
 - 影响：版本和行为可能与 WSL 本地终端不一致
-- 处理：在 WSL 内安装并优先使用本地 Codex（`/home/<user>/...`）
+- 处理：在 WSL 内安装并优先使用本地 CLI（`/home/<user>/...`）
 
 ### guardian 启动失败
 

@@ -82,8 +82,13 @@ endif
 
 # ***REMOVED******REMOVED******REMOVED*** Interactive ***REMOVED******REMOVED******REMOVED***
 
-team: ## Start interactive Codex session
-	cd "$(CURDIR)" && codex
+team: ## Start selected engine interactive session (ENGINE***REMOVED***claude|codex)
+	@engine***REMOVED***"$$(printf '%s' "$(ENGINE)" | tr '[:upper:]' '[:lower:]')"; \
+	if [ "$$engine" !***REMOVED*** "claude" ] && [ "$$engine" !***REMOVED*** "codex" ]; then \
+		echo "Unsupported ENGINE***REMOVED***'$(ENGINE)'. Use ENGINE***REMOVED***claude or ENGINE***REMOVED***codex."; \
+		exit 1; \
+	fi; \
+	cd "$(CURDIR)" && "$$engine"
 
 # ***REMOVED******REMOVED******REMOVED*** Maintenance ***REMOVED******REMOVED******REMOVED***
 

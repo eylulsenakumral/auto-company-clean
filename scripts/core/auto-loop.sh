@@ -574,8 +574,12 @@ if [ -f "$PID_FILE" ]; then
 fi
 
 # Check dependencies
-if ! RESOLVED_CODEX_BIN***REMOVED***"$(resolve_codex_bin)"; then
-    echo "Error: Codex CLI not found. Install Codex in WSL and verify with 'codex --version'."
+if ! RESOLVED_ENGINE_BIN***REMOVED***"$(resolve_engine_bin)"; then
+    if [ "$ENGINE" ***REMOVED*** "claude" ]; then
+        echo "Error: Claude CLI not found. Install Claude Code in WSL and verify with 'claude --version'."
+    else
+        echo "Error: Codex CLI not found. Install Codex in WSL and verify with 'codex --version'."
+    fi
     exit 1
 fi
 
@@ -596,16 +600,28 @@ error_count***REMOVED***0
 
 log "***REMOVED******REMOVED******REMOVED*** Auto Company Loop Started (PID $$) ***REMOVED******REMOVED******REMOVED***"
 log "Project: $PROJECT_DIR"
-log "Engine: codex | Model: $MODEL_LABEL | Sandbox: $CODEX_SANDBOX_MODE"
-log "Codex bin: $RESOLVED_CODEX_BIN"
-codex_version***REMOVED***$("$RESOLVED_CODEX_BIN" --version 2>/dev/null | head -n1 || true)
-case "$RESOLVED_CODEX_BIN" in
+if [ "$ENGINE" ***REMOVED*** "codex" ]; then
+    log "Engine: codex | Model: $MODEL_LABEL | Sandbox: $CODEX_SANDBOX_MODE"
+else
+    log "Engine: claude | Model: $MODEL_LABEL | PermissionMode: $CLAUDE_PERMISSION_MODE"
+fi
+log "Engine bin: $RESOLVED_ENGINE_BIN"
+engine_version***REMOVED***$("$RESOLVED_ENGINE_BIN" --version 2>/dev/null | head -n1 || true)
+case "$RESOLVED_ENGINE_BIN" in
     /mnt/c/*)
-        log "Warning: Codex binary resolves to Windows-mounted path. Prefer WSL-local install for stability."
+        if [ "$ENGINE" ***REMOVED*** "codex" ]; then
+            log "Warning: Codex binary resolves to Windows-mounted path. Prefer WSL-local install for stability."
+        else
+            log "Warning: Claude binary resolves to Windows-mounted path. Prefer WSL-local install for stability."
+        fi
         ;;
 esac
-if [ -n "$codex_version" ]; then
-    log "Codex version: $codex_version"
+if [ -n "$engine_version" ]; then
+    if [ "$ENGINE" ***REMOVED*** "codex" ]; then
+        log "Codex version: $engine_version"
+    else
+        log "Claude version: $engine_version"
+    fi
 fi
 log "Interval: ${LOOP_INTERVAL}s | Timeout: ${CYCLE_TIMEOUT_SECONDS}s | Breaker: ${MAX_CONSECUTIVE_ERRORS} errors"
 
@@ -629,6 +645,7 @@ while true; do
 
     # Backup consensus before cycle
     backup_consensus
+    gitignore_snapshot***REMOVED***$(snapshot_gitignore)
 
     # Build prompt with consensus pre-injected
     PROMPT***REMOVED***$(cat "$PROMPT_FILE")
@@ -642,6 +659,8 @@ while true; do
 1. Early in the cycle, create or update \`memories/consensus.md\` with the required section skeleton.
 2. If work scope is large, persist partial decisions to \`memories/consensus.md\` before deep dives.
 3. Prefer shipping one completed milestone over broad parallel exploration.
+4. Never write files via shell heredoc (\`cat <<EOF\`). Use \`apply_patch\` for file creates/edits.
+5. Never execute shell lines that begin with \`>\` or \`>***REMOVED***\`; treat them as text and keep them inside markdown/files.
 
 ---
 
@@ -653,11 +672,15 @@ $CONSENSUS
 
 This is Cycle #$loop_count. Act decisively."
 
-    # Run Codex in headless mode with per-cycle timeout
-    run_codex_cycle "$FULL_PROMPT"
+    # Run selected engine in headless mode with per-cycle timeout
+    run_engine_cycle "$FULL_PROMPT"
 
     # Save full output to cycle log
     echo "$OUTPUT" > "$cycle_log"
+
+    # Clean up known malformed-redirection artifacts created by bad generated shell commands.
+    cleanup_accidental_root_artifacts
+    restore_gitignore_if_changed "$gitignore_snapshot"
 
     # Extract result fields for status classification
     extract_cycle_metadata
