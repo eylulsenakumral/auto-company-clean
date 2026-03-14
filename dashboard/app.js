@@ -140,7 +140,7 @@ function renderMarkdown(md) {
 function classForState(kind, state) {
   if (kind ***REMOVED******REMOVED******REMOVED*** "daemon") {
     if (state ***REMOVED******REMOVED******REMOVED*** "active") return "good";
-    if (state ***REMOVED******REMOVED******REMOVED*** "inactive" || state ***REMOVED******REMOVED******REMOVED*** "not_installed") return "warn";
+    if (state ***REMOVED******REMOVED******REMOVED*** "inactive" || state ***REMOVED******REMOVED******REMOVED*** "not_installed" || state ***REMOVED******REMOVED******REMOVED*** "unsupported") return "warn";
     return "bad";
   }
   if (kind ***REMOVED******REMOVED******REMOVED*** "loop") {
@@ -150,12 +150,12 @@ function classForState(kind, state) {
   }
   if (kind ***REMOVED******REMOVED******REMOVED*** "guardian") {
     if (state ***REMOVED******REMOVED******REMOVED*** "running") return "good";
-    if (state ***REMOVED******REMOVED******REMOVED*** "stopped") return "warn";
+    if (state ***REMOVED******REMOVED******REMOVED*** "stopped" || state ***REMOVED******REMOVED******REMOVED*** "unsupported") return "warn";
     return "bad";
   }
   if (kind ***REMOVED******REMOVED******REMOVED*** "autostart") {
     if (state ***REMOVED******REMOVED******REMOVED*** "configured") return "good";
-    if (state ***REMOVED******REMOVED******REMOVED*** "not_configured") return "warn";
+    if (state ***REMOVED******REMOVED******REMOVED*** "not_configured" || state ***REMOVED******REMOVED******REMOVED*** "unsupported") return "warn";
     return "bad";
   }
   return "warn";
@@ -218,7 +218,7 @@ async function fetchStatus() {
   applyCardState(els.cardLoop, "loop", loop.state);
 
   els.autostartState.textContent ***REMOVED*** (autostart.state || "unknown").toUpperCase();
-  els.autostartMeta.textContent ***REMOVED*** autostart.raw || "Task Scheduler";
+  els.autostartMeta.textContent ***REMOVED*** autostart.raw || "Autostart";
   applyCardState(els.cardAutostart, "autostart", autostart.state);
 
   renderStateList(parsed, data.stateFile || {});
