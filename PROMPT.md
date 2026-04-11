@@ -21,6 +21,8 @@
 
 读 `.claude/skills/team/SKILL.md`，按里面的流程组建团队执行任务。每轮选 3-5 个最相关的 agent，不要全部拉上。
 
+如果本轮任务会产出 landing page、dashboard、marketing site、产品 Web UI、应用界面、前端组件，或任何面向用户的前端交付物，必须先读并使用 `.claude/skills/frontend-design.md`，再进入界面设计或代码实现。不要跳过这一步，也不要只做普通样式拼装。
+
 ### 4. 更新共识（必须）
 
 结束前**必须**更新 `memories/consensus.md`，格式：
@@ -63,3 +65,4 @@
 3. **Cycle 3+**：GO → 建 repo 开始写代码，禁止继续讨论。NO-GO → 试 #2，全不行就强选一个做
 4. **Cycle 2 之后每轮必须产出实物**（文件、repo、部署），纯讨论禁止
 5. **同一个 Next Action 连续出现 2 轮** → 卡住了，换方向或缩范围直接 ship
+6. **凡是前端交付**（页面、界面、组件、dashboard、marketing site）→ 必须先使用 `frontend-design.md`，确保视觉与交互质量，不允许用通用默认风格直接输出

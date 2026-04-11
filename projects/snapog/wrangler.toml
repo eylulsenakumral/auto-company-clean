@@ -1,0 +1,27 @@
+name ***REMOVED*** "snapog"
+main ***REMOVED*** "src/index.ts"
+compatibility_date ***REMOVED*** "2024-11-01"
+compatibility_flags ***REMOVED*** ["nodejs_compat"]
+
+[[d1_databases]]
+binding ***REMOVED*** "DB"
+database_name ***REMOVED*** "snapog-db"
+database_id ***REMOVED*** "placeholder-set-after-wrangler-d1-create"
+
+[[r2_buckets]]
+binding ***REMOVED*** "OG_CACHE"
+bucket_name ***REMOVED*** "snapog-og-cache"
+
+[vars]
+ENVIRONMENT ***REMOVED*** "development"
+# Set AUTH_SECRET via `wrangler secret put AUTH_SECRET` for dashboard cookie signing
+
+[env.staging]
+name ***REMOVED*** "snapog-staging"
+[env.staging.vars]
+ENVIRONMENT ***REMOVED*** "staging"
+
+[env.production]
+name ***REMOVED*** "snapog"
+[env.production.vars]
+ENVIRONMENT ***REMOVED*** "production"

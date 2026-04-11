@@ -160,7 +160,7 @@ All skills are under `.claude/skills/`. Any agent can use any skill when relevan
 
 ### UX and Experience
 
-- `ux-audit-rethink`, `user-persona-creation`, `user-research-synthesis`
+- `frontend-design`, `ux-audit-rethink`, `user-persona-creation`, `user-research-synthesis`
 
 ### Marketing and Growth
 
@@ -175,6 +175,8 @@ All skills are under `.claude/skills/`. Any agent can use any skill when relevan
 - `team`, `find-skills`, `skill-creator`, `agent-browser`
 
 **Principle:** Skills are tools, agents are operators. Combine skills when tasks cross domains.
+
+**Frontend delivery rule:** When a cycle will produce a landing page, dashboard, website, app UI, frontend component, or any user-facing interface, the responsible agents must invoke `.claude/skills/frontend-design.md` before layout, styling, or implementation work begins.
 
 ## Consensus Memory
 

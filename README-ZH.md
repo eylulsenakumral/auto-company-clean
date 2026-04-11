@@ -4,7 +4,7 @@
 
 **全自主 AI 公司，24/7 不停歇运行**
 
-14 个 AI Agent，每个都是该领域世界顶级专家的思维分身。
+基于 **Agentic Workflows (代理式工作流)** 驱动，系统编排了 14 个 **Autonomous AI Agent (自主智能体)**，每个都是该领域世界顶级专家的思维分身。
 自主构思产品、做决策、写代码、部署上线、搞营销。没有人类参与。
 
 默认使用 Claude Code，并支持 [Codex CLI](https://www.npmjs.com/package/@openai/codex)（macOS 原生 + Windows/WSL），两端都可启动本地 Dashboard。
@@ -23,7 +23,7 @@
 
 ---
 
-[English Version](README.md)
+<a href***REMOVED***"README.md"><img alt***REMOVED***"[English Documentation]" src***REMOVED***"https://img.shields.io/badge/%5BEnglish%20Documentation%5D-2f3640.svg" /></a>
 
 ## 看板预览
 
@@ -155,6 +155,52 @@ make awake         # 读取 .auto-loop.pid 并对该 PID 挂 caffeinate
 说明：
 - 这两个命令依赖 macOS 自带 `caffeinate`
 - `make awake` 会在 PID 结束后自动退出
+
+## 架构技术介绍详单 (5-Layer Architecture)
+
+Auto-Company 并非简单调用 LLM API，而是一个高度解耦的 **多智能体系统 (Multi-Agent System, MAS)**。其技术架构分为 5 个清晰的层级：
+
+```text
+┌────────────────────────────────────────────────────────────┐
+│ 5. 监控与人机交互层 (Observability & HITL)                 │
+│    [ Dashboard看板 ]  [ 基于文件的操纵杆 (consensus.md) ]  │
+├────────────────────────────────────────────────────────────┤
+│ 4. 工作流路由层 (Workflow Routing & Teaming)               │
+│    [ 动态组队路由 (Squad) ]  [ 强制收敛流 (Cycle 1->2->3) ]│
+├────────────────────────────────────────────────────────────┤
+│ 3. 智能体模型与认知层 (Agentic Models & Cognition)         │
+│    [ 14 个专家人格 (Personas) ]  [ 30+ 技能库 (Skills) ]   │
+├────────────────────────────────────────────────────────────┤
+│ 2. 编排与状态控制层 (Orchestration & State Machine)        │
+│    [ 永续主循环 ]  [ 状态机 (Consensus) ]  [ 容错与熔断 ]  │
+├────────────────────────────────────────────────────────────┤
+│ 1. 基础设施与执行引擎层 (Execution Engine & Infrastructure)│
+│    [ 双核驱动器 (Claude/Codex) ]  [ 跨平台守护进程 (Daemon)]│
+└────────────────────────────────────────────────────────────┘
+```
+
+### 第 5 层：监控与人机交互层 (Observability & HITL)
+*   **基于文件的操纵杆 (File-based Steering)**：人类只需编辑 `memories/consensus.md`，修改 `Next Action`，下一个周期醒来的 AI 团队就会立刻“转舵”，实现极简的宏观控制。
+*   **全链路日志与看板 (Dashboard)**：`logs/` 记录每一轮的完整输出和思考链；`dashboard/` 提供基于 Python Server 的本地可视化看板，实时展现 Cycle 状态、成本消耗和 Agent 活跃度。
+
+### 第 4 层：工作流路由层 (Workflow Routing & Teaming)
+*   **动态组队路由 (Dynamic Squad Formation)**：系统利用 Agent Teams 功能，根据当前 `consensus.md` 中的 "Next Action"，从 14 人池子中动态挑选 2-5 名最适合的专家，并在当前循环中将它们“实例化”为子代理。
+*   **强制收敛流 (Convergence Workflow)**：由 `PROMPT.md` 强制执行的流程控制。例如：Cycle 1 发散（提 Idea） -> Cycle 2 验证（算账预检，输出 GO/NO-GO） -> Cycle 3 执行（写代码部署，**禁止纯讨论**）。
+
+### 第 3 层：智能体模型与认知层 (Agentic Models & Cognition)
+*   **专家思维注入 (Expert Personas)**：在 `.claude/agents/` 下，注入具体的历史人物/行业领袖思维模型框架（如 Bezos 的“逆向工作法”、Munger 的“查理清单”、DHH 的“宏伟单体架构”），使决策具有极高的商业和工程厚度。
+*   **技能库系统 (Skill Arsenal)**：位于 `.claude/skills/` 的可插拔插件系统（如 `frontend-design`, `security-audit`）。将具体方法论封装成工具，供任何被唤醒的 Agent “临时加载”。
+*   **约束与红线 (Constitutional Guardrails)**：写死在 `CLAUDE.md` 中的系统级 Prompt，设定了绝对不能触碰的底线（如禁止删除仓库、强制推送），确保高度自治下的安全性。
+
+### 第 2 层：编排与状态控制层 (Orchestration & State Machine)
+*   **永续主循环 (The Auto-Loop)**：通过 `scripts/core/auto-loop.sh` 控制的执行循环，让 AI 摆脱“单次对话”，实现 24/7 永续运行。
+*   **轻量级状态机 (Consensus Memory)**：放弃复杂的向量数据库或内存管理，将跨周期的上下文压缩为一个 Markdown 文件：`memories/consensus.md`。每次循环开始前读取，结束前必须重写，作为整个系统的“接力棒”。
+*   **高可用容错机制 (Resilience & Self-Healing)**：内置熔断器 (连续错误触发冷却)、限流退避 (429 报错自动休眠) 和沙箱重置 (未成功输出有效共识时自动回滚)。
+
+### 第 1 层：基础设施与执行引擎层 (Execution Engine & Infrastructure)
+*   **双核驱动器 (Dual-Engine Executor)**：通过调用成熟的 AI 命令行工具 **Claude Code** 或 **Codex CLI** 作为底层执行器，天然继承其文件读写、Bash 执行、Git 操作等能力。
+*   **跨平台守护进程 (Cross-Platform Daemon)**：macOS 基于 `launchd` 实现开机自启和崩溃重启；Windows/WSL 基于 `systemd --user` 在 WSL 容器内运行，外部通过 PowerShell 进行控制和保活。
+*   **沙盒边界 (Sandbox Boundary)**：目前依赖底层 CLI 的配置（如 Codex 的 `danger-full-access` 或 Claude 的 `bypassPermissions`），系统级操作均在宿主机环境（或 WSL 容器）中直接发生。
 
 ## 运作机制
 

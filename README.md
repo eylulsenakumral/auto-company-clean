@@ -4,7 +4,7 @@
 
 **A fully autonomous AI company running 24/7**
 
-14 AI agents, each modeled after world-class experts in their domain.
+Powered by **Agentic Workflows**, this project orchestrates 14 **Autonomous AI Agents**, each modeled after world-class experts in their domain.
 They ideate products, make decisions, write code, deploy, and market - without human intervention.
 
 Powered by Claude Code (default) and [Codex CLI](https://www.npmjs.com/package/@openai/codex) on macOS + Windows/WSL, with a local dashboard on both hosts.
@@ -23,7 +23,7 @@ Powered by Claude Code (default) and [Codex CLI](https://www.npmjs.com/package/@
 
 ---
 
-[中文版本](README-ZH.md)
+<a href***REMOVED***"README-ZH.md"><img alt***REMOVED***"[中文说明]" src***REMOVED***"https://img.shields.io/badge/%5B%E4%B8%AD%E6%96%87%E8%AF%B4%E6%98%8E%5D-2f3640.svg" /></a>
 
 ## Dashboard Preview
 
@@ -154,6 +154,52 @@ make awake         # Attach caffeinate to PID in .auto-loop.pid
 Notes:
 - Both commands depend on built-in `caffeinate`
 - `make awake` exits automatically when target PID exits
+
+## Architecture & Technology Stack (5-Layer Architecture)
+
+Auto-Company is not a simple LLM API wrapper, but a highly decoupled **Multi-Agent System (MAS)**. Its technical architecture is divided into 5 distinct layers:
+
+```text
+┌────────────────────────────────────────────────────────────┐
+│ 5. Observability & HITL (Human-In-The-Loop) Layer          │
+│    [ Dashboard ]  [ File-based Steering (consensus.md) ]   │
+├────────────────────────────────────────────────────────────┤
+│ 4. Workflow Routing & Teaming Layer                        │
+│    [ Dynamic Squad Routing ]  [ Forced Convergence Flow ]  │
+├────────────────────────────────────────────────────────────┤
+│ 3. Agentic Models & Cognition Layer                        │
+│    [ 14 Expert Personas ]  [ 30+ Skill Arsenal ]           │
+├────────────────────────────────────────────────────────────┤
+│ 2. Orchestration & State Machine Layer                     │
+│    [ 24/7 Auto-Loop ]  [ State Machine ]  [ Resilience ]   │
+├────────────────────────────────────────────────────────────┤
+│ 1. Execution Engine & Infrastructure Layer                 │
+│    [ Dual-Engine (Claude/Codex) ]  [ Cross-Platform Daemon]│
+└────────────────────────────────────────────────────────────┘
+```
+
+### Layer 5: Observability & HITL (Human-In-The-Loop)
+*   **File-based Steering**: Humans only need to edit `memories/consensus.md` and modify the `Next Action`. The AI team waking up in the next cycle will immediately pivot, enabling minimalist macro-control.
+*   **Full-chain Logs & Dashboard**: `logs/` records the complete output and chain-of-thought for each cycle. `dashboard/` provides a local visualization dashboard based on a Python server, displaying real-time cycle status, cost consumption, and agent activity.
+
+### Layer 4: Workflow Routing & Teaming
+*   **Dynamic Squad Formation**: Powered by Agent Teams, the system dynamically selects 2-5 of the most suitable experts from the 14-person pool based on the "Next Action" in `consensus.md`, instantiating them as sub-agents for the current loop.
+*   **Forced Convergence Flow**: Hardcoded flow control in `PROMPT.md`. For example: Cycle 1 Ideation -> Cycle 2 Validation (Pre-mortem, GO/NO-GO) -> Cycle 3 Execution (Code & Deploy, **pure discussion is forbidden**).
+
+### Layer 3: Agentic Models & Cognition
+*   **Expert Personas Injection**: Instead of generic prompts, it injects specific mental models of historical figures/industry leaders (e.g., Bezos's "Working Backwards", Munger's "Checklists", DHH's "Majestic Monolith") into `.claude/agents/`, giving decisions extreme business and engineering depth.
+*   **Skill Arsenal**: A pluggable system located in `.claude/skills/` (e.g., `frontend-design`, `security-audit`). Specific methodologies are encapsulated as tools that any awakened Agent can "temporarily load".
+*   **Constitutional Guardrails**: System-level prompts hardcoded in `CLAUDE.md` set absolute bottom lines (e.g., no deleting repos, no force pushes) to ensure safety under high autonomy.
+
+### Layer 2: Orchestration & State Machine
+*   **The Auto-Loop**: The execution loop controlled by `scripts/core/auto-loop.sh` frees the AI from "single-turn conversations", enabling 24/7 continuous operation.
+*   **Lightweight State Machine (Consensus Memory)**: Forgoes complex vector databases or memory management, compressing cross-cycle context into a single Markdown file: `memories/consensus.md`. Read before every cycle and rewritten before it ends, acting as the system's "baton".
+*   **Resilience & Self-Healing**: Built-in circuit breakers (cooldown triggered by consecutive errors), rate-limit backoff (auto-sleep on 429 errors), and sandbox reset (auto-rollback if a valid consensus is not output).
+
+### Layer 1: Execution Engine & Infrastructure
+*   **Dual-Engine Executor**: Acts as the underlying executor by calling mature AI CLIs (**Claude Code** or **Codex CLI**), naturally inheriting their file I/O, Bash execution, and Git operation capabilities.
+*   **Cross-Platform Daemon**: macOS uses `launchd` for auto-start and crash recovery; Windows/WSL runs via `systemd --user` inside a WSL container, controlled and kept alive externally via PowerShell.
+*   **Sandbox Boundary**: Currently relies on underlying CLI configurations (like Codex's `danger-full-access` or Claude's `bypassPermissions`). System-level operations occur directly in the host environment (or WSL container).
 
 ## Operating Model
 
