@@ -14,10 +14,6 @@ Powered by Claude Code (default) and [Codex CLI](https://www.npmjs.com/package/@
 [![Codex CLI](https://img.shields.io/badge/Engine-Codex%20CLI-orange)](https://www.npmjs.com/package/@openai/codex)
 [![Claude Code](https://img.shields.io/badge/Engine-Claude%20Code-purple)](#dependencies)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](https://opensource.org/licenses/MIT)
-[![Status](https://img.shields.io/badge/Status-Experimental-red)](#disclaimer)
-
-> **Experimental project** - still under active testing. It runs, but stability is not guaranteed.  
-> macOS uses launchd; Windows uses WSL systemd --user + PowerShell entry scripts.
 
 </div>
 

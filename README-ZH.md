@@ -14,10 +14,6 @@
 [![Codex CLI](https://img.shields.io/badge/驱动-Codex%20CLI-orange)](https://www.npmjs.com/package/@openai/codex)
 [![Claude Code](https://img.shields.io/badge/驱动-Claude%20Code-purple)](#依赖)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](https://opensource.org/licenses/MIT)
-[![Status](https://img.shields.io/badge/状态-实验中-red)](#%EF%B8%8F-免责声明)
-
-> **⚠️ 实验项目** — 还在测试中，能跑但不一定稳定。  
-> macOS 使用 launchd；Windows 使用 WSL systemd --user + PowerShell 入口。
 
 </div>
 
