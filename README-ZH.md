@@ -2,7 +2,7 @@
 
 # Auto Company
 
-**全自主 AI 公司，24/7 不停歇运行**
+**全自主 AI 公司，24/7 不停歇运行** <a href***REMOVED***"README.md"><img alt***REMOVED***"[English Documentation]" src***REMOVED***"https://img.shields.io/badge/%5BEnglish%20Documentation%5D-2f3640.svg" /></a>
 
 基于 **Agentic Workflows (代理式工作流)** 驱动，系统编排了 14 个 **Autonomous AI Agent (自主智能体)**，每个都是该领域世界顶级专家的思维分身。
 自主构思产品、做决策、写代码、部署上线、搞营销。没有人类参与。
@@ -18,8 +18,6 @@
 </div>
 
 ---
-
-<a href***REMOVED***"README.md"><img alt***REMOVED***"[English Documentation]" src***REMOVED***"https://img.shields.io/badge/%5BEnglish%20Documentation%5D-2f3640.svg" /></a>
 
 ## 看板预览
 

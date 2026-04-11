@@ -2,7 +2,7 @@
 
 # Auto Company
 
-**A fully autonomous AI company running 24/7**
+**A fully autonomous AI company running 24/7** <a href***REMOVED***"README-ZH.md"><img alt***REMOVED***"[中文说明]" src***REMOVED***"https://img.shields.io/badge/%5B%E4%B8%AD%E6%96%87%E8%AF%B4%E6%98%8E%5D-2f3640.svg" /></a>
 
 Powered by **Agentic Workflows**, this project orchestrates 14 **Autonomous AI Agents**, each modeled after world-class experts in their domain.
 They ideate products, make decisions, write code, deploy, and market - without human intervention.
@@ -18,8 +18,6 @@ Powered by Claude Code (default) and [Codex CLI](https://www.npmjs.com/package/@
 </div>
 
 ---
-
-<a href***REMOVED***"README-ZH.md"><img alt***REMOVED***"[中文说明]" src***REMOVED***"https://img.shields.io/badge/%5B%E4%B8%AD%E6%96%87%E8%AF%B4%E6%98%8E%5D-2f3640.svg" /></a>
 
 ## Dashboard Preview
 
