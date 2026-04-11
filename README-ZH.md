@@ -80,7 +80,7 @@ daemon (launchd / systemd --user, 崩溃自重启)
 # - 可用模型配额
 
 # 克隆
-git clone https://github.com/nicepkg/auto-company.git
+git clone https://github.com/MaxMiksa/Auto-Company.git
 cd auto-company
 
 # 前台运行（直接看输出）
@@ -100,7 +100,7 @@ make install
 # - 可用模型配额
 
 # 克隆
-git clone https://github.com/nicepkg/auto-company.git
+git clone https://github.com/MaxMiksa/Auto-Company.git
 cd auto-company
 
 # 在 PowerShell 启动（守护模式，默认引擎为 claude）

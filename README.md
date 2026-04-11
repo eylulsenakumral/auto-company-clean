@@ -80,7 +80,7 @@ Plus 30+ reusable skills (deep research, scraping, financial modeling, SEO, secu
 # - Available model quota
 
 # Clone
-git clone https://github.com/nicepkg/auto-company.git
+git clone https://github.com/MaxMiksa/Auto-Company.git
 cd auto-company
 
 # Foreground run (live output)
@@ -100,7 +100,7 @@ make install
 # - Available model quota
 
 # Clone
-git clone https://github.com/nicepkg/auto-company.git
+git clone https://github.com/MaxMiksa/Auto-Company.git
 cd auto-company
 
 # Start (daemon mode via PowerShell, default engine ***REMOVED*** claude)
