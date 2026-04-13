@@ -345,16 +345,6 @@ This is an **experimental project**:
 
 Suggested rollout: start with `make start` (foreground), then move to daemon mode (`make install` on macOS/WSL, `.\scripts\windows\start-win.ps1` on Windows).
 
-## 🤝 Contribution
-
-Issues and pull requests are welcome.
-
-Recommended flow:
-1. Fork the repository.
-2. Create a feature branch.
-3. Keep changes scoped and testable.
-4. Open a PR with clear context, risk, and verification notes.
-
 ## Acknowledgments
 
 - Thanks to [@JasonQWJ](https://github.com/JasonQWJ) and [@cnwillz](https://github.com/cnwillz) for earlier macOS dashboard support proposals and implementation attempts that helped inform the final cross-platform dashboard design released in `v1.1.0`.
@@ -362,4 +352,12 @@ Recommended flow:
 - [continuous-claude](https://github.com/AnandChowdhary/continuous-claude) - cross-session shared notes
 - [ralph-claude-code](https://github.com/frankbria/ralph-claude-code) - exit signal interception
 - [claude-auto-resume](https://github.com/terryso/claude-auto-resume) - usage-limit resume pattern
+
+## 🤝 Contribution & Contact
+
+Welcome to submit Issues and Pull Requests!
+Any questions or suggestions? Please contact Zheyuan (Max) Kong (Carnegie Mellon University, Pittsburgh, PA).
+
+Zheyuan (Max) Kong: kongzheyuan@outlook.com | zheyuank@tepper.cmu.edu
+GitHub: https://github.com/MaxMiksa/Auto-Company
 

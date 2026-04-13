@@ -346,16 +346,6 @@ auto-company/
 
 建议先用 `make start`（前台）观察行为，再启用守护模式（macOS/WSL：`make install`，Windows：`.\scripts\windows\start-win.ps1`）。
 
-## 🤝 贡献
-
-欢迎提交 Issue 和 Pull Request。
-
-建议流程：
-1. Fork 本仓库。
-2. 创建独立功能分支。
-3. 保持变更小而可验证。
-4. 提交 PR 时写清背景、风险与验证结果。
-
 ## 致谢
 
 - 感谢 [@JasonQWJ](https://github.com/JasonQWJ) 与 [@cnwillz](https://github.com/cnwillz) 提前推动 macOS dashboard 支持方向与实现尝试，这些工作帮助我最终落地并发布了 `v1.1.0` 的跨平台 dashboard 方案。
@@ -363,4 +353,12 @@ auto-company/
 - [continuous-claude](https://github.com/AnandChowdhary/continuous-claude) — 跨会话共享笔记
 - [ralph-claude-code](https://github.com/frankbria/ralph-claude-code) — 退出信号拦截
 - [claude-auto-resume](https://github.com/terryso/claude-auto-resume) — 用量限制恢复
+
+## 🤝 贡献与联系
+
+欢迎提交 Issue 和 Pull Request！  
+如有任何问题或建议，请联系 Zheyuan (Max) Kong (卡内基梅隆大学，宾夕法尼亚州)。
+
+Zheyuan (Max) Kong: kongzheyuan@outlook.com | zheyuank@tepper.cmu.edu
+本项目 GitHub 链接：https://github.com/MaxMiksa/Auto-Company
 
