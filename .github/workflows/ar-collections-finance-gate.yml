@@ -119,10 +119,10 @@ jobs:
               --result-json "$CLOSE_LOOP_RESULT_JSON" \
               2>&1 | tee "$CI_ARTIFACT_DIR/debug/close-loop-evidence.log"
           else
-            node - "$CLOSE_LOOP_RESULT_JSON" "$CLOSE_LOOP_RUN_ID" "$FINANCE_METADATA_STRICT_MODE" <<'NODE'
+            node -e '
               const fs ***REMOVED*** require("fs");
               const path ***REMOVED*** require("path");
-              const [resultPath, runId, strictTokenRaw] ***REMOVED*** process.argv.slice(2);
+              const [resultPath, runId, strictTokenRaw] ***REMOVED*** process.argv.slice(1);
               const token ***REMOVED*** String(strictTokenRaw || "").trim().toLowerCase();
               const strictMode ***REMOVED*** ["1", "true", "yes", "y", "on", "strict", "enabled"].includes(token);
               const anchor ***REMOVED*** {
@@ -141,7 +141,7 @@ jobs:
               };
               fs.mkdirSync(path.dirname(resultPath), { recursive: true });
               fs.writeFileSync(resultPath, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
-            NODE
+            ' "$CLOSE_LOOP_RESULT_JSON" "$CLOSE_LOOP_RUN_ID" "$FINANCE_METADATA_STRICT_MODE"
             printf '%s\n' "fallback_result_json***REMOVED***1 run_id***REMOVED***${CLOSE_LOOP_RUN_ID}" >> "$CI_ARTIFACT_DIR/debug/close-loop-evidence.log"
           fi
           if ! ls "$CI_ARTIFACT_DIR/close-loop/result-json/"*.json >/dev/null 2>&1; then
