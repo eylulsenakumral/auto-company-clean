@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-import { TelegramNotionBot } from './bot';
+import bot from './bot';
 import { logger } from './logger';
 
 const app ***REMOVED*** express();
@@ -11,8 +11,6 @@ const botToken ***REMOVED*** process.env.TELEGRAM_BOT_TOKEN;
 if (!botToken) {
   throw new Error('TELEGRAM_BOT_TOKEN environment variable is required');
 }
-
-const botInstance ***REMOVED*** new TelegramNotionBot(botToken);
 
 app.get('/health', (req: Request, res: Response) ***REMOVED***> {
   res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
@@ -32,7 +30,7 @@ app.post('/webhook', async (req: Request, res: Response) ***REMOVED***> {
   }
 
   try {
-    await botInstance.getBot().handleUpdate(req.body);
+    await bot.handleUpdate(req.body);
     res.sendStatus(200);
   } catch (error) {
     logger.error('Webhook handling failed', {
@@ -42,10 +40,9 @@ app.post('/webhook', async (req: Request, res: Response) ***REMOVED***> {
   }
 });
 
-app.listen(port, async () ***REMOVED***> {
+app.listen(port, () ***REMOVED***> {
   logger.info(`Server running on port ${port}`);
   logger.info('Webhook mode enabled');
-  await botInstance.start();
 });
 
 export default app;
