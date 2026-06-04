@@ -1,0 +1,62 @@
+name ***REMOVED*** "nextvision-outreach"
+main ***REMOVED*** "src/workers/index.ts"
+compatibility_date ***REMOVED*** "2024-01-01"
+account_id ***REMOVED*** "YOUR_CLOUDFLARE_ACCOUNT_ID"
+
+# Cron triggers - Turkey timezone (UTC+3)
+[triggers]
+crons ***REMOVED*** ["0 5 * * *"]  # 8:00 AM Turkey time (UTC+3 ***REMOVED*** 5:00 AM UTC)
+
+# Environment variables (secrets managed via wrangler secret put)
+[vars]
+ENVIRONMENT ***REMOVED*** "production"
+AUTOMATION_ENABLED ***REMOVED*** "true"
+WORKER_URL ***REMOVED*** "https://nextvision-outreach.your-subdomain.workers.rs"
+
+# D1 Database (SQLite backup - optional, Supabase is primary)
+# [[d1_databases]]
+# binding ***REMOVED*** "DB"
+# database_name ***REMOVED*** "nextvision-prospects"
+# database_id ***REMOVED*** "YOUR_D1_DATABASE_ID"
+
+# KV Namespace (rate limiting cache - optional)
+# [[kv_namespaces]]
+# binding ***REMOVED*** "RATE_LIMIT"
+# id ***REMOVED*** "YOUR_KV_NAMESPACE_ID"
+
+# Queue (email job queue - optional, currently using direct calls)
+# [[queues.producers]]
+# binding ***REMOVED*** "EMAIL_QUEUE"
+# queue ***REMOVED*** "email-jobs"
+
+# [[queues.consumers]]
+# queue ***REMOVED*** "email-jobs"
+# max_batch_size ***REMOVED*** 10
+# max_wait_time_ms ***REMOVED*** 5000
+
+# R2 Bucket (file storage - optional, for attachments)
+# [[r2_buckets]]
+# binding ***REMOVED*** "ATTACHMENTS"
+# bucket_name ***REMOVED*** "nextvision-attachments"
+
+# Build configuration
+[build]
+command ***REMOVED*** "npm install && npm run build"
+cwd ***REMOVED*** "."
+watch_paths ***REMOVED*** ["src/**/*.ts"]
+
+# Development configuration
+[dev]
+port ***REMOVED*** 8787
+local_protocol ***REMOVED*** "http"
+upstream_protocol ***REMOVED*** "https"
+
+# Production deployment settings
+[env.production]
+routes ***REMOVED*** [
+  { pattern ***REMOVED*** "automation.nextvision.ai/*", zone_name ***REMOVED*** "nextvision.ai" }
+]
+
+# Staging deployment settings
+[env.staging]
+vars ***REMOVED*** { ENVIRONMENT ***REMOVED*** "staging", AUTOMATION_ENABLED ***REMOVED*** "false" }

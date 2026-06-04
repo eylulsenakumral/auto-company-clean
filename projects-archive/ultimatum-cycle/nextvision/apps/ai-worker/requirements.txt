@@ -1,0 +1,11 @@
+ultralytics***REMOVED******REMOVED***8.3.0
+opencv-python***REMOVED******REMOVED***4.10.0.84
+numpy***REMOVED******REMOVED***1.26.4
+redis***REMOVED******REMOVED***5.2.1
+pillow***REMOVED******REMOVED***10.4.0
+onnxruntime***REMOVED******REMOVED***1.19.2
+torch***REMOVED******REMOVED***2.4.0
+torchvision***REMOVED******REMOVED***0.19.0
+pydantic***REMOVED******REMOVED***2.9.2
+python-dotenv***REMOVED******REMOVED***1.0.1
+loguru***REMOVED******REMOVED***0.7.2

@@ -1,0 +1,14 @@
+[build]
+builder ***REMOVED*** "nixpacks"
+
+[deploy]
+healthcheckPath ***REMOVED*** "/health"
+healthcheckTimeout ***REMOVED*** 300
+restartPolicyType ***REMOVED*** "on-failure"
+restartPolicyMaxRetries ***REMOVED*** 10
+
+[env]
+NODE_ENV ***REMOVED*** "production"
+LOG_LEVEL ***REMOVED*** "info"
+DATABASE_URL ***REMOVED*** "sqlite:./orders.db"
+PORT ***REMOVED*** "3000"
