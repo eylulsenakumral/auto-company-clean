@@ -1,0 +1,2584 @@
+<!DOCTYPE html>
+<html lang***REMOVED***"en">
+<head>
+    <meta charset***REMOVED***"UTF-8">
+    <meta name***REMOVED***"viewport" content***REMOVED***"width***REMOVED***device-width, initial-scale***REMOVED***1.0">
+    <title>LeadQualifier v3 - B2B Lead Scoring Tool</title>
+    <link rel***REMOVED***"preconnect" href***REMOVED***"https://fonts.googleapis.com">
+    <link rel***REMOVED***"preconnect" href***REMOVED***"https://fonts.gstatic.com" crossorigin>
+    <link href***REMOVED***"https://fonts.googleapis.com/css2?family***REMOVED***Space+Grotesk:wght@300;400;500;600;700&family***REMOVED***JetBrains+Mono:wght@400;500;600&display***REMOVED***swap" rel***REMOVED***"stylesheet">
+    <script src***REMOVED***"https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0a2540;
+            --primary-light: #1a3a5c;
+            --accent: #00d4aa;
+            --accent-glow: rgba(0, 212, 170, 0.3);
+            --text: #e8e8e8;
+            --text-muted: #8b9cb5;
+            --border: #2a3f5f;
+            --card-bg: rgba(26, 58, 92, 0.4);
+            --gradient-1: linear-gradient(135deg, #0a2540 0%, #1a3a5c 50%, #0f2847 100%);
+            --gradient-accent: linear-gradient(135deg, #00d4aa 0%, #00a88a 100%);
+            --tier-hot: #ff4757;
+            --tier-warm: #ffa502;
+            --tier-cool: #3742fa;
+            --tier-cold: #747d8c;
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--primary);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated background */
+        .bg-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(0, 212, 170, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 212, 170, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        .bg-glow {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+            transform: translate(-50%, -50%);
+            z-index: 0;
+            animation: pulse 4s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 0.8; transform: translate(-50%, -50%) scale(1.1); }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 60px;
+            animation: fadeInUp 0.8s ease-out;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            background: var(--gradient-accent);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            padding: 8px 16px;
+            background: rgba(0, 212, 170, 0.1);
+            border: 1px solid var(--accent);
+            border-radius: 20px;
+            font-size: 13px;
+            color: var(--accent);
+        }
+
+        .badge.version {
+            background: rgba(255, 165, 2, 0.1);
+            border-color: var(--tier-warm);
+            color: var(--tier-warm);
+        }
+
+        .badge.new {
+            background: rgba(255, 71, 87, 0.1);
+            border-color: var(--tier-hot);
+            color: var(--tier-hot);
+        }
+
+        /* Main Content */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Input Card */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+            backdrop-filter: blur(10px);
+            animation: fadeInUp 0.6s ease-out both;
+        }
+
+        .card:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card-title-icon {
+            font-size: 24px;
+        }
+
+        /* Template Selector (NEW v3) */
+        .template-selector {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .template-btn {
+            padding: 10px 16px;
+            background: rgba(10, 37, 64, 0.6);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .template-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .template-btn.active {
+            background: rgba(0, 212, 170, 0.2);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .template-btn .emoji {
+            font-size: 16px;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(10, 37, 64, 0.8);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 15px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Range Slider */
+        .range-container {
+            position: relative;
+        }
+
+        .range-input {
+            width: 100%;
+            height: 6px;
+            background: var(--primary-light);
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .range-input::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            background: var(--accent);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .range-input::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        .range-value {
+            position: absolute;
+            right: 0;
+            top: -28px;
+            font-size: 14px;
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        /* Button */
+        .score-button {
+            width: 100%;
+            padding: 16px;
+            background: var(--gradient-accent);
+            color: var(--primary);
+            border: none;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .score-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px var(--accent-glow);
+        }
+
+        .score-button:active {
+            transform: translateY(0);
+        }
+
+        .score-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .score-button.secondary {
+            background: rgba(0, 212, 170, 0.1);
+            border: 1px solid var(--accent);
+            color: var(--accent);
+        }
+
+        .score-button.secondary:hover {
+            background: var(--accent);
+            color: var(--primary);
+        }
+
+        /* Demo Button (NEW v3) */
+        .demo-button {
+            padding: 10px 16px;
+            background: rgba(255, 71, 87, 0.1);
+            border: 1px solid var(--tier-hot);
+            border-radius: 8px;
+            color: var(--tier-hot);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .demo-button:hover {
+            background: var(--tier-hot);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        /* Results */
+        .results-container {
+            display: none;
+        }
+
+        .results-container.active {
+            display: block;
+            animation: fadeInUp 0.4s ease-out;
+        }
+
+        /* Score Header */
+        .score-header {
+            text-align: center;
+            padding: 32px;
+            background: rgba(0, 212, 170, 0.1);
+            border: 1px solid var(--accent);
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+            position: relative;
+        }
+
+        .score-circle svg {
+            transform: rotate(-90deg);
+        }
+
+        .score-circle-bg {
+            fill: none;
+            stroke: var(--primary-light);
+            stroke-width: 8;
+        }
+
+        .score-circle-progress {
+            fill: none;
+            stroke: var(--accent);
+            stroke-width: 8;
+            stroke-linecap: round;
+            stroke-dasharray: 314;
+            stroke-dashoffset: 314;
+            animation: scoreProgress 1.5s ease-out forwards;
+        }
+
+        @keyframes scoreProgress {
+            to { stroke-dashoffset: var(--score-offset, 50); }
+        }
+
+        .score-circle-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 42px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .score-tier-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 24px;
+            border-radius: 24px;
+            font-size: 16px;
+            font-weight: 600;
+            animation: tierReveal 0.8s ease-out 0.3s both;
+        }
+
+        .score-tier-badge.hot {
+            background: rgba(255, 71, 87, 0.2);
+            border: 1px solid var(--tier-hot);
+            color: var(--tier-hot);
+        }
+
+        .score-tier-badge.warm {
+            background: rgba(255, 165, 2, 0.2);
+            border: 1px solid var(--tier-warm);
+            color: var(--tier-warm);
+        }
+
+        .score-tier-badge.cool {
+            background: rgba(55, 66, 250, 0.2);
+            border: 1px solid var(--tier-cool);
+            color: var(--tier-cool);
+        }
+
+        .score-tier-badge.cold {
+            background: rgba(116, 125, 140, 0.2);
+            border: 1px solid var(--tier-cold);
+            color: var(--tier-cold);
+        }
+
+        @keyframes tierReveal {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Signals Grid */
+        .signals-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .signal-card {
+            background: rgba(10, 37, 64, 0.6);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px;
+            animation: fadeInUp 0.4s ease-out both;
+        }
+
+        .signal-card:nth-child(2) { animation-delay: 0.1s; }
+        .signal-card:nth-child(3) { animation-delay: 0.2s; }
+        .signal-card:nth-child(4) { animation-delay: 0.3s; }
+        .signal-card:nth-child(5) { animation-delay: 0.4s; }
+        .signal-card:nth-child(6) { animation-delay: 0.5s; }
+
+        .signal-icon {
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+
+        .signal-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .signal-value {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .signal-value.high {
+            color: var(--accent);
+        }
+
+        .signal-value.medium {
+            color: var(--tier-warm);
+        }
+
+        .signal-value.low {
+            color: var(--tier-cold);
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            flex-wrap: wrap;
+        }
+
+        .action-button {
+            flex: 1;
+            min-width: 140px;
+            padding: 14px;
+            background: rgba(0, 212, 170, 0.1);
+            border: 1px solid var(--accent);
+            border-radius: 8px;
+            color: var(--accent);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-button:hover {
+            background: var(--accent);
+            color: var(--primary);
+        }
+
+        .action-button.danger {
+            border-color: var(--tier-hot);
+            color: var(--tier-hot);
+            background: rgba(255, 71, 87, 0.1);
+        }
+
+        .action-button.danger:hover {
+            background: var(--tier-hot);
+            color: white;
+        }
+
+        /* History */
+        .history-section {
+            margin-top: 40px;
+        }
+
+        .history-title {
+            font-size: 14px;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .history-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: rgba(10, 37, 64, 0.4);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .history-item:hover {
+            border-color: var(--accent);
+            transform: translateX(4px);
+        }
+
+        .history-domain {
+            font-size: 14px;
+            color: var(--text);
+        }
+
+        .history-score {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .history-score-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .history-tier {
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 12px;
+        }
+
+        .history-tier.hot { background: rgba(255, 71, 87, 0.2); color: var(--tier-hot); }
+        .history-tier.warm { background: rgba(255, 165, 2, 0.2); color: var(--tier-warm); }
+        .history-tier.cool { background: rgba(55, 66, 250, 0.2); color: var(--tier-cool); }
+        .history-tier.cold { background: rgba(116, 125, 140, 0.2); color: var(--tier-cold); }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+        }
+
+        /* Loading */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            margin: 0 auto 20px;
+            border: 3px solid var(--primary-light);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Batch Results */
+        .batch-results {
+            display: none;
+        }
+
+        .batch-results.active {
+            display: block;
+        }
+
+        .batch-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .batch-title {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+        }
+
+        .batch-stats {
+            font-size: 13px;
+            color: var(--accent);
+        }
+
+        .batch-table-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .batch-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .batch-table th {
+            text-align: left;
+            padding: 12px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            background: var(--card-bg);
+        }
+
+        .batch-table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+
+        .batch-score {
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .batch-tier {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .batch-tier.hot { background: rgba(255, 71, 87, 0.2); color: var(--tier-hot); }
+        .batch-tier.warm { background: rgba(255, 165, 2, 0.2); color: var(--tier-warm); }
+        .batch-tier.cool { background: rgba(55, 66, 250, 0.2); color: var(--tier-cool); }
+        .batch-tier.cold { background: rgba(116, 125, 140, 0.2); color: var(--tier-cold); }
+
+        /* File Upload */
+        .file-upload {
+            margin-top: 24px;
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 32px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .file-upload:hover {
+            border-color: var(--accent);
+            background: rgba(0, 212, 170, 0.05);
+        }
+
+        .file-upload.dragover {
+            border-color: var(--accent);
+            background: rgba(0, 212, 170, 0.1);
+        }
+
+        .file-upload-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .file-upload-text {
+            font-size: 14px;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+
+        .file-upload-hint {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Config Section */
+        .config-section {
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+        }
+
+        .config-section.collapsed {
+            display: none;
+        }
+
+        .config-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        @media (max-width: 600px) {
+            .config-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .config-item {
+            background: rgba(10, 37, 64, 0.4);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .config-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            font-size: 13px;
+        }
+
+        .weight-total {
+            text-align: center;
+            font-size: 14px;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .weight-total.valid {
+            background: rgba(0, 212, 170, 0.1);
+            color: var(--accent);
+        }
+
+        .weight-total.invalid {
+            background: rgba(255, 71, 87, 0.1);
+            color: var(--tier-hot);
+        }
+
+        /* Section Divider */
+        .section-divider {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin: 32px 0 16px;
+            cursor: pointer;
+        }
+
+        .section-divider.collapsed .section-divider-toggle {
+            transform: rotate(-90deg);
+        }
+
+        .section-divider-line {
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .section-divider-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+        }
+
+        .section-divider-toggle {
+            transition: transform 0.2s;
+        }
+
+        /* Settings Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 37, 64, 0.9);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            background: rgba(255, 71, 87, 0.1);
+            border: 1px solid var(--tier-hot);
+            border-radius: 8px;
+            color: var(--tier-hot);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            background: var(--tier-hot);
+            color: white;
+        }
+
+        #settingsCloseBtn {
+            z-index: 1001;
+            position: relative;
+        }
+
+        .modal-footer {
+            margin-top: 24px;
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 1001;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .toast {
+            padding: 16px 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: toastIn 0.3s ease-out;
+            max-width: 350px;
+        }
+
+        .toast.success {
+            border-color: var(--accent);
+        }
+
+        .toast.error {
+            border-color: var(--tier-hot);
+        }
+
+        .toast.warning {
+            border-color: var(--tier-warm);
+        }
+
+        @keyframes toastIn {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .toast-out {
+            animation: toastOut 0.3s ease-out forwards;
+        }
+
+        @keyframes toastOut {
+            to {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+        }
+
+        .toast-icon {
+            font-size: 20px;
+        }
+
+        .toast-message {
+            font-size: 14px;
+        }
+
+        /* Threshold Config */
+        .threshold-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .threshold-item {
+            background: rgba(10, 37, 64, 0.4);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .threshold-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .threshold-value {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .threshold-item.hot .threshold-value { color: var(--tier-hot); }
+        .threshold-item.warm .threshold-value { color: var(--tier-warm); }
+        .threshold-item.cool .threshold-value { color: var(--tier-cool); }
+
+        /* Webhook Input */
+        .webhook-input-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .webhook-input-group .form-input {
+            flex: 1;
+        }
+
+        .webhook-test-btn {
+            padding: 14px 20px;
+            background: rgba(0, 212, 170, 0.1);
+            border: 1px solid var(--accent);
+            border-radius: 8px;
+            color: var(--accent);
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .webhook-test-btn:hover {
+            background: var(--accent);
+            color: var(--primary);
+        }
+
+        /* Comparison Section (NEW v3) */
+        .comparison-section {
+            margin-top: 60px;
+        }
+
+        .comparison-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 16px 20px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .comparison-table th {
+            background: rgba(10, 37, 64, 0.6);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+        }
+
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .comparison-table .highlight {
+            background: rgba(0, 212, 170, 0.1);
+        }
+
+        .comparison-table .check {
+            color: var(--accent);
+            font-size: 18px;
+        }
+
+        .comparison-table .cross {
+            color: var(--tier-cold);
+            font-size: 18px;
+        }
+
+        /* Integration Guide (NEW v3) */
+        .integration-guide {
+            margin-top: 60px;
+            padding: 32px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+        }
+
+        .integration-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .integration-step {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            background: var(--gradient-accent);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .step-description {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .code-block {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-top: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            overflow-x: auto;
+        }
+
+        /* Full-width section */
+        .full-width-section {
+            grid-column: 1 / -1;
+        }
+    </style>
+</head>
+<body>
+    <div class***REMOVED***"bg-grid"></div>
+    <div class***REMOVED***"bg-glow"></div>
+
+    <div class***REMOVED***"container">
+        <header class***REMOVED***"header">
+            <div class***REMOVED***"logo">LeadQualifier</div>
+            <div class***REMOVED***"header-actions">
+                <span class***REMOVED***"badge new">NEW v3</span>
+                <span class***REMOVED***"badge">Industry Templates</span>
+                <span class***REMOVED***"badge">Demo Mode</span>
+                <button class***REMOVED***"demo-button" id***REMOVED***"demoBtn">🚀 Demo</button>
+                <button class***REMOVED***"action-button" id***REMOVED***"settingsBtn" style***REMOVED***"min-width: auto; padding: 8px 16px;">⚙️ Settings</button>
+            </div>
+        </header>
+
+        <div class***REMOVED***"main-content">
+            <!-- Input Card -->
+            <div class***REMOVED***"card">
+                <div class***REMOVED***"card-title">
+                    <span class***REMOVED***"card-title-icon">🎯</span>
+                    Score a Lead
+                </div>
+
+                <!-- Industry Template Selector (NEW v3) -->
+                <div class***REMOVED***"template-selector">
+                    <button type***REMOVED***"button" class***REMOVED***"template-btn active" data-template***REMOVED***"custom">
+                        <span class***REMOVED***"emoji">⚙️</span>
+                        <span>Custom</span>
+                    </button>
+                    <button type***REMOVED***"button" class***REMOVED***"template-btn" data-template***REMOVED***"saas">
+                        <span class***REMOVED***"emoji">☁️</span>
+                        <span>SaaS</span>
+                    </button>
+                    <button type***REMOVED***"button" class***REMOVED***"template-btn" data-template***REMOVED***"ecommerce">
+                        <span class***REMOVED***"emoji">🛒</span>
+                        <span>E-Commerce</span>
+                    </button>
+                    <button type***REMOVED***"button" class***REMOVED***"template-btn" data-template***REMOVED***"agency">
+                        <span class***REMOVED***"emoji">🏢</span>
+                        <span>Agency</span>
+                    </button>
+                </div>
+
+                <form id***REMOVED***"scoreForm">
+                    <div class***REMOVED***"form-group">
+                        <label class***REMOVED***"form-label">Company Domain</label>
+                        <input type***REMOVED***"text" class***REMOVED***"form-input" id***REMOVED***"domain" placeholder***REMOVED***"e.g., stripe.com" required>
+                    </div>
+
+                    <div class***REMOVED***"form-row">
+                        <div class***REMOVED***"form-group">
+                            <label class***REMOVED***"form-label">Company Size</label>
+                            <select class***REMOVED***"form-select" id***REMOVED***"companySize">
+                                <option value***REMOVED***"">Select size...</option>
+                                <option value***REMOVED***"1-10">1-10 employees</option>
+                                <option value***REMOVED***"11-50">11-50 employees</option>
+                                <option value***REMOVED***"51-200">51-200 employees</option>
+                                <option value***REMOVED***"201-500">201-500 employees</option>
+                                <option value***REMOVED***"501-1000">501-1000 employees</option>
+                                <option value***REMOVED***"1000+">1000+ employees</option>
+                            </select>
+                        </div>
+                        <div class***REMOVED***"form-group">
+                            <label class***REMOVED***"form-label">Industry</label>
+                            <select class***REMOVED***"form-select" id***REMOVED***"industry">
+                                <option value***REMOVED***"">Select industry...</option>
+                                <option value***REMOVED***"saas">SaaS</option>
+                                <option value***REMOVED***"fintech">FinTech</option>
+                                <option value***REMOVED***"ecommerce">E-Commerce</option>
+                                <option value***REMOVED***"healthcare">Healthcare</option>
+                                <option value***REMOVED***"manufacturing">Manufacturing</option>
+                                <option value***REMOVED***"other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class***REMOVED***"form-row">
+                        <div class***REMOVED***"form-group">
+                            <label class***REMOVED***"form-label">Funding Stage</label>
+                            <select class***REMOVED***"form-select" id***REMOVED***"fundingStage">
+                                <option value***REMOVED***"">Select stage...</option>
+                                <option value***REMOVED***"bootstrapped">Bootstrapped</option>
+                                <option value***REMOVED***"seed">Seed</option>
+                                <option value***REMOVED***"series-a">Series A</option>
+                                <option value***REMOVED***"series-b">Series B</option>
+                                <option value***REMOVED***"series-c+">Series C+</option>
+                                <option value***REMOVED***"ipo">Public</option>
+                            </select>
+                        </div>
+                        <div class***REMOVED***"form-group">
+                            <label class***REMOVED***"form-label">Growth Rate</label>
+                            <select class***REMOVED***"form-select" id***REMOVED***"growthRate">
+                                <option value***REMOVED***"">Select growth...</option>
+                                <option value***REMOVED***"declining">Declining</option>
+                                <option value***REMOVED***"stable">Stable</option>
+                                <option value***REMOVED***"moderate">Moderate (10-30%)</option>
+                                <option value***REMOVED***"rapid">Rapid (30%+)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class***REMOVED***"form-group">
+                        <label class***REMOVED***"form-label">Tech sophistication</label>
+                        <div class***REMOVED***"range-container">
+                            <span class***REMOVED***"range-value" id***REMOVED***"techScoreValue">50</span>
+                            <input type***REMOVED***"range" class***REMOVED***"range-input" id***REMOVED***"techScore" min***REMOVED***"0" max***REMOVED***"100" value***REMOVED***"50">
+                        </div>
+                    </div>
+
+                    <button type***REMOVED***"submit" class***REMOVED***"score-button">
+                        <span>Calculate Score</span>
+                        <span>→</span>
+                    </button>
+                </form>
+
+                <!-- CSV Batch Import -->
+                <div class***REMOVED***"file-upload" id***REMOVED***"fileUpload">
+                    <input type***REMOVED***"file" id***REMOVED***"csvFile" accept***REMOVED***".csv">
+                    <div class***REMOVED***"file-upload-icon">📁</div>
+                    <div class***REMOVED***"file-upload-text">Drop CSV file here or click to upload</div>
+                    <div class***REMOVED***"file-upload-hint">Format: domain, companySize, industry, fundingStage, growthRate, techScore</div>
+                </div>
+
+                <!-- Custom Weights Config (Collapsible) -->
+                <div class***REMOVED***"section-divider" id***REMOVED***"weightsDivider">
+                    <div class***REMOVED***"section-divider-line"></div>
+                    <div class***REMOVED***"section-divider-title">
+                        <span>⚙️ Scoring Weights</span>
+                        <span class***REMOVED***"section-divider-toggle">▼</span>
+                    </div>
+                    <div class***REMOVED***"section-divider-line"></div>
+                </div>
+
+                <div class***REMOVED***"config-section collapsed" id***REMOVED***"weightsConfig">
+                    <div class***REMOVED***"config-grid">
+                        <div class***REMOVED***"config-item">
+                            <div class***REMOVED***"config-label">
+                                <span>Company Size</span>
+                                <span id***REMOVED***"weightSizeValue">25%</span>
+                            </div>
+                            <input type***REMOVED***"range" class***REMOVED***"range-input weight-slider" id***REMOVED***"weightSize" min***REMOVED***"0" max***REMOVED***"100" value***REMOVED***"25" data-target***REMOVED***"weightSizeValue">
+                        </div>
+                        <div class***REMOVED***"config-item">
+                            <div class***REMOVED***"config-label">
+                                <span>Funding Stage</span>
+                                <span id***REMOVED***"weightFundingValue">25%</span>
+                            </div>
+                            <input type***REMOVED***"range" class***REMOVED***"range-input weight-slider" id***REMOVED***"weightFunding" min***REMOVED***"0" max***REMOVED***"100" value***REMOVED***"25" data-target***REMOVED***"weightFundingValue">
+                        </div>
+                        <div class***REMOVED***"config-item">
+                            <div class***REMOVED***"config-label">
+                                <span>Growth Rate</span>
+                                <span id***REMOVED***"weightGrowthValue">20%</span>
+                            </div>
+                            <input type***REMOVED***"range" class***REMOVED***"range-input weight-slider" id***REMOVED***"weightGrowth" min***REMOVED***"0" max***REMOVED***"100" value***REMOVED***"20" data-target***REMOVED***"weightGrowthValue">
+                        </div>
+                        <div class***REMOVED***"config-item">
+                            <div class***REMOVED***"config-label">
+                                <span>Industry Fit</span>
+                                <span id***REMOVED***"weightIndustryValue">15%</span>
+                            </div>
+                            <input type***REMOVED***"range" class***REMOVED***"range-input weight-slider" id***REMOVED***"weightIndustry" min***REMOVED***"0" max***REMOVED***"100" value***REMOVED***"15" data-target***REMOVED***"weightIndustryValue">
+                        </div>
+                        <div class***REMOVED***"config-item">
+                            <div class***REMOVED***"config-label">
+                                <span>Tech Score</span>
+                                <span id***REMOVED***"weightTechValue">15%</span>
+                            </div>
+                            <input type***REMOVED***"range" class***REMOVED***"range-input weight-slider" id***REMOVED***"weightTech" min***REMOVED***"0" max***REMOVED***"100" value***REMOVED***"15" data-target***REMOVED***"weightTechValue">
+                        </div>
+                    </div>
+                    <div class***REMOVED***"weight-total" id***REMOVED***"weightTotal">
+                        Total: 100% ✓
+                    </div>
+                </div>
+
+                <div class***REMOVED***"history-section">
+                    <div class***REMOVED***"history-title">Recent Scores</div>
+                    <div class***REMOVED***"history-list" id***REMOVED***"historyList">
+                        <div class***REMOVED***"empty-state">
+                            <div class***REMOVED***"empty-icon">📊</div>
+                            <p>No scores yet. Enter a company above or try Demo mode.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Card -->
+            <div class***REMOVED***"card" style***REMOVED***"position: relative;">
+                <div class***REMOVED***"card-title">
+                    <span class***REMOVED***"card-title-icon">📊</span>
+                    Score Results
+                </div>
+
+                <div class***REMOVED***"loading" id***REMOVED***"loading">
+                    <div class***REMOVED***"loading-spinner"></div>
+                    <p>Analyzing company signals...</p>
+                </div>
+
+                <div class***REMOVED***"results-container" id***REMOVED***"results">
+                    <div class***REMOVED***"score-header">
+                        <div class***REMOVED***"score-circle">
+                            <svg width***REMOVED***"120" height***REMOVED***"120" viewBox***REMOVED***"0 0 120 120">
+                                <circle class***REMOVED***"score-circle-bg" cx***REMOVED***"60" cy***REMOVED***"60" r***REMOVED***"54"></circle>
+                                <circle class***REMOVED***"score-circle-progress" cx***REMOVED***"60" cy***REMOVED***"60" r***REMOVED***"54" id***REMOVED***"scoreProgress"></circle>
+                            </svg>
+                            <div class***REMOVED***"score-circle-text" id***REMOVED***"scoreValue">0</div>
+                        </div>
+                        <div class***REMOVED***"score-tier-badge" id***REMOVED***"tierBadge">
+                            <span id***REMOVED***"tierEmoji">🔥</span>
+                            <span id***REMOVED***"tierText">Hot Lead</span>
+                        </div>
+                    </div>
+
+                    <div class***REMOVED***"signals-grid">
+                        <div class***REMOVED***"signal-card">
+                            <div class***REMOVED***"signal-icon">🏢</div>
+                            <div class***REMOVED***"signal-label">Company Size</div>
+                            <div class***REMOVED***"signal-value" id***REMOVED***"sizeSignal">-</div>
+                        </div>
+                        <div class***REMOVED***"signal-card">
+                            <div class***REMOVED***"signal-icon">💰</div>
+                            <div class***REMOVED***"signal-label">Funding Stage</div>
+                            <div class***REMOVED***"signal-value" id***REMOVED***"fundingSignal">-</div>
+                        </div>
+                        <div class***REMOVED***"signal-card">
+                            <div class***REMOVED***"signal-icon">📈</div>
+                            <div class***REMOVED***"signal-label">Growth Rate</div>
+                            <div class***REMOVED***"signal-value" id***REMOVED***"growthSignal">-</div>
+                        </div>
+                        <div class***REMOVED***"signal-card">
+                            <div class***REMOVED***"signal-icon">🎯</div>
+                            <div class***REMOVED***"signal-label">Industry Fit</div>
+                            <div class***REMOVED***"signal-value" id***REMOVED***"industrySignal">-</div>
+                        </div>
+                        <div class***REMOVED***"signal-card">
+                            <div class***REMOVED***"signal-icon">⚡</div>
+                            <div class***REMOVED***"signal-label">Tech Score</div>
+                            <div class***REMOVED***"signal-value" id***REMOVED***"techSignal">-</div>
+                        </div>
+                        <div class***REMOVED***"signal-card">
+                            <div class***REMOVED***"signal-icon">🏆</div>
+                            <div class***REMOVED***"signal-label">Overall Potential</div>
+                            <div class***REMOVED***"signal-value high" id***REMOVED***"potentialSignal">-</div>
+                        </div>
+                    </div>
+
+                    <div class***REMOVED***"action-buttons">
+                        <button class***REMOVED***"action-button" id***REMOVED***"exportJsonBtn">📥 Export JSON</button>
+                        <button class***REMOVED***"action-button" id***REMOVED***"exportCsvBtn">📊 Export CSV</button>
+                        <button class***REMOVED***"action-button" id***REMOVED***"copyBtn">📋 Copy Results</button>
+                        <button class***REMOVED***"action-button" id***REMOVED***"crmBtn">🔗 Send to CRM</button>
+                    </div>
+                </div>
+
+                <!-- Batch Results -->
+                <div class***REMOVED***"batch-results" id***REMOVED***"batchResults">
+                    <div class***REMOVED***"batch-header">
+                        <div class***REMOVED***"batch-title" style***REMOVED***"font-weight: 600;">Batch Import Results</div>
+                        <div class***REMOVED***"batch-stats" id***REMOVED***"batchStats">0 leads processed</div>
+                    </div>
+                    <div class***REMOVED***"batch-table-container">
+                        <table class***REMOVED***"batch-table">
+                            <thead>
+                                <tr>
+                                    <th>Domain</th>
+                                    <th>Score</th>
+                                    <th>Tier</th>
+                                    <th>Size</th>
+                                    <th>Funding</th>
+                                    <th>Growth</th>
+                                </tr>
+                            </thead>
+                            <tbody id***REMOVED***"batchTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class***REMOVED***"action-buttons">
+                        <button class***REMOVED***"action-button" id***REMOVED***"exportBatchCsvBtn">📊 Export Batch CSV</button>
+                        <button class***REMOVED***"action-button danger" id***REMOVED***"clearBatchBtn">🗑️ Clear</button>
+                    </div>
+                </div>
+
+                <div id***REMOVED***"resultsEmpty" style***REMOVED***"text-align: center; padding: 60px 20px; color: var(--text-muted);">
+                    <div style***REMOVED***"font-size: 48px; margin-bottom: 16px;">📊</div>
+                    <p>No score results yet.</p>
+                    <p style***REMOVED***"font-size: 13px; margin-top: 8px;">Score a lead above or click Demo to see results.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparison Section (NEW v3) -->
+        <div class***REMOVED***"full-width-section card comparison-section">
+            <div class***REMOVED***"comparison-title">🏆 LeadQualifier vs Competitors</div>
+            <table class***REMOVED***"comparison-table">
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th class***REMOVED***"highlight">LeadQualifier</th>
+                        <th>Competitor A</th>
+                        <th>Competitor B</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class***REMOVED***"highlight">
+                        <td><strong>Price</strong></td>
+                        <td><strong>Free Forever</strong></td>
+                        <td>$29+/month</td>
+                        <td>$49+/month</td>
+                    </tr>
+                    <tr>
+                        <td>No API Keys Required</td>
+                        <td><span class***REMOVED***"check">✓</span></td>
+                        <td><span class***REMOVED***"cross">✕</span></td>
+                        <td><span class***REMOVED***"cross">✕</span></td>
+                    </tr>
+                    <tr>
+                        <td>Works Offline</td>
+                        <td><span class***REMOVED***"check">✓</span></td>
+                        <td><span class***REMOVED***"cross">✕</span></td>
+                        <td><span class***REMOVED***"cross">✕</span></td>
+                    </tr>
+                    <tr>
+                        <td>Custom Weights</td>
+                        <td><span class***REMOVED***"check">✓</span></td>
+                        <td><span class***REMOVED***"cross">✕</span></td>
+                        <td><span class***REMOVED***"check">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td>Industry Templates</td>
+                        <td><span class***REMOVED***"check">✓</span></td>
+                        <td><span class***REMOVED***"cross">✕</span></td>
+                        <td><span class***REMOVED***"cross">✕</span></td>
+                    </tr>
+                    <tr>
+                        <td>CSV Batch Import</td>
+                        <td><span class***REMOVED***"check">✓</span></td>
+                        <td>Pro only</td>
+                        <td><span class***REMOVED***"check">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td>CRM Webhooks</td>
+                        <td><span class***REMOVED***"check">✓</span></td>
+                        <td><span class***REMOVED***"cross">✕</span></td>
+                        <td>Pro only</td>
+                    </tr>
+                    <tr>
+                        <td>Local-First Privacy</td>
+                        <td><span class***REMOVED***"check">✓</span></td>
+                        <td><span class***REMOVED***"cross">✕</span></td>
+                        <td><span class***REMOVED***"cross">✕</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Integration Guide (NEW v3) -->
+        <div class***REMOVED***"full-width-section integration-guide">
+            <div class***REMOVED***"integration-title">
+                <span>🔗</span>
+                <span>CRM Integration Guide</span>
+            </div>
+
+            <div class***REMOVED***"integration-step">
+                <div class***REMOVED***"step-number">1</div>
+                <div class***REMOVED***"step-content">
+                    <div class***REMOVED***"step-title">Configure Your CRM Webhook</div>
+                    <div class***REMOVED***"step-description">
+                        Open Settings (⚙️) and add your CRM webhook URL. LeadQualifier supports HubSpot and Salesforce webhooks.
+                    </div>
+                </div>
+            </div>
+
+            <div class***REMOVED***"integration-step">
+                <div class***REMOVED***"step-number">2</div>
+                <div class***REMOVED***"step-content">
+                    <div class***REMOVED***"step-title">HubSpot Webhook Setup</div>
+                    <div class***REMOVED***"step-description">
+                        Create a workflow in HubSpot that triggers on "Custom" event. Use this endpoint format:
+                    </div>
+                    <div class***REMOVED***"code-block">https://api.hsforms.com/submissions/v3/integration/submit/YOUR_PORTAL_ID/YOUR_FORM_GUID</div>
+                </div>
+            </div>
+
+            <div class***REMOVED***"integration-step">
+                <div class***REMOVED***"step-number">3</div>
+                <div class***REMOVED***"step-content">
+                    <div class***REMOVED***"step-title">Salesforce Webhook Setup</div>
+                    <div class***REMOVED***"step-description">
+                        Create a REST API endpoint in Salesforce or use a middleware like Zapier:
+                    </div>
+                    <div class***REMOVED***"code-block">https://your-instance.my.salesforce.com/services/apexrest/LeadQualifier</div>
+                </div>
+            </div>
+
+            <div class***REMOVED***"integration-step">
+                <div class***REMOVED***"step-number">4</div>
+                <div class***REMOVED***"step-content">
+                    <div class***REMOVED***"step-title">Send Scores to CRM</div>
+                    <div class***REMOVED***"step-description">
+                        After scoring a lead, click "Send to CRM" button. The score, tier, and all signals will be sent to your configured webhook.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class***REMOVED***"modal" id***REMOVED***"settingsModal">
+        <div class***REMOVED***"modal-content">
+            <div class***REMOVED***"modal-header">
+                <div class***REMOVED***"modal-title">Settings</div>
+                <button class***REMOVED***"modal-close" id***REMOVED***"settingsCloseBtn">✕</button>
+            </div>
+
+            <!-- Tier Thresholds -->
+            <div class***REMOVED***"form-group">
+                <label class***REMOVED***"form-label">Tier Thresholds</label>
+                <div class***REMOVED***"threshold-grid">
+                    <div class***REMOVED***"threshold-item hot">
+                        <div class***REMOVED***"threshold-label">Hot</div>
+                        <input type***REMOVED***"number" class***REMOVED***"form-input" id***REMOVED***"thresholdHot" min***REMOVED***"0" max***REMOVED***"100" value***REMOVED***"75" style***REMOVED***"text-align: center;">
+                    </div>
+                    <div class***REMOVED***"threshold-item warm">
+                        <div class***REMOVED***"threshold-label">Warm</div>
+                        <input type***REMOVED***"number" class***REMOVED***"form-input" id***REMOVED***"thresholdWarm" min***REMOVED***"0" max***REMOVED***"100" value***REMOVED***"50" style***REMOVED***"text-align: center;">
+                    </div>
+                    <div class***REMOVED***"threshold-item cool">
+                        <div class***REMOVED***"threshold-label">Cool</div>
+                        <input type***REMOVED***"number" class***REMOVED***"form-input" id***REMOVED***"thresholdCool" min***REMOVED***"0" max***REMOVED***"100" value***REMOVED***"25" style***REMOVED***"text-align: center;">
+                    </div>
+                </div>
+            </div>
+
+            <!-- CRM Webhooks -->
+            <div class***REMOVED***"form-group">
+                <label class***REMOVED***"form-label">CRM Webhooks (Optional)</label>
+                <div style***REMOVED***"margin-bottom: 12px;">
+                    <label style***REMOVED***"font-size: 12px; color: var(--text-muted); margin-bottom: 4px; display: block;">HubSpot Webhook URL</label>
+                    <div class***REMOVED***"webhook-input-group">
+                        <input type***REMOVED***"text" class***REMOVED***"form-input" id***REMOVED***"webhookHubSpot" placeholder***REMOVED***"https://api.hsforms.com/...">
+                    </div>
+                </div>
+                <div>
+                    <label style***REMOVED***"font-size: 12px; color: var(--text-muted); margin-bottom: 4px; display: block;">Salesforce Webhook URL</label>
+                    <div class***REMOVED***"webhook-input-group">
+                        <input type***REMOVED***"text" class***REMOVED***"form-input" id***REMOVED***"webhookSalesforce" placeholder***REMOVED***"https://your-instance.my.salesforce.com/...">
+                    </div>
+                </div>
+            </div>
+
+            <div class***REMOVED***"modal-footer">
+                <button class***REMOVED***"action-button" id***REMOVED***"resetSettingsBtn">Reset to Defaults</button>
+                <button class***REMOVED***"score-button" style***REMOVED***"width: auto; padding: 12px 24px;" id***REMOVED***"saveSettingsBtn">Save Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class***REMOVED***"toast-container" id***REMOVED***"toastContainer"></div>
+
+    <script>
+        // ***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED*** STATE ***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***
+        let scores ***REMOVED*** JSON.parse(localStorage.getItem('leadQualifierScores') || '[]');
+        let batchResults ***REMOVED*** [];
+        let currentResult ***REMOVED*** null;
+        let currentTemplate ***REMOVED*** 'custom';
+
+        // Industry Templates (NEW v3)
+        const templates ***REMOVED*** {
+            saas: {
+                name: 'SaaS',
+                weights: { size: 25, funding: 25, growth: 25, industry: 15, tech: 10 },
+                description: 'Optimized for SaaS companies with emphasis on growth and funding'
+            },
+            ecommerce: {
+                name: 'E-Commerce',
+                weights: { size: 30, funding: 15, growth: 30, industry: 15, tech: 10 },
+                description: 'Optimized for e-commerce with emphasis on size and growth'
+            },
+            agency: {
+                name: 'Agency',
+                weights: { size: 20, funding: 20, growth: 20, industry: 30, tech: 10 },
+                description: 'Optimized for agencies with emphasis on industry fit'
+            },
+            custom: {
+                name: 'Custom',
+                weights: null, // Uses user's custom weights
+                description: 'Use your own custom weight configuration'
+            }
+        };
+
+        // Demo Data (NEW v3)
+        const demoLeads ***REMOVED*** [
+            {
+                domain: 'stripe.com',
+                companySize: '5000+',
+                industry: 'fintech',
+                fundingStage: 'series-c+',
+                growthRate: 'rapid',
+                techScore: 95
+            },
+            {
+                domain: 'shopify.com',
+                companySize: '5000+',
+                industry: 'ecommerce',
+                fundingStage: 'ipo',
+                growthRate: 'rapid',
+                techScore: 90
+            },
+            {
+                domain: 'acme-agency.com',
+                companySize: '11-50',
+                industry: 'other',
+                fundingStage: 'bootstrapped',
+                growthRate: 'moderate',
+                techScore: 65
+            }
+        ];
+
+        // Default weights
+        const defaultWeights ***REMOVED*** {
+            size: 25,
+            funding: 25,
+            growth: 20,
+            industry: 15,
+            tech: 15
+        };
+
+        // Default thresholds
+        const defaultThresholds ***REMOVED*** {
+            hot: 75,
+            warm: 50,
+            cool: 25
+        };
+
+        // Default webhooks
+        const defaultWebhooks ***REMOVED*** {
+            hubSpot: '',
+            salesforce: ''
+        };
+
+        // Load settings
+        let weights ***REMOVED*** JSON.parse(localStorage.getItem('leadQualifierWeights') || JSON.stringify(defaultWeights));
+        let thresholds ***REMOVED*** JSON.parse(localStorage.getItem('leadQualifierThresholds') || JSON.stringify(defaultThresholds));
+        let webhooks ***REMOVED*** JSON.parse(localStorage.getItem('leadQualifierWebhooks') || JSON.stringify(defaultWebhooks));
+
+        // Initialize default weights if empty
+        if (Object.keys(weights).length ***REMOVED******REMOVED******REMOVED*** 0) {
+            weights ***REMOVED*** { size: 25, funding: 25, growth: 20, industry: 15, tech: 15 };
+            localStorage.setItem('leadQualifierWeights', JSON.stringify(weights));
+        }
+
+        // ***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED*** DOM ELEMENTS ***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***
+        const form ***REMOVED*** document.getElementById('scoreForm');
+        const techScore ***REMOVED*** document.getElementById('techScore');
+        const techScoreValue ***REMOVED*** document.getElementById('techScoreValue');
+        const loading ***REMOVED*** document.getElementById('loading');
+        const results ***REMOVED*** document.getElementById('results');
+        const resultsEmpty ***REMOVED*** document.getElementById('resultsEmpty');
+        const historyList ***REMOVED*** document.getElementById('historyList');
+        const batchResultsEl ***REMOVED*** document.getElementById('batchResults');
+        const batchTableBody ***REMOVED*** document.getElementById('batchTableBody');
+        const batchStats ***REMOVED*** document.getElementById('batchStats');
+
+        // Template selector elements (NEW v3)
+        const templateBtns ***REMOVED*** document.querySelectorAll('.template-btn');
+        const demoBtn ***REMOVED*** document.getElementById('demoBtn');
+
+        // Settings elements
+        const settingsBtn ***REMOVED*** document.getElementById('settingsBtn');
+        const settingsModal ***REMOVED*** document.getElementById('settingsModal');
+        const settingsCloseBtn ***REMOVED*** document.getElementById('settingsCloseBtn');
+        const saveSettingsBtn ***REMOVED*** document.getElementById('saveSettingsBtn');
+        const resetSettingsBtn ***REMOVED*** document.getElementById('resetSettingsBtn');
+
+        // Threshold inputs
+        const thresholdHot ***REMOVED*** document.getElementById('thresholdHot');
+        const thresholdWarm ***REMOVED*** document.getElementById('thresholdWarm');
+        const thresholdCool ***REMOVED*** document.getElementById('thresholdCool');
+
+        // Webhook inputs
+        const webhookHubSpot ***REMOVED*** document.getElementById('webhookHubSpot');
+        const webhookSalesforce ***REMOVED*** document.getElementById('webhookSalesforce');
+
+        // Weights config
+        const weightsDivider ***REMOVED*** document.getElementById('weightsDivider');
+        const weightsConfig ***REMOVED*** document.getElementById('weightsConfig');
+        const weightSliders ***REMOVED*** document.querySelectorAll('.weight-slider');
+        const weightTotal ***REMOVED*** document.getElementById('weightTotal');
+
+        // File upload
+        const fileUpload ***REMOVED*** document.getElementById('fileUpload');
+        const csvFile ***REMOVED*** document.getElementById('csvFile');
+
+        // ***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED*** INITIALIZATION ***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***
+        function init() {
+            // Load settings into UI
+            thresholdHot.value ***REMOVED*** thresholds.hot;
+            thresholdWarm.value ***REMOVED*** thresholds.warm;
+            thresholdCool.value ***REMOVED*** thresholds.cool;
+            webhookHubSpot.value ***REMOVED*** webhooks.hubSpot || '';
+            webhookSalesforce.value ***REMOVED*** webhooks.salesforce || '';
+
+            // Load weights into UI
+            document.getElementById('weightSize').value ***REMOVED*** weights.size;
+            document.getElementById('weightSizeValue').textContent ***REMOVED*** weights.size + '%';
+            document.getElementById('weightFunding').value ***REMOVED*** weights.funding;
+            document.getElementById('weightFundingValue').textContent ***REMOVED*** weights.funding + '%';
+            document.getElementById('weightGrowth').value ***REMOVED*** weights.growth;
+            document.getElementById('weightGrowthValue').textContent ***REMOVED*** weights.growth + '%';
+            document.getElementById('weightIndustry').value ***REMOVED*** weights.industry;
+            document.getElementById('weightIndustryValue').textContent ***REMOVED*** weights.industry + '%';
+            document.getElementById('weightTech').value ***REMOVED*** weights.tech;
+            document.getElementById('weightTechValue').textContent ***REMOVED*** weights.tech + '%';
+
+            updateWeightTotal();
+            updateHistory();
+        }
+
+        // ***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED*** TEMPLATE SELECTOR (NEW v3) ***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***
+        templateBtns.forEach(btn ***REMOVED***> {
+            btn.addEventListener('click', () ***REMOVED***> {
+                const template ***REMOVED*** btn.dataset.template;
+
+                // Update active state
+                templateBtns.forEach(b ***REMOVED***> b.classList.remove('active'));
+                btn.classList.add('active');
+
+                currentTemplate ***REMOVED*** template;
+
+                if (template !***REMOVED******REMOVED*** 'custom' && templates[template].weights) {
+                    // Apply template weights
+                    applyTemplateWeights(templates[template].weights);
+                    showToast(`Applied ${templates[template].name} template`, 'success');
+                } else {
+                    showToast('Switched to custom weights', 'success');
+                }
+            });
+        });
+
+        function applyTemplateWeights(templateWeights) {
+            // Update weights state
+            weights ***REMOVED*** { ...templateWeights };
+            localStorage.setItem('leadQualifierWeights', JSON.stringify(weights));
+
+            // Update UI
+            document.getElementById('weightSize').value ***REMOVED*** weights.size;
+            document.getElementById('weightSizeValue').textContent ***REMOVED*** weights.size + '%';
+            document.getElementById('weightFunding').value ***REMOVED*** weights.funding;
+            document.getElementById('weightFundingValue').textContent ***REMOVED*** weights.funding + '%';
+            document.getElementById('weightGrowth').value ***REMOVED*** weights.growth;
+            document.getElementById('weightGrowthValue').textContent ***REMOVED*** weights.growth + '%';
+            document.getElementById('weightIndustry').value ***REMOVED*** weights.industry;
+            document.getElementById('weightIndustryValue').textContent ***REMOVED*** weights.industry + '%';
+            document.getElementById('weightTech').value ***REMOVED*** weights.tech;
+            document.getElementById('weightTechValue').textContent ***REMOVED*** weights.tech + '%';
+
+            updateWeightTotal();
+
+            // Switch to custom mode to indicate weights were modified
+            templateBtns.forEach(b ***REMOVED***> b.classList.remove('active'));
+            document.querySelector('[data-template***REMOVED***"custom"]').classList.add('active');
+            currentTemplate ***REMOVED*** 'custom';
+        }
+
+        // ***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED*** DEMO MODE (NEW v3) ***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***
+        demoBtn.addEventListener('click', () ***REMOVED***> {
+            // Pick a random demo lead
+            const demoLead ***REMOVED*** demoLeads[Math.floor(Math.random() * demoLeads.length)];
+
+            // Fill form
+            document.getElementById('domain').value ***REMOVED*** demoLead.domain;
+            document.getElementById('companySize').value ***REMOVED*** demoLead.companySize;
+            document.getElementById('industry').value ***REMOVED*** demoLead.industry;
+            document.getElementById('fundingStage').value ***REMOVED*** demoLead.fundingStage;
+            document.getElementById('growthRate').value ***REMOVED*** demoLead.growthRate;
+            document.getElementById('techScore').value ***REMOVED*** demoLead.techScore;
+            techScoreValue.textContent ***REMOVED*** demoLead.techScore;
+
+            showToast(`Demo loaded: ${demoLead.domain}`, 'success');
+        });
+
+        // ***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED*** TOAST NOTIFICATIONS ***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***
+        function showToast(message, type ***REMOVED*** 'success') {
+            const container ***REMOVED*** document.getElementById('toastContainer');
+            const toast ***REMOVED*** document.createElement('div');
+            toast.className ***REMOVED*** `toast ${type}`;
+
+            const icons ***REMOVED*** {
+                success: '✓',
+                error: '✕',
+                warning: '⚠'
+            };
+
+            toast.innerHTML ***REMOVED*** `
+                <span class***REMOVED***"toast-icon">${icons[type]}</span>
+                <span class***REMOVED***"toast-message">${message}</span>
+            `;
+
+            container.appendChild(toast);
+
+            setTimeout(() ***REMOVED***> {
+                toast.classList.add('toast-out');
+                setTimeout(() ***REMOVED***> toast.remove(), 300);
+            }, 3000);
+        }
+
+        // ***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED*** SCORING ALGORITHM (WITH CUSTOM WEIGHTS) ***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***
+        function calculateScore(data, customWeights ***REMOVED*** null) {
+            const w ***REMOVED*** customWeights || weights;
+            let score ***REMOVED*** 0;
+            const signals ***REMOVED*** {};
+
+            // Company size score (0-100 base, scaled by weight)
+            const sizeScores ***REMOVED*** {
+                '1-10': 20,
+                '11-50': 40,
+                '51-200': 60,
+                '201-500': 80,
+                '501-1000': 90,
+                '1000+': 100,
+                '5000+': 100
+            };
+            const sizeBase ***REMOVED*** sizeScores[data.companySize] || 0;
+            const sizeScore ***REMOVED*** (sizeBase / 100) * w.size;
+            score +***REMOVED*** sizeScore;
+            signals.size ***REMOVED*** { value: data.companySize, score: Math.round(sizeScore), weight: w.size };
+
+            // Funding stage score (0-100 base, scaled by weight)
+            const fundingScores ***REMOVED*** {
+                'bootstrapped': 40,
+                'seed': 60,
+                'series-a': 70,
+                'series-b': 85,
+                'series-c+': 95,
+                'ipo': 100
+            };
+            const fundingBase ***REMOVED*** fundingScores[data.fundingStage] || 0;
+            const fundingScore ***REMOVED*** (fundingBase / 100) * w.funding;
+            score +***REMOVED*** fundingScore;
+            signals.funding ***REMOVED*** { value: data.fundingStage, score: Math.round(fundingScore), weight: w.funding };
+
+            // Growth rate score (0-100 base, scaled by weight)
+            const growthScores ***REMOVED*** {
+                'declining': 0,
+                'stable': 25,
+                'moderate': 60,
+                'rapid': 100
+            };
+            const growthBase ***REMOVED*** growthScores[data.growthRate] || 0;
+            const growthScore ***REMOVED*** (growthBase / 100) * w.growth;
+            score +***REMOVED*** growthScore;
+            signals.growth ***REMOVED*** { value: data.growthRate, score: Math.round(growthScore), weight: w.growth };
+
+            // Industry fit (0-100 base, scaled by weight)
+            const industryScores ***REMOVED*** {
+                'saas': 100,
+                'fintech': 100,
+                'ecommerce': 80,
+                'healthcare': 67,
+                'manufacturing': 53,
+                'other': 33
+            };
+            const industryBase ***REMOVED*** industryScores[data.industry] || 0;
+            const industryScore ***REMOVED*** (industryBase / 100) * w.industry;
+            score +***REMOVED*** industryScore;
+            signals.industry ***REMOVED*** { value: data.industry, score: Math.round(industryScore), weight: w.industry };
+
+            // Tech sophistication (0-100 input, scaled by weight)
+            const techBase ***REMOVED*** parseInt(data.techScore) || 0;
+            const techScore ***REMOVED*** (techBase / 100) * w.tech;
+            score +***REMOVED*** techScore;
+            signals.tech ***REMOVED*** { value: techBase, score: Math.round(techScore), weight: w.tech };
+
+            // Final score is already 0-100 based on weighted sum
+            const finalScore ***REMOVED*** Math.min(100, Math.round(score));
+
+            // Determine tier based on custom thresholds
+            let tier ***REMOVED*** 'cold';
+            let tierEmoji ***REMOVED*** '❄️';
+            let tierLabel ***REMOVED*** 'Cold Lead';
+            let tierColor ***REMOVED*** 'cold';
+
+            if (finalScore >***REMOVED*** thresholds.hot) {
+                tier ***REMOVED*** 'hot';
+                tierEmoji ***REMOVED*** '🔥';
+                tierLabel ***REMOVED*** 'Hot Lead';
+                tierColor ***REMOVED*** 'hot';
+            } else if (finalScore >***REMOVED*** thresholds.warm) {
+                tier ***REMOVED*** 'warm';
+                tierEmoji ***REMOVED*** '🌡️';
+                tierLabel ***REMOVED*** 'Warm Lead';
+                tierColor ***REMOVED*** 'warm';
+            } else if (finalScore >***REMOVED*** thresholds.cool) {
+                tier ***REMOVED*** 'cool';
+                tierEmoji ***REMOVED*** '❄️';
+                tierLabel ***REMOVED*** 'Cool Lead';
+                tierColor ***REMOVED*** 'cool';
+            }
+
+            return {
+                domain: data.domain,
+                score: finalScore,
+                tier,
+                tierEmoji,
+                tierLabel,
+                tierColor,
+                signals: {
+                    size: { value: formatValue(data.companySize, 'companySize'), signalScore: Math.round(sizeScore) },
+                    funding: { value: formatValue(data.fundingStage, 'fundingStage'), signalScore: Math.round(fundingScore) },
+                    growth: { value: formatValue(data.growthRate, 'growthRate'), signalScore: Math.round(growthScore) },
+                    industry: { value: formatValue(data.industry, 'industry'), signalScore: Math.round(industryScore) },
+                    tech: { value: data.techScore + '/100', signalScore: Math.round(techScore) }
+                },
+                timestamp: new Date().toISOString()
+            };
+        }
+
+        // ***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED*** UTILITY FUNCTIONS ***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***
+        function getSignalClass(score, max ***REMOVED*** 25) {
+            const ratio ***REMOVED*** score / max;
+            if (ratio >***REMOVED*** 0.7) return 'high';
+            if (ratio >***REMOVED*** 0.4) return 'medium';
+            return 'low';
+        }
+
+        function formatValue(value, type) {
+            if (type ***REMOVED******REMOVED******REMOVED*** 'companySize') {
+                return value + ' employees';
+            }
+            if (type ***REMOVED******REMOVED******REMOVED*** 'fundingStage') {
+                return value.split('-').map(w ***REMOVED***> w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+            }
+            if (type ***REMOVED******REMOVED******REMOVED*** 'growthRate') {
+                return value.split('-').map(w ***REMOVED***> w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+            }
+            if (type ***REMOVED******REMOVED******REMOVED*** 'industry') {
+                return value.charAt(0).toUpperCase() + value.slice(1);
+            }
+            if (type ***REMOVED******REMOVED******REMOVED*** 'techScore') {
+                return value + '/100';
+            }
+            return value;
+        }
+
+        function getTierColor(tier) {
+            const colors ***REMOVED*** {
+                hot: '#ff4757',
+                warm: '#ffa502',
+                cool: '#3742fa',
+                cold: '#747d8c'
+            };
+            return colors[tier] || colors.cold;
+        }
+
+        // ***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED*** DISPLAY FUNCTIONS ***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***
+        function displayResults(result) {
+            loading.classList.remove('active');
+            resultsEmpty.style.display ***REMOVED*** 'none';
+            batchResultsEl.classList.remove('active');
+            results.classList.add('active');
+
+            currentResult ***REMOVED*** result;
+
+            // Animate score
+            const scoreProgress ***REMOVED*** document.getElementById('scoreProgress');
+            const scoreValue ***REMOVED*** document.getElementById('scoreValue');
+            const circumference ***REMOVED*** 2 * Math.PI * 54;
+            const offset ***REMOVED*** circumference - (result.score / 100) * circumference;
+
+            scoreProgress.style.setProperty('--score-offset', offset);
+            scoreProgress.style.stroke ***REMOVED*** getTierColor(result.tier);
+            scoreValue.textContent ***REMOVED*** result.score;
+            scoreValue.style.color ***REMOVED*** getTierColor(result.tier);
+
+            // Update tier badge
+            const tierBadge ***REMOVED*** document.getElementById('tierBadge');
+            document.getElementById('tierEmoji').textContent ***REMOVED*** result.tierEmoji;
+            document.getElementById('tierText').textContent ***REMOVED*** result.tierLabel;
+            tierBadge.className ***REMOVED*** `score-tier-badge ${result.tierColor}`;
+
+            // Update signals
+            document.getElementById('sizeSignal').textContent ***REMOVED*** result.signals.size.value;
+            document.getElementById('sizeSignal').className ***REMOVED*** `signal-value ${result.signals.size.signalScore > 17 ? 'high' : result.signals.size.signalScore > 8 ? 'medium' : 'low'}`;
+
+            document.getElementById('fundingSignal').textContent ***REMOVED*** result.signals.funding.value;
+            document.getElementById('fundingSignal').className ***REMOVED*** `signal-value ${result.signals.funding.signalScore > 17 ? 'high' : result.signals.funding.signalScore > 8 ? 'medium' : 'low'}`;
+
+            document.getElementById('growthSignal').textContent ***REMOVED*** result.signals.growth.value;
+            document.getElementById('growthSignal').className ***REMOVED*** `signal-value ${result.signals.growth.signalScore > 14 ? 'high' : result.signals.growth.signalScore > 7 ? 'medium' : 'low'}`;
+
+            document.getElementById('industrySignal').textContent ***REMOVED*** result.signals.industry.value;
+            document.getElementById('industrySignal').className ***REMOVED*** `signal-value ${result.signals.industry.signalScore > 10 ? 'high' : result.signals.industry.signalScore > 5 ? 'medium' : 'low'}`;
+
+            document.getElementById('techSignal').textContent ***REMOVED*** result.signals.tech.value;
+            document.getElementById('techSignal').className ***REMOVED*** `signal-value ${result.signals.tech.signalScore > 10 ? 'high' : result.signals.tech.signalScore > 5 ? 'medium' : 'low'}`;
+
+            const potentialText ***REMOVED*** result.score >***REMOVED*** thresholds.hot ? 'High' : result.score >***REMOVED*** thresholds.warm ? 'Medium' : 'Low';
+            const potentialEl ***REMOVED*** document.getElementById('potentialSignal');
+            potentialEl.textContent ***REMOVED*** potentialText;
+            potentialEl.className ***REMOVED*** `signal-value ${result.score >***REMOVED*** thresholds.hot ? 'high' : result.score >***REMOVED*** thresholds.warm ? 'medium' : 'low'}`;
+        }
+
+        function updateHistory() {
+            if (scores.length ***REMOVED******REMOVED******REMOVED*** 0) {
+                historyList.innerHTML ***REMOVED*** `
+                    <div class***REMOVED***"empty-state">
+                        <div class***REMOVED***"empty-icon">📊</div>
+                        <p>No scores yet. Enter a company above or try Demo mode.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            historyList.innerHTML ***REMOVED*** scores.slice(0, 5).map(score ***REMOVED***> `
+                <div class***REMOVED***"history-item" data-domain***REMOVED***"${score.domain}">
+                    <span class***REMOVED***"history-domain">${score.domain}</span>
+                    <div class***REMOVED***"history-score">
+                        <span class***REMOVED***"history-score-value">${score.score}</span>
+                        <span class***REMOVED***"history-tier ${score.tierColor}">${score.tierEmoji} ${score.tierLabel}</span>
+                    </div>
+                </div>
+            `).join('');
+
+            // Add click handlers
+            historyList.querySelectorAll('.history-item').forEach(item ***REMOVED***> {
+                item.addEventListener('click', () ***REMOVED***> {
+                    const domain ***REMOVED*** item.dataset.domain;
+                    const score ***REMOVED*** scores.find(s ***REMOVED***> s.domain ***REMOVED******REMOVED******REMOVED*** domain);
+                    if (score) {
+                        displayResults(score);
+                        document.getElementById('domain').value ***REMOVED*** score.domain;
+                    }
+                });
+            });
+        }
+
+        function saveScore(result) {
+            scores.unshift(result);
+            scores ***REMOVED*** scores.slice(0, 20);
+            localStorage.setItem('leadQualifierScores', JSON.stringify(scores));
+            updateHistory();
+        }
+
+        // ***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED*** WEIGHT MANAGEMENT ***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***
+        function updateWeightTotal() {
+            const total ***REMOVED*** parseInt(document.getElementById('weightSize').value) +
+                         parseInt(document.getElementById('weightFunding').value) +
+                         parseInt(document.getElementById('weightGrowth').value) +
+                         parseInt(document.getElementById('weightIndustry').value) +
+                         parseInt(document.getElementById('weightTech').value);
+
+            weightTotal.textContent ***REMOVED*** `Total: ${total}%`;
+            weightTotal.className ***REMOVED*** `weight-total ${total ***REMOVED******REMOVED******REMOVED*** 100 ? 'valid' : 'invalid'}`;
+            weightTotal.textContent +***REMOVED*** total ***REMOVED******REMOVED******REMOVED*** 100 ? ' ✓' : ' ⚠️ Must equal 100%';
+
+            return total;
+        }
+
+        function normalizeWeights(changedId) {
+            const sliders ***REMOVED*** ['weightSize', 'weightFunding', 'weightGrowth', 'weightIndustry', 'weightTech'];
+            const otherSliders ***REMOVED*** sliders.filter(id ***REMOVED***> id !***REMOVED******REMOVED*** changedId);
+            const changedValue ***REMOVED*** parseInt(document.getElementById(changedId).value);
+            const otherTotal ***REMOVED*** otherSliders.reduce((sum, id) ***REMOVED***> sum + parseInt(document.getElementById(id).value), 0);
+
+            if (changedValue + otherTotal !***REMOVED******REMOVED*** 100) {
+                const difference ***REMOVED*** 100 - changedValue;
+                const baseValue ***REMOVED*** otherSliders.length > 0 ? Math.floor(difference / otherSliders.length) : 0;
+                const remainder ***REMOVED*** difference - (baseValue * otherSliders.length);
+
+                otherSliders.forEach((id, index) ***REMOVED***> {
+                    const newValue ***REMOVED*** baseValue + (index < remainder ? 1 : 0);
+                    document.getElementById(id).value ***REMOVED*** Math.max(0, newValue);
+                    updateWeightDisplay(id);
+                });
+            }
+
+            updateWeightTotal();
+            saveWeights();
+        }
+
+        function updateWeightDisplay(sliderId) {
+            const slider ***REMOVED*** document.getElementById(sliderId);
+            const targetId ***REMOVED*** slider.dataset.target;
+            const display ***REMOVED*** document.getElementById(targetId);
+            if (display) {
+                display.textContent ***REMOVED*** slider.value + '%';
+            }
+        }
+
+        function saveWeights() {
+            weights ***REMOVED*** {
+                size: parseInt(document.getElementById('weightSize').value),
+                funding: parseInt(document.getElementById('weightFunding').value),
+                growth: parseInt(document.getElementById('weightGrowth').value),
+                industry: parseInt(document.getElementById('weightIndustry').value),
+                tech: parseInt(document.getElementById('weightTech').value)
+            };
+            localStorage.setItem('leadQualifierWeights', JSON.stringify(weights));
+        }
+
+        // Weight slider events
+        weightSliders.forEach(slider ***REMOVED***> {
+            slider.addEventListener('input', () ***REMOVED***> {
+                updateWeightDisplay(slider.id);
+            });
+
+            slider.addEventListener('change', () ***REMOVED***> {
+                normalizeWeights(slider.id);
+            });
+        });
+
+        // Toggle weights section
+        weightsDivider.addEventListener('click', () ***REMOVED***> {
+            weightsDivider.classList.toggle('collapsed');
+            weightsConfig.classList.toggle('collapsed');
+        });
+
+        // ***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED*** CSV IMPORT ***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***
+        fileUpload.addEventListener('click', () ***REMOVED***> csvFile.click());
+        fileUpload.addEventListener('dragover', (e) ***REMOVED***> {
+            e.preventDefault();
+            fileUpload.classList.add('dragover');
+        });
+        fileUpload.addEventListener('dragleave', () ***REMOVED***> fileUpload.classList.remove('dragover'));
+        fileUpload.addEventListener('drop', (e) ***REMOVED***> {
+            e.preventDefault();
+            fileUpload.classList.remove('dragover');
+            const file ***REMOVED*** e.dataTransfer.files[0];
+            if (file && file.name.endsWith('.csv')) {
+                processCSV(file);
+            } else {
+                showToast('Please upload a CSV file', 'error');
+            }
+        });
+
+        csvFile.addEventListener('change', () ***REMOVED***> {
+            const file ***REMOVED*** csvFile.files[0];
+            if (file) processCSV(file);
+        });
+
+        function processCSV(file) {
+            Papa.parse(file, {
+                header: true,
+                skipEmptyLines: true,
+                complete: (results) ***REMOVED***> {
+                    if (results.errors.length > 0) {
+                        console.error('CSV parsing errors:', results.errors);
+                    }
+
+                    const data ***REMOVED*** results.data;
+                    if (data.length ***REMOVED******REMOVED******REMOVED*** 0) {
+                        showToast('CSV file is empty', 'error');
+                        return;
+                    }
+
+                    // Validate required columns
+                    const requiredCols ***REMOVED*** ['domain', 'companySize', 'industry', 'fundingStage', 'growthRate', 'techScore'];
+                    const firstRow ***REMOVED*** data[0];
+                    const missingCols ***REMOVED*** requiredCols.filter(col ***REMOVED***> !firstRow.hasOwnProperty(col));
+
+                    if (missingCols.length > 0) {
+                        showToast(`Missing columns: ${missingCols.join(', ')}`, 'error');
+                        return;
+                    }
+
+                    // Process each row
+                    batchResults ***REMOVED*** [];
+                    let processed ***REMOVED*** 0;
+                    let errors ***REMOVED*** 0;
+
+                    data.forEach(row ***REMOVED***> {
+                        try {
+                            const result ***REMOVED*** calculateScore({
+                                domain: row.domain?.trim() || '',
+                                companySize: row.companySize || '',
+                                industry: row.industry || '',
+                                fundingStage: row.fundingStage || '',
+                                growthRate: row.growthRate || '',
+                                techScore: parseInt(row.techScore) || 50
+                            });
+                            batchResults.push(result);
+                            processed++;
+                        } catch (e) {
+                            errors++;
+                        }
+                    });
+
+                    if (processed ***REMOVED******REMOVED******REMOVED*** 0) {
+                        showToast('No valid rows found in CSV', 'error');
+                        return;
+                    }
+
+                    // Display batch results
+                    displayBatchResults();
+                    showToast(`Processed ${processed} leads${errors > 0 ? ` (${errors} errors)` : ''}`, errors > 0 ? 'warning' : 'success');
+                },
+                error: (error) ***REMOVED***> {
+                    showToast('Error parsing CSV: ' + error.message, 'error');
+                }
+            });
+        }
+
+        function displayBatchResults() {
+            loading.classList.remove('active');
+            results.classList.remove('active');
+            resultsEmpty.style.display ***REMOVED*** 'none';
+            batchResultsEl.classList.add('active');
+
+            // Update stats
+            const hotCount ***REMOVED*** batchResults.filter(r ***REMOVED***> r.tier ***REMOVED******REMOVED******REMOVED*** 'hot').length;
+            const warmCount ***REMOVED*** batchResults.filter(r ***REMOVED***> r.tier ***REMOVED******REMOVED******REMOVED*** 'warm').length;
+            batchStats.textContent ***REMOVED*** `${batchResults.length} leads • ${hotCount} hot • ${warmCount} warm`;
+
+            // Populate table
+            batchTableBody.innerHTML ***REMOVED*** batchResults.map(result ***REMOVED***> `
+                <tr>
+                    <td>${result.domain}</td>
+                    <td class***REMOVED***"batch-score">${result.score}</td>
+                    <td><span class***REMOVED***"batch-tier ${result.tier}">${result.tierEmoji} ${result.tier}</span></td>
+                    <td>${result.signals.size.value}</td>
+                    <td>${result.signals.funding.value}</td>
+                    <td>${result.signals.growth.value}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Clear batch
+        document.getElementById('clearBatchBtn').addEventListener('click', () ***REMOVED***> {
+            batchResults ***REMOVED*** [];
+            batchResultsEl.classList.remove('active');
+            resultsEmpty.style.display ***REMOVED*** 'block';
+            csvFile.value ***REMOVED*** '';
+            showToast('Batch results cleared', 'success');
+        });
+
+        // ***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED*** CSV EXPORT ***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***
+        function exportToCSV(data, filename ***REMOVED*** 'lead-scores.csv') {
+            const headers ***REMOVED*** ['domain', 'score', 'tier', 'sizeSignal', 'fundingSignal', 'growthSignal', 'industrySignal', 'techSignal'];
+            const rows ***REMOVED*** data.map(row ***REMOVED***> [
+                row.domain,
+                row.score,
+                row.tierLabel,
+                row.signals.size.value,
+                row.signals.funding.value,
+                row.signals.growth.value,
+                row.signals.industry.value,
+                row.signals.tech.value
+            ]);
+
+            const csvContent ***REMOVED*** [headers, ...rows].map(row ***REMOVED***> row.map(cell ***REMOVED***> `"${cell}"`).join(',')).join('\n');
+            const blob ***REMOVED*** new Blob([csvContent], { type: 'text/csv;charset***REMOVED***utf-8;' });
+            const url ***REMOVED*** URL.createObjectURL(blob);
+            const a ***REMOVED*** document.createElement('a');
+            a.href ***REMOVED*** url;
+            a.download ***REMOVED*** filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Export single result to CSV
+        document.getElementById('exportCsvBtn').addEventListener('click', () ***REMOVED***> {
+            if (!currentResult) {
+                showToast('No score to export', 'warning');
+                return;
+            }
+            exportToCSV([currentResult], `lead-${currentResult.domain}-${Date.now()}.csv`);
+            showToast('CSV exported successfully', 'success');
+        });
+
+        // Export batch to CSV
+        document.getElementById('exportBatchCsvBtn').addEventListener('click', () ***REMOVED***> {
+            if (batchResults.length ***REMOVED******REMOVED******REMOVED*** 0) {
+                showToast('No batch results to export', 'warning');
+                return;
+            }
+            exportToCSV(batchResults, `batch-leads-${Date.now()}.csv`);
+            showToast(`Exported ${batchResults.length} leads to CSV`, 'success');
+        });
+
+        // ***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED*** JSON EXPORT ***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***
+        document.getElementById('exportJsonBtn').addEventListener('click', () ***REMOVED***> {
+            const result ***REMOVED*** currentResult || scores[0];
+            if (!result) {
+                showToast('No score to export', 'warning');
+                return;
+            }
+
+            const data ***REMOVED*** JSON.stringify(result, null, 2);
+            const blob ***REMOVED*** new Blob([data], { type: 'application/json' });
+            const url ***REMOVED*** URL.createObjectURL(blob);
+            const a ***REMOVED*** document.createElement('a');
+            a.href ***REMOVED*** url;
+            a.download ***REMOVED*** `lead-${result.domain}-${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('JSON exported successfully', 'success');
+        });
+
+        // ***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED*** COPY RESULTS ***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***
+        document.getElementById('copyBtn').addEventListener('click', () ***REMOVED***> {
+            const result ***REMOVED*** currentResult || scores[0];
+            if (!result) {
+                showToast('No score to copy', 'warning');
+                return;
+            }
+
+            const text ***REMOVED*** `
+LeadQualifier Score Report
+***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***
+Domain: ${result.domain}
+Score: ${result.score}/100
+Tier: ${result.tierLabel} ${result.tierEmoji}
+
+Signals:
+- Company Size: ${result.signals.size.value}
+- Funding: ${result.signals.funding.value}
+- Growth: ${result.signals.growth.value}
+- Industry: ${result.signals.industry.value}
+- Tech Score: ${result.signals.tech.value}
+
+Generated: ${new Date(result.timestamp).toLocaleString()}
+            `.trim();
+
+            navigator.clipboard.writeText(text);
+            const btn ***REMOVED*** document.getElementById('copyBtn');
+            const originalText ***REMOVED*** btn.textContent;
+            btn.textContent ***REMOVED*** '✓ Copied!';
+            setTimeout(() ***REMOVED***> btn.textContent ***REMOVED*** originalText, 2000);
+        });
+
+        // ***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED*** CRM WEBHOOK ***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***
+        document.getElementById('crmBtn').addEventListener('click', async () ***REMOVED***> {
+            const result ***REMOVED*** currentResult || scores[0];
+            if (!result) {
+                showToast('No score to send', 'warning');
+                return;
+            }
+
+            // Determine which webhook to use
+            let webhookUrl ***REMOVED*** webhooks.hubSpot || webhooks.salesforce;
+            let crmType ***REMOVED*** webhooks.hubSpot ? 'HubSpot' : webhooks.salesforce ? 'Salesforce' : null;
+
+            if (!webhookUrl) {
+                showToast('No CRM webhook configured. Open Settings to add one.', 'warning');
+                return;
+            }
+
+            try {
+                const response ***REMOVED*** await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        domain: result.domain,
+                        score: result.score,
+                        tier: result.tier,
+                        tierLabel: result.tierLabel,
+                        signals: result.signals,
+                        timestamp: result.timestamp
+                    })
+                });
+
+                if (response.ok) {
+                    showToast(`Sent to ${crmType} successfully`, 'success');
+                } else {
+                    showToast(`Failed to send to ${crmType}: ${response.status}`, 'error');
+                }
+            } catch (error) {
+                showToast(`Error sending to ${crmType}: ${error.message}`, 'error');
+            }
+        });
+
+        // ***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED*** SETTINGS MODAL ***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***
+        settingsBtn.addEventListener('click', () ***REMOVED***> {
+            settingsModal.classList.add('active');
+        });
+
+        settingsCloseBtn.addEventListener('click', () ***REMOVED***> {
+            settingsModal.classList.remove('active');
+        });
+
+        settingsModal.addEventListener('click', (e) ***REMOVED***> {
+            if (e.target ***REMOVED******REMOVED******REMOVED*** settingsModal) {
+                settingsModal.classList.remove('active');
+            }
+        });
+
+        saveSettingsBtn.addEventListener('click', () ***REMOVED***> {
+            // Validate thresholds
+            const hot ***REMOVED*** parseInt(thresholdHot.value);
+            const warm ***REMOVED*** parseInt(thresholdWarm.value);
+            const cool ***REMOVED*** parseInt(thresholdCool.value);
+
+            if (hot <***REMOVED*** warm || warm <***REMOVED*** cool || cool < 0) {
+                showToast('Invalid thresholds: Hot > Warm > Cool ≥ 0', 'error');
+                return;
+            }
+
+            thresholds ***REMOVED*** { hot, warm, cool };
+            localStorage.setItem('leadQualifierThresholds', JSON.stringify(thresholds));
+
+            webhooks ***REMOVED*** {
+                hubSpot: webhookHubSpot.value,
+                salesforce: webhookSalesforce.value
+            };
+            localStorage.setItem('leadQualifierWebhooks', JSON.stringify(webhooks));
+
+            settingsModal.classList.remove('active');
+            showToast('Settings saved successfully', 'success');
+        });
+
+        resetSettingsBtn.addEventListener('click', () ***REMOVED***> {
+            if (confirm('Reset all settings to defaults?')) {
+                thresholds ***REMOVED*** { ...defaultThresholds };
+                weights ***REMOVED*** { ...defaultWeights };
+                webhooks ***REMOVED*** { ...defaultWebhooks };
+
+                localStorage.setItem('leadQualifierThresholds', JSON.stringify(thresholds));
+                localStorage.setItem('leadQualifierWeights', JSON.stringify(weights));
+                localStorage.setItem('leadQualifierWebhooks', JSON.stringify(webhooks));
+
+                // Reload UI
+                thresholdHot.value ***REMOVED*** thresholds.hot;
+                thresholdWarm.value ***REMOVED*** thresholds.warm;
+                thresholdCool.value ***REMOVED*** thresholds.cool;
+                webhookHubSpot.value ***REMOVED*** '';
+                webhookSalesforce.value ***REMOVED*** '';
+
+                document.getElementById('weightSize').value ***REMOVED*** weights.size;
+                document.getElementById('weightFunding').value ***REMOVED*** weights.funding;
+                document.getElementById('weightGrowth').value ***REMOVED*** weights.growth;
+                document.getElementById('weightIndustry').value ***REMOVED*** weights.industry;
+                document.getElementById('weightTech').value ***REMOVED*** weights.tech;
+
+                ['weightSize', 'weightFunding', 'weightGrowth', 'weightIndustry', 'weightTech'].forEach(id ***REMOVED***> {
+                    updateWeightDisplay(id);
+                });
+
+                updateWeightTotal();
+                showToast('Settings reset to defaults', 'success');
+            }
+        });
+
+        // ***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED*** FORM SUBMIT ***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***
+        techScore.addEventListener('input', () ***REMOVED***> {
+            techScoreValue.textContent ***REMOVED*** techScore.value;
+        });
+
+        form.addEventListener('submit', async (e) ***REMOVED***> {
+            e.preventDefault();
+
+            const data ***REMOVED*** {
+                domain: document.getElementById('domain').value.trim(),
+                companySize: document.getElementById('companySize').value,
+                industry: document.getElementById('industry').value,
+                fundingStage: document.getElementById('fundingStage').value,
+                growthRate: document.getElementById('growthRate').value,
+                techScore: parseInt(document.getElementById('techScore').value)
+            };
+
+            // Validate required fields
+            if (!data.companySize || !data.industry || !data.fundingStage || !data.growthRate) {
+                showToast('Please fill in all fields', 'warning');
+                return;
+            }
+
+            // Show loading
+            results.classList.remove('active');
+            batchResultsEl.classList.remove('active');
+            resultsEmpty.style.display ***REMOVED*** 'block';
+            loading.classList.add('active');
+
+            // Simulate processing
+            await new Promise(resolve ***REMOVED***> setTimeout(resolve, 800));
+
+            const result ***REMOVED*** calculateScore(data);
+            saveScore(result);
+            displayResults(result);
+            showToast('Score calculated successfully', 'success');
+        });
+
+        // ***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED*** INITIALIZE ***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***
+        init();
+    </script>
+</body>
+</html>

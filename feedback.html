@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang***REMOVED***"en">
+<head>
+    <meta charset***REMOVED***"UTF-8">
+    <meta name***REMOVED***"viewport" content***REMOVED***"width***REMOVED***device-width, initial-scale***REMOVED***1.0">
+    <title>Auto Company — Product Feedback</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #0a0e27;
+            --accent: #00d4aa;
+            --text: #e8e8e8;
+            --border: #1f2937;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--primary);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .container {
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
+        .form {
+            background: rgba(31, 41, 55, 0.3);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+        }
+
+        .field {
+            margin-bottom: 1.5rem;
+        }
+
+        .field label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .field input,
+        .field textarea,
+        .field select {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text);
+            font-size: 0.9rem;
+        }
+
+        .field textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .field input:focus,
+        .field textarea:focus,
+        .field select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .product-select {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .product-option {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .product-option input {
+            display: none;
+        }
+
+        .product-option label {
+            display: block;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.8rem;
+        }
+
+        .product-option input:checked + label {
+            background: rgba(0, 212, 170, 0.2);
+            border-color: var(--accent);
+        }
+
+        .rating {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .rating input {
+            display: none;
+        }
+
+        .rating label {
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .rating label:hover {
+            transform: scale(1.2);
+        }
+
+        .rating input:checked + label {
+            color: var(--accent);
+        }
+
+        .submit {
+            width: 100%;
+            padding: 0.875rem;
+            background: var(--accent);
+            color: var(--primary);
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: filter 0.2s;
+        }
+
+        .submit:hover {
+            filter: brightness(1.1);
+        }
+
+        .telegram-note {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: rgba(0, 212, 170, 0.1);
+            border-radius: 8px;
+            font-size: 0.875rem;
+        }
+
+        .telegram-note a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .telegram-emoji {
+            font-size: 1.2rem;
+            margin-right: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class***REMOVED***"container">
+        <div class***REMOVED***"header">
+            <h1>🎯 Product Feedback</h1>
+            <p>Help shape the next AI-built product</p>
+        </div>
+
+        <form class***REMOVED***"form" onsubmit***REMOVED***"submitFeedback(event)">
+            <div class***REMOVED***"field">
+                <label>Which product(s) did you try?</label>
+                <div class***REMOVED***"product-select">
+                    <div class***REMOVED***"product-option">
+                        <input type***REMOVED***"checkbox" id***REMOVED***"p1" name***REMOVED***"products" value***REMOVED***"leadqualifier">
+                        <label for***REMOVED***"p1">🎯 LeadQualifier</label>
+                    </div>
+                    <div class***REMOVED***"product-option">
+                        <input type***REMOVED***"checkbox" id***REMOVED***"p2" name***REMOVED***"products" value***REMOVED***"mockfirst">
+                        <label for***REMOVED***"p2">🔧 MockFirst</label>
+                    </div>
+                    <div class***REMOVED***"product-option">
+                        <input type***REMOVED***"checkbox" id***REMOVED***"p3" name***REMOVED***"products" value***REMOVED***"landing-pages">
+                        <label for***REMOVED***"p3">🚀 Landing Pages</label>
+                    </div>
+                    <div class***REMOVED***"product-option">
+                        <input type***REMOVED***"checkbox" id***REMOVED***"p4" name***REMOVED***"products" value***REMOVED***"changelog">
+                        <label for***REMOVED***"p4">📝 Changelog</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class***REMOVED***"field">
+                <label>Overall impression</label>
+                <div class***REMOVED***"rating">
+                    <input type***REMOVED***"radio" id***REMOVED***"r1" name***REMOVED***"rating" value***REMOVED***"1">
+                    <label for***REMOVED***"r1" title***REMOVED***"Poor">😕</label>
+
+                    <input type***REMOVED***"radio" id***REMOVED***"r2" name***REMOVED***"rating" value***REMOVED***"2">
+                    <label for***REMOVED***"r2" title***REMOVED***"Fair">😐</label>
+
+                    <input type***REMOVED***"radio" id***REMOVED***"r3" name***REMOVED***"rating" value***REMOVED***"3" checked>
+                    <label for***REMOVED***"r3" title***REMOVED***"Good">🙂</label>
+
+                    <input type***REMOVED***"radio" id***REMOVED***"r4" name***REMOVED***"rating" value***REMOVED***"4">
+                    <label for***REMOVED***"r4" title***REMOVED***"Great">😊</label>
+
+                    <input type***REMOVED***"radio" id***REMOVED***"r5" name***REMOVED***"rating" value***REMOVED***"5">
+                    <label for***REMOVED***"r5" title***REMOVED***"Excellent">🤩</label>
+                </div>
+            </div>
+
+            <div class***REMOVED***"field">
+                <label for***REMOVED***"feedback">Your thoughts</label>
+                <textarea id***REMOVED***"feedback" name***REMOVED***"feedback" placeholder***REMOVED***"What did you like? What could be better? Which product would you actually use?"></textarea>
+            </div>
+
+            <div class***REMOVED***"field">
+                <label for***REMOVED***"email">Email (optional)</label>
+                <input type***REMOVED***"email" id***REMOVED***"email" name***REMOVED***"email" placeholder***REMOVED***"If you want a reply">
+            </div>
+
+            <button type***REMOVED***"submit" class***REMOVED***"submit">Send Feedback</button>
+        </form>
+
+        <div class***REMOVED***"telegram-note">
+            <span class***REMOVED***"telegram-emoji">✈️</span>
+            Prefer direct contact? <a href***REMOVED***"https://t.me/tolgabrk" target***REMOVED***"_blank">Message on Telegram: @tolgabrk</a>
+        </div>
+    </div>
+
+    <script>
+        function submitFeedback(e) {
+            e.preventDefault();
+
+            const formData ***REMOVED*** new FormData(e.target);
+            const data ***REMOVED*** {
+                products: Array.from(formData.getAll('products')),
+                rating: formData.get('rating'),
+                feedback: formData.get('feedback'),
+                email: formData.get('email') || '',
+                timestamp: new Date().toISOString()
+            };
+
+            // Generate feedback message for Telegram
+            const message ***REMOVED*** `
+🎯 *Auto Company Feedback*
+
+*Products:* ${data.products.join(', ') || 'None specified'}
+*Rating:* ${data.rating}/5
+*Feedback:* ${data.feedback || 'No comments'}
+*Email:* ${data.email || 'Not provided'}
+
+_Time: ${data.timestamp}_
+            `.trim();
+
+            // Copy to clipboard with instructions
+            navigator.clipboard.writeText(message).then(() ***REMOVED***> {
+                alert('Feedback generated!\n\nMessage copied to clipboard.\n\n1. Open Telegram: https://t.me/tolgabrk\n2. Paste and send\n\nThanks for your feedback!');
+            });
+
+            // Also log to console (for development)
+            console.log('Feedback data:', data);
+        }
+    </script>
+</body>
+</html>

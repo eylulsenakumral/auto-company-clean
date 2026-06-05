@@ -1,0 +1,13 @@
+name ***REMOVED*** "leadqualifier-v4-feedback"
+main ***REMOVED*** "api/submit-feedback.js"
+compatibility_date ***REMOVED*** "2024-01-01"
+
+# KV Namespace for storing feedback
+# Create with: wrangler kv:namespace create FEEDBACK_KV
+[[kv_namespaces]]
+binding ***REMOVED*** "FEEDBACK_KV"
+id ***REMOVED*** "YOUR_KV_NAMESPACE_ID"
+
+# Environment variables (set via wrangler secret)
+# RESEND_API_KEY - For email notifications (optional)
+# NOTIFICATION_EMAIL - Where to send notifications (optional)

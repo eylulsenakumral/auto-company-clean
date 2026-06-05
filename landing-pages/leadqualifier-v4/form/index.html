@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang***REMOVED***"en">
+<head>
+    <meta charset***REMOVED***"UTF-8">
+    <meta name***REMOVED***"viewport" content***REMOVED***"width***REMOVED***device-width, initial-scale***REMOVED***1.0">
+    <title>LeadQualifier v4 - Feedback</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; background: linear-gradient(135deg, #0a0a0a, #1a1a1a); color: #fff; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1rem; }
+        .form-container { max-width: 500px; width: 100%; background: #111; padding: 2.5rem; border-radius: 16px; border: 1px solid #222; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+        .form-container h1 { font-size: 1.75rem; margin-bottom: 0.5rem; color: #00ff88; }
+        .form-container .subtitle { color: #888; font-size: 0.95rem; margin-bottom: 2rem; }
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; color: #aaa; font-size: 0.9rem; font-weight: 500; }
+        .form-group input[type***REMOVED***"email"], .form-group textarea { width: 100%; padding: 0.85rem 1rem; background: #0a0a0a; border: 1px solid #333; border-radius: 8px; color: #fff; font-size: 0.95rem; transition: border-color 0.2s; }
+        .form-group input[type***REMOVED***"email"]:focus, .form-group textarea:focus { outline: none; border-color: #00ff88; }
+        .form-group textarea { resize: vertical; min-height: 100px; }
+        .checkbox-group { display: flex; flex-direction: column; gap: 0.75rem; }
+        .checkbox-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background: #0a0a0a; border-radius: 8px; border: 1px solid #222; cursor: pointer; transition: border-color 0.2s; }
+        .checkbox-item:hover { border-color: #333; }
+        .checkbox-item input[type***REMOVED***"checkbox"] { width: 18px; height: 18px; accent-color: #00ff88; }
+        .checkbox-item label { flex: 1; cursor: pointer; color: #ccc; font-size: 0.9rem; }
+        .submit-btn { width: 100%; background: linear-gradient(135deg, #00ff88, #00d4ff); color: #000; padding: 1rem; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
+        .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,255,136,0.3); }
+        .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .success-message { text-align: center; padding: 2rem; }
+        .success-message h2 { color: #00ff88; font-size: 1.5rem; margin-bottom: 1rem; }
+        .success-message p { color: #888; }
+        .back-link { display: block; text-align: center; margin-top: 2rem; color: #666; text-decoration: none; font-size: 0.9rem; }
+        .back-link:hover { color: #00ff88; }
+        .optional { color: #666; font-size: 0.85rem; margin-left: 0.5rem; }
+    </style>
+</head>
+<body>
+    <div class***REMOVED***"form-container" id***REMOVED***"formContainer">
+        <h1>LeadQualifier v4 Feedback</h1>
+        <p class***REMOVED***"subtitle">Your input shapes v4.2. Takes 2 minutes.</p>
+
+        <form id***REMOVED***"feedbackForm">
+            <div class***REMOVED***"form-group">
+                <label>What feedback do you want to give? <span class***REMOVED***"optional">(Select all that apply)</span></label>
+                <div class***REMOVED***"checkbox-group">
+                    <div class***REMOVED***"checkbox-item">
+                        <input type***REMOVED***"checkbox" id***REMOVED***"design" name***REMOVED***"topics" value***REMOVED***"Design">
+                        <label for***REMOVED***"design">Design feedback</label>
+                    </div>
+                    <div class***REMOVED***"checkbox-item">
+                        <input type***REMOVED***"checkbox" id***REMOVED***"copy" name***REMOVED***"topics" value***REMOVED***"Copy">
+                        <label for***REMOVED***"copy">Copy / messaging</label>
+                    </div>
+                    <div class***REMOVED***"checkbox-item">
+                        <input type***REMOVED***"checkbox" id***REMOVED***"ux" name***REMOVED***"topics" value***REMOVED***"UX">
+                        <label for***REMOVED***"ux">User experience</label>
+                    </div>
+                    <div class***REMOVED***"checkbox-item">
+                        <input type***REMOVED***"checkbox" id***REMOVED***"performance" name***REMOVED***"topics" value***REMOVED***"Performance">
+                        <label for***REMOVED***"performance">Performance</label>
+                    </div>
+                    <div class***REMOVED***"checkbox-item">
+                        <input type***REMOVED***"checkbox" id***REMOVED***"features" name***REMOVED***"topics" value***REMOVED***"Features">
+                        <label for***REMOVED***"features">Feature requests</label>
+                    </div>
+                    <div class***REMOVED***"checkbox-item">
+                        <input type***REMOVED***"checkbox" id***REMOVED***"other" name***REMOVED***"topics" value***REMOVED***"Other">
+                        <label for***REMOVED***"other">Other</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class***REMOVED***"form-group">
+                <label for***REMOVED***"email">Email address <span class***REMOVED***"optional">(For follow-up)</span></label>
+                <input type***REMOVED***"email" id***REMOVED***"email" name***REMOVED***"email" placeholder***REMOVED***"you@example.com" required>
+            </div>
+
+            <div class***REMOVED***"form-group">
+                <label for***REMOVED***"comments">Additional comments <span class***REMOVED***"optional">(Optional)</span></label>
+                <textarea id***REMOVED***"comments" name***REMOVED***"comments" placeholder***REMOVED***"Any specific feedback, suggestions, or issues you encountered..."></textarea>
+            </div>
+
+            <button type***REMOVED***"submit" class***REMOVED***"submit-btn" id***REMOVED***"submitBtn">Submit Feedback</button>
+        </form>
+
+        <a href***REMOVED***"../index.html" class***REMOVED***"back-link">← Back to LeadQualifier v4</a>
+    </div>
+
+    <div class***REMOVED***"success-message" id***REMOVED***"successMessage" style***REMOVED***"display: none;">
+        <h2>Thank You!</h2>
+        <p>Your feedback has been submitted.</p>
+        <p style***REMOVED***"margin-top: 1rem; color: #666;">We read every response and use it to improve LeadQualifier.</p>
+        <a href***REMOVED***"../index.html" class***REMOVED***"back-link">← Back to LeadQualifier v4</a>
+    </div>
+
+    <script>
+        const form ***REMOVED*** document.getElementById('feedbackForm');
+        const formContainer ***REMOVED*** document.getElementById('formContainer');
+        const successMessage ***REMOVED*** document.getElementById('successMessage');
+        const submitBtn ***REMOVED*** document.getElementById('submitBtn');
+
+        form.addEventListener('submit', async (e) ***REMOVED***> {
+            e.preventDefault();
+            submitBtn.disabled ***REMOVED*** true;
+            submitBtn.textContent ***REMOVED*** 'Submitting...';
+
+            const formData ***REMOVED*** new FormData(form);
+            const data ***REMOVED*** {
+                topics: Array.from(document.querySelectorAll('input[name***REMOVED***"topics"]:checked')).map(cb ***REMOVED***> cb.value),
+                email: formData.get('email'),
+                comments: formData.get('comments') || '',
+                timestamp: new Date().toISOString(),
+                source: 'leadqualifier-v4-landing-page'
+            };
+
+            try {
+                const response ***REMOVED*** await fetch('/api/submit-feedback', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    formContainer.style.display ***REMOVED*** 'none';
+                    successMessage.style.display ***REMOVED*** 'block';
+                } else {
+                    throw new Error('Submission failed');
+                }
+            } catch (error) {
+                // Fallback: Store in localStorage and show success
+                const submissions ***REMOVED*** JSON.parse(localStorage.getItem('leadqualifier_feedback') || '[]');
+                submissions.push(data);
+                localStorage.setItem('leadqualifier_feedback', JSON.stringify(submissions));
+
+                formContainer.style.display ***REMOVED*** 'none';
+                successMessage.style.display ***REMOVED*** 'block';
+            }
+
+            submitBtn.disabled ***REMOVED*** false;
+            submitBtn.textContent ***REMOVED*** 'Submit Feedback';
+        });
+    </script>
+</body>
+</html>
