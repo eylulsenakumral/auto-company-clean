@@ -1,7 +1,8 @@
-'use client';
-
-// RSU Tax Calculator - Main UI
+// RSU Tax Calculator - Client-Side Only Version
 // Product #16 | DHH | 2025-06-05
+// Static export compatible - no API routes needed
+
+'use client';
 
 import { useState } from 'react';
 import {
@@ -14,6 +15,52 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
+
+// ***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED*** TAX CONSTANTS (2025) ***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***
+
+const FEDERAL_BRACKETS_2025 ***REMOVED*** [
+  { min: 0, max: 11600, rate: 0.10 },
+  { min: 11600, max: 47150, rate: 0.12 },
+  { min: 47150, max: 100525, rate: 0.22 },
+  { min: 100525, max: 191950, rate: 0.24 },
+  { min: 191950, max: 243725, rate: 0.32 },
+  { min: 243725, max: 609350, rate: 0.35 },
+  { min: 609350, max: null, rate: 0.37 },
+] as const;
+
+const FEDERAL_BRACKETS_MFJ_2025 ***REMOVED*** [
+  { min: 0, max: 23200, rate: 0.10 },
+  { min: 23200, max: 94300, rate: 0.12 },
+  { min: 94300, max: 201050, rate: 0.22 },
+  { min: 201050, max: 383900, rate: 0.24 },
+  { min: 383900, max: 487450, rate: 0.32 },
+  { min: 487450, max: 731200, rate: 0.35 },
+  { min: 731200, max: null, rate: 0.37 },
+] as const;
+
+const FEDERAL_BRACKETS_HOH_2025 ***REMOVED*** [
+  { min: 0, max: 16550, rate: 0.10 },
+  { min: 16550, max: 63100, rate: 0.12 },
+  { min: 63100, max: 100500, rate: 0.22 },
+  { min: 100500, max: 191950, rate: 0.24 },
+  { min: 191950, max: 243700, rate: 0.32 },
+  { min: 243700, max: 609350, rate: 0.35 },
+  { min: 609350, max: null, rate: 0.37 },
+] as const;
+
+const STANDARD_DEDUCTION_2025 ***REMOVED*** {
+  SINGLE: 14600,
+  MFJ: 29200,
+  HOH: 21800,
+} as const;
+
+const CAPITAL_GAINS_THRESHOLDS_2025 ***REMOVED*** {
+  SINGLE: { ZERO: 47000, FIFTEEN: 518900 },
+  MFJ: { ZERO: 94000, FIFTEEN: 1037800 },
+  HOH: { ZERO: 63000, FIFTEEN: 551850 },
+} as const;
+
+// ***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED*** TYPES ***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***
 
 interface CalculationResult {
   proceeds: number;
@@ -46,6 +93,170 @@ interface ComparisonResult {
   recommendation: string;
 }
 
+// ***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED*** TAX CALCULATIONS ***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***
+
+function getBrackets(filingStatus: 'SINGLE' | 'MFJ' | 'HOH') {
+  return filingStatus ***REMOVED******REMOVED******REMOVED*** 'MFJ' ? FEDERAL_BRACKETS_MFJ_2025 :
+         filingStatus ***REMOVED******REMOVED******REMOVED*** 'HOH' ? FEDERAL_BRACKETS_HOH_2025 :
+         FEDERAL_BRACKETS_2025;
+}
+
+function getStandardDeduction(filingStatus: 'SINGLE' | 'MFJ' | 'HOH') {
+  return filingStatus ***REMOVED******REMOVED******REMOVED*** 'MFJ' ? STANDARD_DEDUCTION_2025.MFJ :
+         filingStatus ***REMOVED******REMOVED******REMOVED*** 'HOH' ? STANDARD_DEDUCTION_2025.HOH :
+         STANDARD_DEDUCTION_2025.SINGLE;
+}
+
+function calculateFederalTax(taxableIncome: number, filingStatus: 'SINGLE' | 'MFJ' | 'HOH') {
+  const brackets ***REMOVED*** getBrackets(filingStatus);
+  const standardDeduction ***REMOVED*** getStandardDeduction(filingStatus);
+  const finalTaxableIncome ***REMOVED*** Math.max(0, taxableIncome - standardDeduction);
+
+  if (finalTaxableIncome ***REMOVED******REMOVED******REMOVED*** 0) {
+    return { tax: 0, effectiveRate: 0, brackets: [] };
+  }
+
+  let totalTax ***REMOVED*** 0;
+  let remainingIncome ***REMOVED*** finalTaxableIncome;
+  const bracketTaxes: Array<{ bracket: string; rate: number; taxableAmount: number; tax: number }> ***REMOVED*** [];
+
+  for (const bracket of brackets) {
+    const bracketWidth ***REMOVED*** bracket.max ***REMOVED******REMOVED******REMOVED*** null ? Infinity : bracket.max - bracket.min;
+    const taxableInBracket ***REMOVED*** Math.min(remainingIncome, bracketWidth);
+    const taxInBracket ***REMOVED*** taxableInBracket * bracket.rate;
+
+    if (taxableInBracket > 0) {
+      bracketTaxes.push({
+        bracket: `${(bracket.rate * 100).toFixed(0)}%`,
+        rate: bracket.rate,
+        taxableAmount: taxableInBracket,
+        tax: taxInBracket,
+      });
+      totalTax +***REMOVED*** taxInBracket;
+      remainingIncome -***REMOVED*** taxableInBracket;
+    }
+
+    if (remainingIncome <***REMOVED*** 0) break;
+  }
+
+  return {
+    tax: totalTax,
+    effectiveRate: taxableIncome > 0 ? totalTax / taxableIncome : 0,
+    brackets: bracketTaxes,
+  };
+}
+
+function calculateScenario(
+  shares: number,
+  vestPrice: number,
+  sellPrice: number,
+  otherIncome: number,
+  filingStatus: 'SINGLE' | 'MFJ' | 'HOH',
+  holdingPeriodDays: number ***REMOVED*** 0
+): CalculationResult {
+  const proceeds ***REMOVED*** shares * sellPrice;
+  const costBasis ***REMOVED*** shares * vestPrice;
+  const ordinaryIncomeAtVest ***REMOVED*** costBasis;
+
+  const isLongTerm ***REMOVED*** holdingPeriodDays >***REMOVED*** 365;
+
+  let ordinaryTax ***REMOVED*** 0;
+  let capitalGainsTax ***REMOVED*** 0;
+
+  if (isLongTerm) {
+    // Long-term: capital gains at preferential rates
+    const thresholds ***REMOVED*** CAPITAL_GAINS_THRESHOLDS_2025[filingStatus];
+    const gain ***REMOVED*** proceeds - costBasis;
+
+    if (gain > 0) {
+      const taxableIncomeForLTCG ***REMOVED*** otherIncome + ordinaryIncomeAtVest;
+      let rate ***REMOVED*** 0.20; // Default 20%
+
+      if (taxableIncomeForLTCG <***REMOVED*** thresholds.ZERO) {
+        rate ***REMOVED*** 0;
+      } else if (taxableIncomeForLTCG <***REMOVED*** thresholds.FIFTEEN) {
+        rate ***REMOVED*** 0.15;
+      }
+
+      capitalGainsTax ***REMOVED*** gain * rate;
+    }
+  } else {
+    // Short-term: taxed at ordinary income rates
+    const gain ***REMOVED*** proceeds - costBasis;
+    const totalOrdinaryIncome ***REMOVED*** otherIncome + ordinaryIncomeAtVest + gain;
+    const fedTax ***REMOVED*** calculateFederalTax(totalOrdinaryIncome, filingStatus);
+    const fedTaxNoSale ***REMOVED*** calculateFederalTax(otherIncome + ordinaryIncomeAtVest, filingStatus);
+    ordinaryTax ***REMOVED*** fedTax.tax - fedTaxNoSale.tax;
+  }
+
+  const totalTax ***REMOVED*** ordinaryTax + capitalGainsTax;
+  const netProceeds ***REMOVED*** proceeds - totalTax;
+  const effectiveRate ***REMOVED*** proceeds > 0 ? totalTax / proceeds : 0;
+
+  // Get bracket details for display
+  const fedTaxResult ***REMOVED*** calculateFederalTax(otherIncome + ordinaryIncomeAtVest + (isLongTerm ? 0 : proceeds - costBasis), filingStatus);
+
+  return {
+    proceeds,
+    ordinaryTax,
+    capitalGainsTax,
+    totalTax,
+    netProceeds,
+    effectiveRate,
+    year: 2025,
+    holdingPeriod: isLongTerm ? 'LONG' : 'SHORT',
+    brackets: fedTaxResult.brackets,
+  };
+}
+
+function calculateScenarios(
+  shares: number,
+  vestPrice: number,
+  sellPrice: number,
+  otherIncome: number,
+  filingStatus: 'SINGLE' | 'MFJ' | 'HOH'
+): ComparisonResult {
+  const scenarios ***REMOVED*** [
+    { name: 'Sell Now', sellPrice, holdingPeriodDays: 0 },
+    { name: 'Sell in 3 months', sellPrice: sellPrice * 1.05, holdingPeriodDays: 90 },
+    { name: 'Sell in 6 months', sellPrice: sellPrice * 1.10, holdingPeriodDays: 180 },
+    { name: 'Sell in 1 year', sellPrice: sellPrice * 1.10, holdingPeriodDays: 365 },
+    { name: 'Sell Now (Pessimistic)', sellPrice: sellPrice * 0.95, holdingPeriodDays: 0 },
+  ];
+
+  const comparison ***REMOVED*** scenarios.map((scenario) ***REMOVED***> {
+    const result ***REMOVED*** calculateScenario(
+      shares,
+      vestPrice,
+      scenario.sellPrice,
+      otherIncome,
+      filingStatus,
+      scenario.holdingPeriodDays
+    );
+    return {
+      name: scenario.name,
+      proceeds: result.proceeds,
+      ordinaryTax: result.ordinaryTax,
+      capitalGainsTax: result.capitalGainsTax,
+      totalTax: result.totalTax,
+      netProceeds: result.netProceeds,
+      effectiveRate: result.effectiveRate,
+      holdingPeriod: result.holdingPeriod,
+    };
+  });
+
+  const best ***REMOVED*** comparison.reduce((prev, current) ***REMOVED***>
+    current.netProceeds > prev.netProceeds ? current : prev
+  );
+
+  return {
+    comparison,
+    recommendation: `Best to ${best.name.toLowerCase()} for $${best.netProceeds.toFixed(2)} net proceeds`,
+  };
+}
+
+// ***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED*** MAIN COMPONENT ***REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED******REMOVED***
+
 export default function Home() {
   const [shares, setShares] ***REMOVED*** useState('100');
   const [vestPrice, setVestPrice] ***REMOVED*** useState('50');
@@ -58,27 +269,31 @@ export default function Home() {
 
   const calculate ***REMOVED*** async (compare ***REMOVED*** false) ***REMOVED***> {
     setLoading(true);
+
+    // Simulate calculation delay for UX
+    await new Promise((resolve) ***REMOVED***> setTimeout(resolve, 300));
+
     try {
-      const response ***REMOVED*** await fetch('/api/calculate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          shares: Number(shares),
-          vestPrice: Number(vestPrice),
-          sellPrice: Number(sellPrice),
-          otherIncome: Number(otherIncome),
-          filingStatus,
-          compare,
-        }),
-      });
-
-      const data ***REMOVED*** await response.json();
-
       if (compare) {
-        setComparison(data);
+        const comparisonResult ***REMOVED*** calculateScenarios(
+          Number(shares),
+          Number(vestPrice),
+          Number(sellPrice),
+          Number(otherIncome),
+          filingStatus
+        );
+        setComparison(comparisonResult);
         setResult(null);
       } else {
-        setResult(data);
+        const calcResult ***REMOVED*** calculateScenario(
+          Number(shares),
+          Number(vestPrice),
+          Number(sellPrice),
+          Number(otherIncome),
+          filingStatus,
+          0 // Default to short-term
+        );
+        setResult(calcResult);
         setComparison(null);
       }
     } catch (error) {
@@ -188,7 +403,7 @@ export default function Home() {
                 </label>
                 <select
                   value***REMOVED***{filingStatus}
-                  onChange***REMOVED***{(e) ***REMOVED***> setFilingStatus(e.target.value as any)}
+                  onChange***REMOVED***{(e) ***REMOVED***> setFilingStatus(e.target.value as 'SINGLE' | 'MFJ' | 'HOH')}
                   className***REMOVED***"w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 print:border-black print:bg-white print:text-black"
                 >
                   <option value***REMOVED***"SINGLE">Single</option>
