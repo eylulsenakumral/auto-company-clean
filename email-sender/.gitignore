@@ -1,0 +1,8 @@
+node_modules/
+dist/
+*.log
+.env
+logs/*.jsonl
+!logs/.gitkeep
+.DS_Store
+*.tgz

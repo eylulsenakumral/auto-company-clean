@@ -1,0 +1,31 @@
+{
+  "name": "email-sender",
+  "version": "1.0.0",
+  "description": "Resend-based cold email sender with rate limiting and audit logging",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "email-sender": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "send": "node --import tsx src/index.ts",
+    "send:compiled": "node dist/index.js"
+  },
+  "keywords": ["email", "resend", "cold-outreach"],
+  "author": "Tolga Berk",
+  "license": "MIT",
+  "dependencies": {
+    "resend": "^4.1.2",
+    "dotenv": "^16.4.7",
+    "csv-parse": "^5.5.6"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.5",
+    "typescript": "^5.7.3",
+    "tsx": "^4.19.4"
+  },
+  "engines": {
+    "node": ">***REMOVED***20.0.0"
+  }
+}
