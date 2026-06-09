@@ -1,0 +1,42 @@
+{
+  "name": "bundle-size-analyzer",
+  "version": "0.1.0",
+  "description": "CLI that analyzes bundle sizes, detects bloat, and enforces budgets",
+  "main": "dist/index.js",
+  "bin": {
+    "bundle-analyzer": "dist/cli.js"
+  },
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "test": "node --test dist/test/**/*.test.js",
+    "pretest": "npm run build",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "bundle",
+    "size",
+    "analyzer",
+    "cli",
+    "budget",
+    "performance"
+  ],
+  "author": "Auto Company",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "cli-table3": "^0.6.5",
+    "commander": "^12.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "typescript": "^5.5.0"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">***REMOVED***18.0.0"
+  }
+}
