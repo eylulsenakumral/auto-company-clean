@@ -1,0 +1,32 @@
+# Source files
+src/
+tests/
+*.ts
+
+# Build artifacts (keep dist/)
+coverage/
+
+# Dev files
+.eslintrc.*
+.prettierrc.*
+
+# CI
+.github/
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Debug
+*.log
+npm-debug.log*
+
+# Git
+.git/
+.gitignore
