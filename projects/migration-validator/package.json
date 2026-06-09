@@ -1,0 +1,44 @@
+{
+  "name": "migration-validator",
+  "version": "0.1.0",
+  "description": "Static analysis tool for database migrations - detect destructive operations, lock risks, and schema drift",
+  "type": "module",
+  "main": "dist/cli.js",
+  "bin": {
+    "migration-validator": "./dist/cli.js",
+    "mv": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "node --test test/**/*.test.js",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "database",
+    "migration",
+    "validator",
+    "static-analysis",
+    "prisma",
+    "django",
+    "flyway",
+    "sql"
+  ],
+  "author": "Auto Company",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^12.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.5",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">***REMOVED***20.0.0"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "severity": {
+    "critical": [
+      "destructive",
+      "breaking-change"
+    ],
+    "warning": [
+      "lock-risk",
+      "rollback",
+      "data-integrity"
+    ],
+    "info": [
+      "index-impact",
+      "performance"
+    ]
+  },
+  "ignore": [],
+  "paths": [
+    "./migrations",
+    "./prisma/migrations",
+    "./database/migrations"
+  ]
+}
