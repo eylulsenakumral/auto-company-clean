@@ -1,0 +1,8 @@
+{
+  "iterations": 15,
+  "threshold": 25,
+  "testCommand": "vitest run",
+  "runner": "vitest",
+  "verbose": true,
+  "timeout": 90000
+}

@@ -1,0 +1,46 @@
+{
+  "name": "flaky-test-detector",
+  "version": "0.1.0",
+  "description": "Detect flaky tests by running test suites multiple times and analyzing pass/fail patterns",
+  "main": "dist/index.js",
+  "bin": {
+    "flaky-detect": "./dist/cli.js",
+    "flaky": "./dist/cli.js"
+  },
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "node --test",
+    "lint": "eslint src/",
+    "flaky": "node dist/cli.js",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "testing",
+    "flaky",
+    "test-runner",
+    "jest",
+    "vitest",
+    "pytest",
+    "ci"
+  ],
+  "author": "Auto Company",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "commander": "^12.1.0",
+    "glob": "^11.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "typescript": "^5.7.3"
+  },
+  "engines": {
+    "node": ">***REMOVED***18.0.0"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ]
+}

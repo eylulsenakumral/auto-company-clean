@@ -1,0 +1,8 @@
+{
+  "iterations": 10,
+  "threshold": 30,
+  "testCommand": "npm test",
+  "runner": "jest",
+  "verbose": false,
+  "timeout": 60000
+}
