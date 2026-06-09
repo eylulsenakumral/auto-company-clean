@@ -1,0 +1,25 @@
+service: vulnerable-lambda
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  iamRoleStatements:
+    - Effect: Allow
+      Action: '*'
+      Resource: '*'
+  environment:
+    API_KEY: ***REMOVED***
+    JWT_SECRET: ***REMOVED***
+
+functions:
+  publicApi:
+    handler: handler.public
+    timeout: 300
+    events:
+      - httpApi:
+          path: /public
+          method: GET
+
+  slowFunction:
+    handler: handler.slow
+    timeout: 120

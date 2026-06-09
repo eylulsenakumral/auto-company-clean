@@ -147,6 +147,7 @@ projects/*
 !projects/.gitkeep
 !projects/snapog/
 !projects/api-security-scanner/
+!projects/serverless-security-scanner/
 
 # Local/private outputs (do not publish)
 AGENTS.md

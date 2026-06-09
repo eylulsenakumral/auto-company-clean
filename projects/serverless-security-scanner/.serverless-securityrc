@@ -1,0 +1,12 @@
+{
+  "severity": "warning",
+  "ignore": [
+    "node_modules",
+    ".git",
+    "dist",
+    "build",
+    ".serverless"
+  ],
+  "framework": "auto",
+  "checkRuntime": true
+}
