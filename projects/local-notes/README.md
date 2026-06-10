@@ -1,67 +1,91 @@
 # local-notes
 
-![GitHub stars](https://img.shields.io/github/stars/eylulsenakumral/auto-company?style=social)
-![License](https://img.shields.io/github/license/eylulsenakumral/auto-company)
-![npm](https://img.shields.io/npm/v/local-notes-cli?label=npm)
+![npm](https://img.shields.io/npm/v/local-notes-cli)
+![License: MIT](https://img.shields.io/npm/l/local-notes-cli)
+![Node](https://img.shields.io/node/v/local-notes-cli)
+![GitHub stars](https://img.shields.io/github/stars/eylulsenakumral/auto-company-clean?style=social)
 
-Terminal-based note-taking. Zero cloud. Zero BS.
+> Terminal-based note-taking. Zero cloud. Zero BS.
+
+**Repository:** [github.com/eylulsenakumral/auto-company-clean](https://github.com/eylulsenakumral/auto-company-clean/tree/main/projects/local-notes)
+
+A minimal CLI for capturing thoughts without leaving your terminal. Notes stored locally as Markdown — yours forever, searchable instantly.
+
+## Why local-notes?
+
+- **Zero friction** — Type `ln add` and keep typing
+- **No account required** — Your notes live on your machine
+- **Plain Markdown** — Future-proof, grep-friendly, works with any editor
+- **Privacy first** — No cloud, no telemetry, no tracking
 
 ## Installation
 
-### Option 1: Direct from GitHub (Recommended, No Token Required)
+### Option 1: Direct from GitHub (Recommended)
+
+No token required. Clone and install:
 
 ```bash
-# Clone the repo
-git clone https://github.com/eylulsenakumral/auto-company.git
-cd auto-company/projects/local-notes
-
-# Install globally
+git clone https://github.com/eylulsenakumral/auto-company-clean.git
+cd auto-company-clean/projects/local-notes
 npm install -g .
 ```
 
-### Option 2: npm (When Published)
+### Option 2: npm
 
 ```bash
 npm install -g local-notes-cli
 ```
 
-Or use with npx:
+Or use with `npx` (no install):
 
 ```bash
 npx local-notes-cli add "my note"
 ```
 
-## Usage
+## Quick Start
 
 ```bash
-# Create a new note (opens editor)
+# Create a note (opens your $EDITOR)
 ln add "meeting notes"
 
-# Create note with direct content
-ln add "quick idea" -c "content here"
+# Quick capture with inline content
+ln add "api idea" -c "Add rate limiting to /api/search endpoint"
 
-# Create note with tags
-ln add "task" -t work -t urgent
+# Tag important notes
+ln add "urgent bug" -t production -t fix-asap
 
-# List all notes
+# Find what you need
 ln list
-
-# Search notes
 ln search "authentication"
 
-# View a specific note
-ln view 2025-06-10-my-note
-
-# Delete a note (with confirmation)
-ln delete "old-note"
-
-# Delete without confirmation
-ln delete "temp" -f
+# View or delete
+ln view 2025-06-10-api-idea
+ln delete "old draft"
 ```
+
+## Commands
+
+| Command | Description |
+|---------|-------------|
+| `add <title>` | Create a new note |
+| `list` | List all notes (sorted by date) |
+| `search <query>` | Full-text search across notes |
+| `view <id\|title>` | View a specific note |
+| `delete <id\|title>` | Delete a note (with confirmation) |
+
+## Options
+
+| Flag | Description |
+|------|-------------|
+| `-c, --content <text>` | Add note with content directly (skip editor) |
+| `-t, --tag <tag>` | Add tag (use multiple times) |
+| `-f, --force` | Skip confirmation (for delete) |
+| `-h, --help` | Show command help |
+| `-v, --version` | Show version |
 
 ## Storage
 
-Notes are stored in `~/.local-notes/notes/` as plain Markdown files with frontmatter:
+Notes live at `~/.local-notes/notes/` as plain Markdown:
 
 ```markdown
 ---
@@ -73,29 +97,15 @@ tags: ["idea", "project"]
 
 # Note Title
 
-Note content in plain markdown.
+Your content here.
 ```
 
-## Commands
+Use any editor to edit them directly — the CLI reads the same files.
 
-| Command | Description |
-|---------|-------------|
-| `add <title>` | Create a new note |
-| `list` | List all notes |
-| `search <query>` | Search notes |
-| `view <id\|title>` | View a specific note |
-| `delete <id\|title>` | Delete a note |
+## Requirements
 
-## Options
-
-| Option | Description |
-|--------|-------------|
-| `-c, --content <text>` | Add note with content directly (no editor) |
-| `-t, --tag <tag>` | Add tag to note |
-| `-f, --force` | Skip confirmation (for delete) |
-| `-h, --help` | Show help |
-| `-v, --version` | Show version |
+- Node.js >= 18.0.0
 
 ## License
 
-MIT
+MIT © Auto Company

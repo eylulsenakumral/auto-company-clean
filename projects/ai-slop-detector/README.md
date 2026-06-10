@@ -1,10 +1,12 @@
 # AI Slop Detector
 
-![GitHub stars](https://img.shields.io/github/stars/eylulsenakumral/auto-company?style=social)
-![License](https://img.shields.io/github/license/eylulsenakumral/auto-company)
+![GitHub stars](https://img.shields.io/github/stars/eylulsenakumral/auto-company-clean?style=social)
+![License](https://img.shields.io/github/license/eylulsenakumral/auto-company-clean)
 ![npm](https://img.shields.io/npm/v/ai-slop-detector?label=npm)
 
 A heuristic-based CLI tool to detect AI-generated code slop. No AI required - just statistics and pattern analysis.
+
+**Repository:** [github.com/eylulsenakumral/auto-company-clean](https://github.com/eylulsenakumral/auto-company-clean/tree/main/projects/ai-slop-detector)
 
 ## Why?
 
@@ -19,18 +21,17 @@ This tool uses pure heuristics to flag suspicious files.
 
 ## Installation
 
-### Option 1: Direct from GitHub (Recommended, No Token Required)
+### Option 1: Direct from GitHub (Recommended)
+
+No token required. Clone and install:
 
 ```bash
-# Clone the repo
-git clone https://github.com/eylulsenakumral/auto-company.git
-cd auto-company/projects/ai-slop-detector
-
-# Install globally
+git clone https://github.com/eylulsenakumral/auto-company-clean.git
+cd auto-company-clean/projects/ai-slop-detector
 npm install -g .
 ```
 
-### Option 2: npm (When Published)
+### Option 2: npm
 
 ```bash
 npm install -g ai-slop-detector

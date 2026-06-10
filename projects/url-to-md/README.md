@@ -1,12 +1,12 @@
 # url-to-md
 
-![GitHub stars](https://img.shields.io/github/stars/MaxMiksa/Auto-Company?style=social)
-![License](https://img.shields.io/github/license/MaxMiksa/Auto-Company)
+![GitHub stars](https://img.shields.io/github/stars/eylulsenakumral/auto-company-clean?style=social)
+![License](https://img.shields.io/github/license/eylulsenakumral/auto-company-clean)
 ![npm](https://img.shields.io/npm/v/url-to-md?label=npm)
 
 Convert any webpage to clean markdown. Strip ads, bloat, clutter.
 
-**Repository:** [github.com/MaxMiksa/Auto-Company](https://github.com/MaxMiksa/Auto-Company/tree/main/projects/url-to-md)
+**Repository:** [github.com/eylulsenakumral/auto-company-clean](https://github.com/eylulsenakumral/auto-company-clean/tree/main/projects/url-to-md)
 
 ## Installation
 
@@ -15,8 +15,8 @@ Convert any webpage to clean markdown. Strip ads, bloat, clutter.
 No token required. Clone and install:
 
 ```bash
-git clone https://github.com/MaxMiksa/Auto-Company.git
-cd Auto-Company/projects/url-to-md
+git clone https://github.com/eylulsenakumral/auto-company-clean.git
+cd auto-company-clean/projects/url-to-md
 npm install -g .
 ```
 
