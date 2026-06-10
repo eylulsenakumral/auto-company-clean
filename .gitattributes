@@ -1,4 +1,13 @@
-*.sh text eol***REMOVED***lf
-Makefile text eol***REMOVED***lf
-*.ps1 text eol***REMOVED***lf
+* textgho_REDACTED_TOKENauto
+
+*.sh text eolgho_REDACTED_TOKENlf
+Makefile text eolgho_REDACTED_TOKENlf
+*.ps1 text eolgho_REDACTED_TOKENlf
 .claude/skills/agent-browser/templates/*.sh -text
+
+# Node modules
+node_modules/** -text
+
+# Large files
+*.tar.gz binary
+*.tgz binary
