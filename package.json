@@ -28,11 +28,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tolgabrk/auto-company.git"
+    "url": "git+https://github.com/eylulsenakumral/auto-company.git"
   },
-  "homepage": "https://github.com/tolgabrk/auto-company#readme",
+  "homepage": "https://github.com/eylulsenakumral/auto-company#readme",
   "bugs": {
-    "url": "https://github.com/tolgabrk/auto-company/issues"
+    "url": "https://github.com/eylulsenakumral/auto-company/issues"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"

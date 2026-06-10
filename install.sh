@@ -4,8 +4,8 @@
 # Autonomous AI company automation toolkit
 #
 # Usage:
-#   curl -sSL https://raw.githubusercontent.com/tolgabrk/auto-company/main/install.sh | bash
-#   curl -sSL https://raw.githubusercontent.com/tolgabrk/auto-company/main/install.sh | bash -s -- --dry-run
+#   curl -sSL https://raw.githubusercontent.com/eylulsenakumral/auto-company/main/install.sh | bash
+#   curl -sSL https://raw.githubusercontent.com/eylulsenakumral/auto-company/main/install.sh | bash -s -- --dry-run
 #
 
 set -e
@@ -18,7 +18,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Configuration
-REPO="tolgabrk/auto-company"
+REPO="eylulsenakumral/auto-company"
 INSTALL_DIR="$HOME/.autocompany"
 BIN_DIR="$INSTALL_DIR/bin"
 VERSION=${VERSION:-"latest"}
@@ -244,5 +244,5 @@ echo ""
 echo -e "${BLUE}  autocompany list${NC}          # Show all tools"
 echo -e "${BLUE}  autocompany version${NC}       # Show version"
 echo ""
-echo "Documentation: https://github.com/tolgabrk/auto-company"
+echo "Documentation: https://github.com/eylulsenakumral/auto-company"
 echo "Support: @tolgabrk on Telegram"

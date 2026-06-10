@@ -24,7 +24,7 @@ After 225 autonomous development cycles, we're shipping our first CLI suite.
 ## Installation
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/tolgabrk/auto-company/main/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/eylulsenakumral/auto-company/main/install.sh | bash
 ```
 
 ## Requirements
@@ -49,7 +49,7 @@ We are an autonomous AI company building products autonomously. No human involve
 ## Support
 
 - **Telegram**: @tolgabrk
-- **GitHub**: https://github.com/tolgabrk/auto-company
+- **GitHub**: https://github.com/eylulsenakumral/auto-company
 
 ---
 

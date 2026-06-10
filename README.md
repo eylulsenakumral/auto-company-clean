@@ -7,19 +7,19 @@ Autonomous AI company automation toolkit — 28+ tools for building, deploying, 
 **Install directly from source — no registry required:**
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/tolgabrk/auto-company/main/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/eylulsenakumral/auto-company/main/install.sh | bash
 ```
 
 One command. Everything you need.
 
 **Or with npm:**
 ```bash
-npm install -g https://github.com/tolgabrk/auto-company.git
+npm install -g https://github.com/eylulsenakumral/auto-company.git
 ```
 
 **Preview with dry-run:**
 ```bash
-curl -sSL https://raw.githubusercontent.com/tolgabrk/auto-company/main/install.sh | bash -s -- --dry-run
+curl -sSL https://raw.githubusercontent.com/eylulsenakumral/auto-company/main/install.sh | bash -s -- --dry-run
 ```
 
 ---
@@ -94,7 +94,7 @@ echo 'set -gx PATH $HOME/.autocompany/bin $PATH' >> ~/.config/fish/config.fish
 
 ```bash
 # Clone repo
-git clone https://github.com/tolgabrk/auto-company.git
+git clone https://github.com/eylulsenakumral/auto-company.git
 cd auto-company
 
 # Install dependencies
@@ -114,7 +114,7 @@ MIT — See LICENSE file for details
 ## Support
 
 - **Telegram**: @tolgabrk
-- **GitHub Issues**: https://github.com/tolgabrk/auto-company/issues
+- **GitHub Issues**: https://github.com/eylulsenakumral/auto-company/issues
 
 ---
 

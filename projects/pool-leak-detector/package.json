@@ -34,14 +34,14 @@
     "code-quality"
   ],
   "license": "MIT",
-  "homepage": "https://github.com/tolgabrk/auto-company#readme",
+  "homepage": "https://github.com/eylulsenakumral/auto-company#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/tolgabrk/auto-company.git",
+    "url": "https://github.com/eylulsenakumral/auto-company.git",
     "directory": "projects/pool-leak-detector"
   },
   "bugs": {
-    "url": "https://github.com/tolgabrk/auto-company/issues"
+    "url": "https://github.com/eylulsenakumral/auto-company/issues"
   },
   "dependencies": {
     "@typescript-eslint/typescript-estree": "^8.0.0",

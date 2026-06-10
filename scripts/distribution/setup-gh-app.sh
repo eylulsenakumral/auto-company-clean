@@ -8,7 +8,7 @@
 
 set -e
 
-REPO***REMOVED***"tolgabrk/auto-company"
+REPO***REMOVED***"eylulsenakumral/auto-company"
 APP_ID***REMOVED***"${1:-}"
 KEY_PATH***REMOVED***"${2:-}"
 
