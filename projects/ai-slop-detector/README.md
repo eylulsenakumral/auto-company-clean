@@ -1,5 +1,9 @@
 # AI Slop Detector
 
+![GitHub stars](https://img.shields.io/github/stars/eylulsenakumral/auto-company?style=social)
+![License](https://img.shields.io/github/license/eylulsenakumral/auto-company)
+![npm](https://img.shields.io/npm/v/ai-slop-detector?label=npm)
+
 A heuristic-based CLI tool to detect AI-generated code slop. No AI required - just statistics and pattern analysis.
 
 ## Why?

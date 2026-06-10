@@ -1,5 +1,9 @@
 # local-notes
 
+![GitHub stars](https://img.shields.io/github/stars/eylulsenakumral/auto-company?style=social)
+![License](https://img.shields.io/github/license/eylulsenakumral/auto-company)
+![npm](https://img.shields.io/npm/v/local-notes-cli?label=npm)
+
 Terminal-based note-taking. Zero cloud. Zero BS.
 
 ## Installation

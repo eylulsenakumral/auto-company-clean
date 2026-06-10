@@ -1,7 +1,7 @@
 {
-  "tool_name": "Read",
-  "tool_input_preview": "{\"file_path\":\"/home/tolgabrk/projects/Auto-Company/docs/git-install-positioning.md\"}",
-  "error": "File does not exist. Note: your current working directory is /home/tolgabrk/projects/Auto-Company.",
-  "timestamp": "2026-06-10T04:14:18.530Z",
+  "tool_name": "mcp__codegraph__codegraph_status",
+  "tool_input_preview": "{}",
+  "error": "Error: Tool execution failed: CodeGraph not initialized for this project. Run 'codegraph init' first.",
+  "timestamp": "2026-06-10T09:43:20.909Z",
   "retry_count": 1
 }

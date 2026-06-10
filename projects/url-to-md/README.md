@@ -1,5 +1,9 @@
 # url-to-md
 
+![GitHub stars](https://img.shields.io/github/stars/eylulsenakumral/auto-company?style=social)
+![License](https://img.shields.io/github/license/eylulsenakumral/auto-company)
+![npm](https://img.shields.io/npm/v/@eylulsenakumral/url-to-md?label=npm)
+
 Convert any webpage to clean markdown. Strip ads, bloat, clutter.
 
 ## Installation
