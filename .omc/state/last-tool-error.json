@@ -1,7 +1,7 @@
 {
   "tool_name": "Bash",
-  "tool_input_preview": "{\"command\":\"cat /tmp/test-bad-pkg.json && echo -e \\\"\\\\n---\\\" && node /home/tolgabrk/projects/Auto-Company/projects/package-json-optimizer/src/index.js fix -p /tmp/test-bad-pkg.json && echo -e \\\"\\\\n---...",
-  "error": "Exit code 1\n{\"name\":\"My Package\"}\n\n---\n\n🔧 Fix results\n\nChanges applied:\n  ✓ name: Replaced spaces with hyphens\n  ✓ name: Converted to lowercase\n\nBefore: 7 issues\nAfter: 5 issues\n✓ Fixed: 2 issue(s)\n\n✓ Updated: /tmp/test-bad-pkg.json",
-  "timestamp": "2026-06-09T00:32:47.525Z",
-  "retry_count": 1
+  "tool_input_preview": "{\"command\":\"export GH_TOKEN\\\"***REMOVED***\\\" && git push origin main -u 2>&1\",\"description\":\"Push to new clean repo\"}",
+  "error": "Exit code 1\nremote: error: GH013: Repository rule violations found for refs/heads/main.        \nremote: \nremote: - GITHUB PUSH PROTECTION        \nremote:   —————————————————————————————————————————        \nremote:     Resolve the following violations before pushing again        \nremote: \nremote:     - Push cannot contain secrets        \nremote: \nremote:             \nremote:      (?) Learn how to resolve a blocked push        \nremote:      https://docs.github.com/code-security/secret-scanning/wor...",
+  "timestamp": "2026-06-10T01:32:26.996Z",
+  "retry_count": 2
 }
