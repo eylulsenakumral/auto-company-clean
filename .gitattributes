@@ -1,8 +1,8 @@
-* textgho_REDACTEDauto
+* text=auto
 
-*.sh text eolgho_REDACTEDlf
-Makefile text eolgho_REDACTEDlf
-*.ps1 text eolgho_REDACTEDlf
+*.sh text eol=lf
+Makefile text eol=lf
+*.ps1 text eol=lf
 .claude/skills/agent-browser/templates/*.sh -text
 
 # Node modules
