@@ -36,4 +36,4 @@ gh release create v1.1.1 \
 echo ""
 echo "✅ Release v1.1.1 created!"
 echo ""
-echo "🔗 View at: https://github.com/tolgabrk/autocompany/releases/tag/v1.1.1"
+echo "🔗 View at: https://github.com/eylulsenakumral/auto-company/releases/tag/v1.1.1"
