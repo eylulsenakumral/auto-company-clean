@@ -1,7 +1,7 @@
 {
   "tool_name": "Bash",
-  "tool_input_preview": "Command contained GitHub token (REDACTED)",
-  "error": "Exit code 1 - remote: error: GH013: Repository rule violations",
-  "timestamp": "2026-06-10T01:32:26.996Z",
-  "retry_count": 2
+  "tool_input_preview": "{\"command\":\"npm publish 2>&1\",\"timeout\":120000,\"description\":\"Publish to GitHub Packages\"}",
+  "error": "Exit code 1\nnpm warn publish npm auto-corrected some errors in your package.json when publishing.  Please run \"npm pkg fix\" to address these errors.\nnpm warn publish errors corrected:\nnpm warn publish \"bin[autocompany]\" script name was cleaned\nnpm warn publish \"repository.url\" was normalized to \"git+https://github.com/tolgabrk/auto-company.git\"\nnpm notice\nnpm notice 📦  autocompany@1.1.0\nnpm notice Tarball Contents\nnpm notice 2.3kB README.md\nnpm notice 3.9kB bin/autocompany\nnpm notice 1.9kB pack...",
+  "timestamp": "2026-06-10T03:13:27.431Z",
+  "retry_count": 1
 }

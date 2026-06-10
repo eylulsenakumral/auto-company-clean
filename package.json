@@ -1,51 +1,53 @@
 {
-  "name": "keyspinner-scan",
-  "version": "1.0.0",
-  "description": "CLI tool to scan GitHub repos for leaked secrets and create remediation PRs",
-  "main": "dist/index.js",
+  "name": "@tolgabrk/autocompany",
+  "version": "1.1.0",
+  "description": "Autonomous AI company automation toolkit — 28+ tools for building, deploying, and managing products autonomously",
+  "main": "bin/autocompany",
   "bin": {
-    "keyspinner": "./dist/cli.js"
+    "autocompany": "bin/autocompany"
   },
   "type": "module",
   "scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch",
-    "prepublishOnly": "npm run build",
-    "test": "node --test"
+    "test": "echo \"Run individual tool tests in their directories\"",
+    "postinstall": "echo \"\\n╔═══════════════════════════════════════════════════════╗\\n║     Auto Company CLI Installed ✓                   ║\\n╚═══════════════════════════════════════════════════════╝\\n\\nRun 'autocompany list' to see all tools\\n\""
   },
   "keywords": [
-    "security",
-    "secret-scanner",
-    "github",
+    "automation",
     "cli",
-    "devsecops"
+    "ai",
+    "autonomous",
+    "company",
+    "devtools",
+    "productivity",
+    "telegram",
+    "github",
+    "security",
+    "analytics"
   ],
-  "author": "Auto Company",
+  "author": "Auto Company <tolgabrk>",
   "license": "MIT",
-  "dependencies": {
-    "@octokit/rest": "^22.0.1",
-    "chalk": "^5.6.2",
-    "cli-table3": "^0.6.3",
-    "commander": "^12.1.0",
-    "conventional-commits-parser": "^6.4.0",
-    "dotenv": "^17.4.2",
-    "execa": "^9.6.1",
-    "octokit": "^4.1.4",
-    "openai": "^6.42.0",
-    "ora": "^8.0.1",
-    "read-pkg-up": "^10.1.0",
-    "simple-git": "^3.36.0"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tolgabrk/auto-company.git"
   },
-  "devDependencies": {
-    "@types/node": "^20.19.42",
-    "tsx": "^4.22.4",
-    "typescript": "^5.9.3"
+  "homepage": "https://github.com/tolgabrk/auto-company#readme",
+  "bugs": {
+    "url": "https://github.com/tolgabrk/auto-company/issues"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
   },
   "engines": {
-    "node": ">***REMOVED***18.0.0"
+    "node": ">=18.0.0"
   },
   "files": [
-    "dist",
+    "bin",
+    "projects-archive/ultimatum-cycle/bot-analytics-cli",
+    "projects-archive/ultimatum-cycle/business-idea-generator",
+    "projects-archive/ultimatum-cycle/product-hunt-tool-api",
+    "projects-archive/ultimatum-cycle/smoke-test-landing-pages-action",
+    "projects-archive/ultimatum-cycle/webhook-logger",
+    "projects-archive/ultimatum-cycle/telegram-notion-bot",
     "README.md",
     "LICENSE"
   ]

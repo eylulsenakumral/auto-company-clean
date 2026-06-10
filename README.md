@@ -2,16 +2,34 @@
 
 Autonomous AI company automation toolkit — 28+ tools for building, deploying, and managing products autonomously.
 
-## Quick Install
+## 🚀 Quick Install
+
+**Install directly from source — no registry required:**
 
 ```bash
 curl -sSL https://raw.githubusercontent.com/tolgabrk/auto-company/main/install.sh | bash
 ```
 
-Or preview with dry-run:
+One command. Everything you need.
+
+**Or with npm:**
+```bash
+npm install -g https://github.com/tolgabrk/auto-company.git
+```
+
+**Preview with dry-run:**
 ```bash
 curl -sSL https://raw.githubusercontent.com/tolgabrk/auto-company/main/install.sh | bash -s -- --dry-run
 ```
+
+---
+
+### 📖 Why direct from source?
+
+- **Transparency:** Read the install script before running it
+- **No dependencies:** Works without npm (curl only)
+- **Reliability:** No registry downtime, no token expiration
+- **Supply chain security:** See exactly what you're installing
 
 ## What's Included
 

@@ -11,29 +11,44 @@
 set -e
 
 # Colors
-RED***REMOVED***'\033[0;31m'
-GREEN***REMOVED***'\033[0;32m'
-YELLOW***REMOVED***'\033[1;33m'
-BLUE***REMOVED***'\033[0;34m'
-NC***REMOVED***'\033[0m' # No Color
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
 
 # Configuration
-REPO***REMOVED***"tolgabrk/auto-company"
-INSTALL_DIR***REMOVED***"$HOME/.autocompany"
-BIN_DIR***REMOVED***"$INSTALL_DIR/bin"
-VERSION***REMOVED***${VERSION:-"latest"}
-DRY_RUN***REMOVED***false
+REPO="tolgabrk/auto-company"
+INSTALL_DIR="$HOME/.autocompany"
+BIN_DIR="$INSTALL_DIR/bin"
+VERSION=${VERSION:-"latest"}
+DRY_RUN=false
+LOCAL_MODE=false
+
+# Detect if running from local repo
+if [ -f "$(dirname "$0")/package.json" ] && [ -d "$(dirname "$0")/bin" ]; then
+  LOCAL_MODE=true
+  AUTOCOMPANY_ROOT="$(dirname "$0")"
+else
+  LOCAL_MODE=false
+  AUTOCOMPANY_ROOT="$INSTALL_DIR"
+fi
 
 # Parse arguments
 while [[ $# -gt 0 ]]; do
   case $1 in
     --dry-run)
-      DRY_RUN***REMOVED***true
+      DRY_RUN=true
       shift
       ;;
     --version)
-      VERSION***REMOVED***"$2"
+      VERSION="$2"
       shift 2
+      ;;
+    --local)
+      LOCAL_MODE=true
+      AUTOCOMPANY_ROOT="$(pwd)"
+      shift
       ;;
     *)
       echo -e "${RED}Unknown option: $1${NC}"
@@ -50,14 +65,14 @@ echo "╚═══════════════════════�
 echo -e "${NC}"
 
 # Detect OS
-OS***REMOVED***"$(uname -s)"
+OS="$(uname -s)"
 case "$OS" in
-  Linux*)     MACHINE***REMOVED***Linux;;
-  Darwin*)    MACHINE***REMOVED***Mac;;
-  CYGWIN*)    MACHINE***REMOVED***Cygwin;;
-  MINGW*)     MACHINE***REMOVED***MinGW;;
-  MSYS*)      MACHINE***REMOVED***MSYS;;
-  *)          MACHINE***REMOVED***"UNKNOWN:${OS}"
+  Linux*)     MACHINE=Linux;;
+  Darwin*)    MACHINE=Mac;;
+  CYGWIN*)    MACHINE=Cygwin;;
+  MINGW*)     MACHINE=MinGW;;
+  MSYS*)      MACHINE=MSYS;;
+  *)          MACHINE="UNKNOWN:${OS}"
 esac
 
 # Check Node.js
@@ -67,7 +82,7 @@ if ! command -v node &> /dev/null; then
   exit 1
 fi
 
-NODE_VERSION***REMOVED***$(node -v | cut -d'v' -f2 | cut -d'.' -f1)
+NODE_VERSION=$(node -v | cut -d'v' -f2 | cut -d'.' -f1)
 if [ "$NODE_VERSION" -lt 18 ]; then
   echo -e "${RED}✗ Node.js v18 or higher required (found v${NODE_VERSION})${NC}"
   exit 1
@@ -76,7 +91,7 @@ fi
 echo -e "${GREEN}✓ Node.js v${NODE_VERSION} detected${NC}"
 echo -e "${GREEN}✓ OS: ${MACHINE}${NC}"
 
-if [ "$DRY_RUN" ***REMOVED*** true ]; then
+if [ "$DRY_RUN" = true ]; then
   echo -e "${YELLOW}--dry-run mode: Skipping installation${NC}"
   echo "Installation would:"
   echo "  - Download release ${VERSION} from GitHub"
@@ -86,33 +101,46 @@ if [ "$DRY_RUN" ***REMOVED*** true ]; then
 fi
 
 # Create install directory
-echo -e "${BLUE}Installing to ${INSTALL_DIR}...${NC}"
 mkdir -p "${BIN_DIR}"
 
-# Download release
-DOWNLOAD_URL***REMOVED***"https://github.com/${REPO}/archive/refs/tags/${VERSION}.tar.gz"
-if [ "$VERSION" ***REMOVED*** "latest" ]; then
-  DOWNLOAD_URL***REMOVED***"https://github.com/${REPO}/archive/refs/heads/main.tar.gz"
-fi
+if [ "$LOCAL_MODE" = true ]; then
+  echo -e "${GREEN}✓ Local mode: Using current directory${NC}"
+  echo -e "${BLUE}Installing from ${AUTOCOMPANY_ROOT}...${NC}"
 
-echo -e "${BLUE}Downloading from ${DOWNLOAD_URL}...${NC}"
-TMP_DIR***REMOVED***$(mktemp -d)
-curl -fsSL "${DOWNLOAD_URL}" -o "${TMP_DIR}/autocompany.tar.gz"
+  # Copy local files
+  mkdir -p "${INSTALL_DIR}"
+  cp -r "${AUTOCOMPANY_ROOT}/"* "${INSTALL_DIR}/" 2>/dev/null || true
+  cp -r "${AUTOCOMPANY_ROOT}/".* "${INSTALL_DIR}/" 2>/dev/null || true
 
-# Extract
-tar -xzf "${TMP_DIR}/autocompany.tar.gz" -C "${TMP_DIR}"
+  EXTRACTED_DIR="${INSTALL_DIR}"
+else
+  echo -e "${BLUE}Installing to ${INSTALL_DIR}...${NC}"
 
-# Copy files
-EXTRACTED_DIR***REMOVED***"${TMP_DIR}/$(ls "${TMP_DIR}" | grep auto-company)"
-if [ ! -d "${EXTRACTED_DIR}" ]; then
-  EXTRACTED_DIR***REMOVED***"${TMP_DIR}/$(ls "${TMP_DIR}" | head -1)"
+  # Download release
+  DOWNLOAD_URL="https://github.com/${REPO}/archive/refs/tags/${VERSION}.tar.gz"
+  if [ "$VERSION" = "latest" ]; then
+    DOWNLOAD_URL="https://github.com/${REPO}/archive/refs/heads/main.tar.gz"
+  fi
+
+  echo -e "${BLUE}Downloading from ${DOWNLOAD_URL}...${NC}"
+  TMP_DIR=$(mktemp -d)
+  curl -fsSL "${DOWNLOAD_URL}" -o "${TMP_DIR}/autocompany.tar.gz"
+
+  # Extract
+  tar -xzf "${TMP_DIR}/autocompany.tar.gz" -C "${TMP_DIR}"
+
+  # Copy files
+  EXTRACTED_DIR="${TMP_DIR}/$(ls "${TMP_DIR}" | grep auto-company)"
+  if [ ! -d "${EXTRACTED_DIR}" ]; then
+    EXTRACTED_DIR="${TMP_DIR}/$(ls "${TMP_DIR}" | head -1)"
+  fi
 fi
 
 # Create launcher script
-cat > "${BIN_DIR}/autocompany" << 'EOF'
+cat > "${BIN_DIR}/autocompany" << EOF
 #!/usr/bin/env bash
 # Auto Company CLI Launcher
-AUTOCOMPANY_ROOT***REMOVED***"$HOME/.autocompany"
+AUTOCOMPANY_ROOT="${INSTALL_DIR}"
 
 # List available tools
 list_tools() {
@@ -157,9 +185,9 @@ case "$1" in
     ;;
   *)
     # Try to run the tool
-    TOOL_NAME***REMOVED***"$1"
+    TOOL_NAME="$1"
     shift
-    TOOL_PATH***REMOVED***"$AUTOCOMPANY_ROOT/tools/$TOOL_NAME"
+    TOOL_PATH="$AUTOCOMPANY_ROOT/tools/$TOOL_NAME"
 
     if [ -f "$TOOL_PATH" ]; then
       node "$TOOL_PATH" "$@"
@@ -183,11 +211,11 @@ chmod +x "${BIN_DIR}/autocompany"
 rm -rf "${TMP_DIR}"
 
 # Add to PATH
-SHELL_CONFIG***REMOVED***""
+SHELL_CONFIG=""
 case "$SHELL" in
-  *zsh*) SHELL_CONFIG***REMOVED***"$HOME/.zshrc" ;;
-  *bash*) SHELL_CONFIG***REMOVED***"$HOME/.bashrc" ;;
-  *fish*) SHELL_CONFIG***REMOVED***"$HOME/.config/fish/config.fish" ;;
+  *zsh*) SHELL_CONFIG="$HOME/.zshrc" ;;
+  *bash*) SHELL_CONFIG="$HOME/.bashrc" ;;
+  *fish*) SHELL_CONFIG="$HOME/.config/fish/config.fish" ;;
 esac
 
 if [ -n "$SHELL_CONFIG" ] && ! grep -q "$BIN_DIR" "$SHELL_CONFIG" 2>/dev/null; then
@@ -199,7 +227,7 @@ if [ -n "$SHELL_CONFIG" ] && ! grep -q "$BIN_DIR" "$SHELL_CONFIG" 2>/dev/null; t
       echo "set -gx PATH $BIN_DIR \$PATH" >> "$SHELL_CONFIG"
       ;;
     *)
-      echo "export PATH***REMOVED***\"$BIN_DIR:\$PATH\"" >> "$SHELL_CONFIG"
+      echo "export PATH=\"$BIN_DIR:\$PATH\"" >> "$SHELL_CONFIG"
       ;;
   esac
 
