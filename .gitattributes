@@ -1,8 +1,8 @@
-* textgho_REDACTED_TOKENauto
+* textgho_REDACTEDauto
 
-*.sh text eolgho_REDACTED_TOKENlf
-Makefile text eolgho_REDACTED_TOKENlf
-*.ps1 text eolgho_REDACTED_TOKENlf
+*.sh text eolgho_REDACTEDlf
+Makefile text eolgho_REDACTEDlf
+*.ps1 text eolgho_REDACTEDlf
 .claude/skills/agent-browser/templates/*.sh -text
 
 # Node modules
