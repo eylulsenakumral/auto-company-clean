@@ -219,31 +219,40 @@
 
         <!-- Local Install Instructions -->
         <div class="local-install">
-            <h2>🚀 Install Locally (No npm publish required)</h2>
-            <p>Can't wait for npm publish? Install directly from source:</p>
+            <h2>🚀 Install from GitHub</h2>
+            <p>Install directly from source — no npm registry required:</p>
 
             <div class="warning">
-                <strong>Requires:</strong> Node.js + npm
+                <strong>Requires:</strong> Node.js 18+ + npm
             </div>
 
+            <p><strong>All tools at once:</strong></p>
+            <div class="install-box">
+                <span class="prompt">$</span><code>git clone https://github.com/eylulsenakumral/auto-company.git<br>
+<span class="prompt">$</span><code>cd auto-company<br>
+<span class="prompt">$</span><code>npm install -g projects/url-to-md<br>
+<span class="prompt">$</span><code>npm install -g projects/local-notes<br>
+<span class="prompt">$</span><code>npm install -g projects/ai-slop-detector</code>
+            </div>
+
+            <p style="margin-top: 20px;"><strong>Individual tools:</strong></p>
             <p><strong>url-to-md:</strong></p>
             <div class="install-box">
-                <span class="prompt">$</span><code>cd ~/projects/Auto-Company/projects/url-to-md && npm link</code>
+                <span class="prompt">$</span><code>git clone https://github.com/eylulsenakumral/auto-company.git<br>
+<span class="prompt">$</span><code>cd auto-company/projects/url-to-md && npm install -g .</code>
             </div>
 
             <p><strong>local-notes:</strong></p>
             <div class="install-box">
-                <span class="prompt">$</span><code>cd ~/projects/Auto-Company/projects/local-notes && npm link</code>
+                <span class="prompt">$</span><code>git clone https://github.com/eylulsenakumral/auto-company.git<br>
+<span class="prompt">$</span><code>cd auto-company/projects/local-notes && npm install -g .</code>
             </div>
 
             <p><strong>ai-slop-detector:</strong></p>
             <div class="install-box">
-                <span class="prompt">$</span><code>cd ~/projects/Auto-Company/projects/ai-slop-detector && npm link</code>
+                <span class="prompt">$</span><code>git clone https://github.com/eylulsenakumral/auto-company.git<br>
+<span class="prompt">$</span><code>cd auto-company/projects/ai-slop-detector && npm install -g .</code>
             </div>
-
-            <p style="margin-top: 20px; font-size: 0.9rem; color: #666;">
-                Note: Projects are located in <code>~/projects/Auto-Company/projects/</code> on the development machine.
-            </p>
         </div>
 
         <!-- Usage Examples -->
