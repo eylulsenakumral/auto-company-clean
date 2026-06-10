@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Developer Tools by Eylül Şenakumral</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background: #fafafa;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 80px 0;
+            text-align: center;
+        }
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        .byline {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        /* Products Grid */
+        .products {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            margin: 60px auto;
+        }
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+        }
+        .product-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+        .product-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+        }
+        .product-card .tagline {
+            color: #666;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+        .product-card p {
+            color: #444;
+            margin-bottom: 20px;
+        }
+        .product-card ul {
+            list-style: none;
+            margin-bottom: 25px;
+        }
+        .product-card li {
+            padding: 8px 0;
+            padding-left: 24px;
+            position: relative;
+            color: #555;
+        }
+        .product-card li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        /* Install Box */
+        .install-box {
+            background: #1e1e1e;
+            color: #e0e0e0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+        }
+        .install-box code {
+            color: #a5d6ff;
+        }
+        .install-box .prompt {
+            color: #4ec9b0;
+            margin-right: 8px;
+        }
+
+        /* Local Install Section */
+        .local-install {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            margin: 60px auto;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+        }
+        .local-install h2 {
+            margin-bottom: 20px;
+            color: #667eea;
+        }
+        .local-install p {
+            color: #555;
+            margin-bottom: 15px;
+        }
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            header { padding: 40px 0; }
+            header h1 { font-size: 1.8rem; }
+            .products { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Developer Tools</h1>
+            <p>CLI tools built for developers who value simplicity and privacy</p>
+            <div class="byline">By Eylül Şenakumral</div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="products">
+            <!-- URL to MD -->
+            <div class="product-card">
+                <div class="product-icon">📄</div>
+                <h3>url-to-md</h3>
+                <p class="tagline">Convert any webpage to clean markdown</p>
+                <p>Strip ads, sidebars, comments, and popups. Extract the main content and save as clean markdown.</p>
+                <ul>
+                    <li>Zero cloud, zero tracking</li>
+                    <li>Saves locally to your machine</li>
+                    <li>Perfect for offline reading</li>
+                </ul>
+                <div class="install-box">
+                    <span class="prompt">$</span><code>npm install -g @eylulsenakumral/url-to-md</code>
+                </div>
+            </div>
+
+            <!-- Local Notes -->
+            <div class="product-card">
+                <div class="product-icon">📝</div>
+                <h3>local-notes</h3>
+                <p class="tagline">Terminal-based note-taking. Zero cloud.</p>
+                <p>Fast, local note-taking from your terminal. Notes stored as plain Markdown files with frontmatter.</p>
+                <ul>
+                    <li>Create, search, view, delete notes</li>
+                    <li>Tag support for organization</li>
+                    <li>Your data stays on your machine</li>
+                </ul>
+                <div class="install-box">
+                    <span class="prompt">$</span><code>npm install -g local-notes-cli</code>
+                </div>
+            </div>
+
+            <!-- AI Slop Detector -->
+            <div class="product-card">
+                <div class="product-icon">🔍</div>
+                <h3>ai-slop-detector</h3>
+                <p class="tagline">Detect AI-generated code slop</p>
+                <p>Heuristic-based CLI tool to detect AI-generated code patterns. No AI required — just statistics.</p>
+                <ul>
+                    <li>9 detection heuristics</li>
+                    <li>JSON output for CI/CD</li>
+                    <li>Works on JavaScript, TypeScript, Python</li>
+                </ul>
+                <div class="install-box">
+                    <span class="prompt">$</span><code>npm install -g ai-slop-detector</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- Local Install Instructions -->
+        <div class="local-install">
+            <h2>🚀 Install Locally (No npm publish required)</h2>
+            <p>Can't wait for npm publish? Install directly from source:</p>
+
+            <div class="warning">
+                <strong>Requires:</strong> Node.js + npm
+            </div>
+
+            <p><strong>url-to-md:</strong></p>
+            <div class="install-box">
+                <span class="prompt">$</span><code>cd ~/projects/Auto-Company/projects/url-to-md && npm link</code>
+            </div>
+
+            <p><strong>local-notes:</strong></p>
+            <div class="install-box">
+                <span class="prompt">$</span><code>cd ~/projects/Auto-Company/projects/local-notes && npm link</code>
+            </div>
+
+            <p><strong>ai-slop-detector:</strong></p>
+            <div class="install-box">
+                <span class="prompt">$</span><code>cd ~/projects/Auto-Company/projects/ai-slop-detector && npm link</code>
+            </div>
+
+            <p style="margin-top: 20px; font-size: 0.9rem; color: #666;">
+                Note: Projects are located in <code>~/projects/Auto-Company/projects/</code> on the development machine.
+            </p>
+        </div>
+
+        <!-- Usage Examples -->
+        <div class="local-install">
+            <h2>📚 Quick Start</h2>
+
+            <h3 style="margin-top: 20px;">url-to-md</h3>
+            <div class="install-box">
+                <span class="prompt">$</span><code>url2md https://example.com/article<br>
+<span class="prompt">$</span><code>url2md https://example.com --output=my-article.md</code>
+            </div>
+
+            <h3 style="margin-top: 20px;">local-notes</h3>
+            <div class="install-box">
+                <span class="prompt">$</span><code>ln add "meeting notes"<br>
+<span class="prompt">$</span><code>ln add "quick idea" -c "content here"<br>
+<span class="prompt">$</span><code>ln list</code>
+            </div>
+
+            <h3 style="margin-top: 20px;">ai-slop-detector</h3>
+            <div class="install-box">
+                <span class="prompt">$</span><code>slop src/app.js<br>
+<span class="prompt">$</span><code>slop . --threshold 30<br>
+<span class="prompt">$</span><code>slop src/ --json</code>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>Built with ❤️ by Eylül Şenakumral • MIT License</p>
+            <p style="margin-top: 10px;">
+                <a href="https://github.com/eylulsenakumral" target="_blank">GitHub</a>
+            </p>
+        </div>
+    </footer>
+</body>
+</html>
